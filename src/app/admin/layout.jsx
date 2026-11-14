@@ -1,0 +1,24 @@
+import Link from 'next/link';
+import { requireAdmin } from '@/lib/auth.js';
+
+export const metadata = { title: 'Administration', robots: { index: false, follow: false } };
+
+export default async function AdminLayout({ children }) {
+  await requireAdmin();
+  return (
+    <main>
+      <div className="wrap">
+        <nav className="admin-nav" aria-label="Administration">
+          <Link href="/admin">Tableau de bord</Link>
+          <Link href="/admin/formations">Formations</Link>
+          <Link href="/admin/apprenants">Apprenants</Link>
+          <Link href="/admin/paiements">Paiements</Link>
+          <Link href="/admin/reglages">Réglages</Link>
+          <Link href="/admin/textes">Textes du site</Link>
+          <Link href="/admin/journal">Journal</Link>
+        </nav>
+        {children}
+      </div>
+    </main>
+  );
+}

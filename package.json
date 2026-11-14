@@ -1,0 +1,23 @@
+{
+  "name": "africa-money-academy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "migrate": "node scripts/migrate.mjs",
+    "vercel-build": "node scripts/migrate.mjs && next build",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "next": "^15.5.0",
+    "pg": "^8.13.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
