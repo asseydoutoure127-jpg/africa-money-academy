@@ -46,6 +46,16 @@ export function videoEmbedUrl(raw) {
   return null;
 }
 
+export function slugifyHeading(t) {
+  return String(t)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+
 export default function RichText({ text }) {
   const blocks = String(text || '')
     .replace(/\r\n/g, '\n')
@@ -60,7 +70,11 @@ export default function RichText({ text }) {
         const h = block.match(/^(#{1,3})\s+(.+)$/);
         if (h && !block.includes('\n')) {
           const Tag = `h${h[1].length + 1}`;
-          return <Tag key={key}>{inline(h[2], key)}</Tag>;
+          return (
+            <Tag key={key} id={h[1].length === 2 ? slugifyHeading(h[2]) : undefined}>
+              {inline(h[2], key)}
+            </Tag>
+          );
         }
         if (block.split('\n').every((l) => /^[-*]\s+/.test(l))) {
           return (

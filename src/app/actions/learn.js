@@ -22,8 +22,39 @@ export async function markLessonDone(formData) {
   const found = findUnlockedLesson(progress, lessonId);
   if (!found || found.locked) redirect(`${base}?m=acces_verrouille`);
 
+  // Une leçon avec exercice ne se termine qu'en envoyant la réponse (action submitExercise).
+  if (String(lesson.exercise || '').trim()) redirect(`${base}/lecon/${lessonId}?m=exercice_requis#exercice`);
+
   await store.markLessonDone(ctx.db, user.id, lessonId);
   redirect(`${base}/lecon/${lessonId}?m=lecon_ok`);
+}
+
+const EXERCISE_MIN = 20;
+const EXERCISE_MAX = 5000;
+
+/** Envoie la réponse à l'exercice : l'enregistre, puis termine la leçon (ce qui ouvre la suivante). */
+export async function submitExercise(formData) {
+  const ctx = getCtx();
+  const lessonId = String(formData.get('lessonId') || '');
+  const user = await requireUser('/espace');
+  const lesson = /^[0-9a-f-]{36}$/i.test(lessonId) ? await store.getLesson(ctx.db, lessonId) : null;
+  if (!lesson) redirect('/espace');
+  const course = await store.getCourseById(ctx.db, lesson.course_id);
+  const base = `/espace/formation/${course.slug}`;
+  if (!(await store.hasActiveAccess(ctx.db, user.id, course.id))) redirect(`/formations/${course.slug}`);
+
+  const modules = await store.listModulesWithLessons(ctx.db, course.id);
+  const progress = computeProgress(modules, await store.listCompletedLessonIds(ctx.db, user.id, course.id));
+  const found = findUnlockedLesson(progress, lessonId);
+  if (!found || found.locked) redirect(`${base}?m=acces_verrouille`);
+  if (!String(lesson.exercise || '').trim()) redirect(`${base}/lecon/${lessonId}`);
+
+  const answer = String(formData.get('answer') || '').replace(/\r\n/g, '\n').trim().slice(0, EXERCISE_MAX);
+  if (answer.length < EXERCISE_MIN) redirect(`${base}/lecon/${lessonId}?m=exercice_court#exercice`);
+
+  await store.saveExerciseAnswer(ctx.db, user.id, lessonId, answer);
+  await store.markLessonDone(ctx.db, user.id, lessonId);
+  redirect(`${base}/lecon/${lessonId}?m=exercice_ok`);
 }
 
 export async function enrollFree(formData) {

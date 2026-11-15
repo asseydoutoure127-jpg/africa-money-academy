@@ -4,8 +4,10 @@ import Flash from '@/components/Flash.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { saveLesson, deleteLessonAction } from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 export default async function EditLesson({ params, searchParams }) {
+  await requireAdmin();
   const { id } = await params;
   const sp = await searchParams;
   const lesson = /^[0-9a-f-]{36}$/i.test(id) ? await store.getLesson(getDb(), id) : null;
@@ -25,6 +27,9 @@ export default async function EditLesson({ params, searchParams }) {
         <label htmlFor="content">Contenu</label>
         <textarea id="content" name="content" defaultValue={lesson.content} style={{ minHeight: 360 }} />
         <p className="hint">Mise en forme : « ## Titre » pour un titre, « - » pour une liste, « &gt; » pour un encadré, **gras**, [texte](https://lien), ![description](https://image), et sur une ligne seule « @video https://youtube.com/... » (YouTube ou Vimeo). Une ligne vide sépare deux paragraphes.</p>
+        <label htmlFor="exercise">Exercice (consigne)</label>
+        <textarea id="exercise" name="exercise" defaultValue={lesson.exercise} style={{ minHeight: 160 }} />
+        <p className="hint">Si vous écrivez une consigne ici, l'élève doit écrire et envoyer sa réponse pour terminer la leçon et ouvrir la suivante. Laissez vide pour une leçon sans exercice.</p>
         <p style={{ marginTop: 16 }}><button className="btn" type="submit">Enregistrer</button></p>
       </form>
       <form action={deleteLessonAction}>

@@ -260,13 +260,14 @@ export async function getLesson(db, id) {
   );
 }
 
-export async function updateLesson(db, id, { title, content, durationMin, position }) {
+export async function updateLesson(db, id, { title, content, durationMin, position, exercise }) {
   return first(
     await db.query(
       `update lessons set title = coalesce($2, title), content = coalesce($3, content),
-         duration_min = coalesce($4, duration_min), position = coalesce($5, position)
+         duration_min = coalesce($4, duration_min), position = coalesce($5, position),
+         exercise = coalesce($6, exercise)
        where id = $1 returning *`,
-      [id, title ?? null, content ?? null, durationMin ?? null, position ?? null],
+      [id, title ?? null, content ?? null, durationMin ?? null, position ?? null, exercise ?? null],
     ),
   );
 }
@@ -287,6 +288,18 @@ export async function listCompletedLessonIds(db, userId, courseId) {
     )
   ).rows;
   return new Set(rows.map((r) => r.lesson_id));
+}
+
+export async function getExerciseAnswer(db, userId, lessonId) {
+  return first(await db.query(`select answer, submitted_at, updated_at from lesson_exercises where user_id = $1 and lesson_id = $2`, [userId, lessonId]));
+}
+
+export async function saveExerciseAnswer(db, userId, lessonId, answer) {
+  await db.query(
+    `insert into lesson_exercises (user_id, lesson_id, answer) values ($1, $2, $3)
+     on conflict (user_id, lesson_id) do update set answer = excluded.answer, updated_at = now()`,
+    [userId, lessonId, answer],
+  );
 }
 
 export async function markLessonDone(db, userId, lessonId) {

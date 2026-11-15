@@ -6,7 +6,14 @@ export const metadata = { title: 'Administration', robots: { index: false, follo
 export default async function AdminLayout({ children }) {
   await requireAdmin();
   return (
-    <main>
+    <main className="admin-area">
+      <div className="admin-banner">
+        <div className="wrap">
+          <strong>Espace administrateur</strong>
+          <span>Réservé au propriétaire du site. Les élèves n’y ont jamais accès.</span>
+          <Link href="/espace">Voir comme un élève</Link>
+        </div>
+      </div>
       <div className="wrap">
         <nav className="admin-nav" aria-label="Administration">
           <Link href="/admin">Tableau de bord</Link>

@@ -4,8 +4,10 @@ import { getDb } from '@/lib/db.js';
 import { getPageText } from '@/lib/pages.js';
 import { PAGE_DEFAULTS } from '@/lib/defaults.js';
 import { saveSitePage } from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 export default async function Texts({ searchParams }) {
+  await requireAdmin();
   const sp = await searchParams;
   const slugs = Object.keys(PAGE_DEFAULTS);
   const slug = slugs.includes(sp.page) ? sp.page : slugs[0];

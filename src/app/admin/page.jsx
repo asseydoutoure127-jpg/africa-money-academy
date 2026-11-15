@@ -5,8 +5,10 @@ import { getSetting } from '@/lib/settings.js';
 import { getPulseSecrets } from '@/lib/settings.js';
 import { getSiteUrl } from '@/lib/context.js';
 import { resolveAlertAction } from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 export default async function Dashboard() {
+  await requireAdmin();
   const db = getDb();
   const [stats, alerts, recent, apiKey, secrets, testPulse, courses, resend] = await Promise.all([
     store.dashboardStats(db),

@@ -3,10 +3,12 @@ import TestButton from '@/components/TestButton.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { retryDelivery, runReconcileNow, manualSaleCheck } from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 const fmt = (d) => new Date(d).toLocaleString('fr-FR', { timeZone: 'Africa/Bamako' });
 
 export default async function Payments({ searchParams }) {
+  await requireAdmin();
   const sp = await searchParams;
   const db = getDb();
   const [deliveries, pending, rejections] = await Promise.all([store.listDeliveries(db, { limit: 40 }), store.listPendingPurchases(db), store.countRecentRejections(db, 1440)]);

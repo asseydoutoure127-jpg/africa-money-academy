@@ -1,9 +1,11 @@
 import { getDb } from '@/lib/db.js';
 import { listReferrers, listReferredWithPurchases } from '@/lib/referral.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 const fmt = (d) => new Date(d).toLocaleDateString('fr-FR', { timeZone: 'Africa/Bamako' });
 
 export default async function Parrainage() {
+  await requireAdmin();
   const db = getDb();
   const parrains = await listReferrers(db);
   const details = [];

@@ -206,6 +206,7 @@ export async function saveLesson(formData) {
   await store.updateLesson(ctx.db, lessonId, {
     title: text(formData, 'title', 150) || null,
     content: longText(formData, 'content'),
+    exercise: longText(formData, 'exercise', 5000),
     durationMin: Number.isFinite(duration) && duration >= 0 ? duration : null,
     position: Number.isFinite(pos) ? pos : null,
   });

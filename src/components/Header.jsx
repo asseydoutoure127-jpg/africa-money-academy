@@ -25,7 +25,11 @@ export default async function Header() {
           {user ? (
             <>
               <Link href="/espace">Mon espace</Link>
-              {user.role === 'admin' && <Link href="/admin">Admin</Link>}
+              {user.role === 'admin' && (
+                <Link href="/admin" className="nav-admin">
+                  Administration
+                </Link>
+              )}
               <form action={logout}>
                 <button type="submit" className="link">
                   Déconnexion

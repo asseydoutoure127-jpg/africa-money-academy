@@ -2,8 +2,10 @@ import Flash from '@/components/Flash.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { grantManual, revokeManual, toggleBlock } from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 export default async function Learners({ searchParams }) {
+  await requireAdmin();
   const sp = await searchParams;
   const db = getDb();
   const q = typeof sp.q === 'string' ? sp.q.slice(0, 100) : '';

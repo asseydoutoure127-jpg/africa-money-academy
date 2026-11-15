@@ -44,21 +44,25 @@ export default async function CourseSpace({ params, searchParams }) {
         {progress.modules.map((m, i) => (
           <section key={m.id} className={`module${m.unlocked ? '' : ' locked'}`}>
             <h2 style={{ fontSize: '1.15rem' }}>
-              Module {i + 1} : {m.title} {m.finished && <span className="badge">Terminé</span>}
+              Module {i + 1} : {String(m.title).replace(/^Module\s*\d+\s*:\s*/i, '')} {m.finished && <span className="badge">Terminé</span>}
               {!m.unlocked && <span className="badge grey">Verrouillé</span>}
             </h2>
             {m.description && <p className="muted small">{m.description}</p>}
             {!m.unlocked && <p className="small">Terminez le module précédent pour ouvrir celui-ci.</p>}
+            {m.unlocked && !m.finished && <p className="small muted">Chaque leçon s’ouvre quand la précédente est terminée (exercice envoyé).</p>}
             <ul className="lesson-list">
               {m.lessons.map((l) => (
                 <li key={l.id}>
-                  {m.unlocked ? (
+                  {l.unlocked ? (
                     <Link href={`/espace/formation/${slug}/lecon/${l.id}`} className="row-lesson">
                       <span>{l.title}</span>
                       {l.done ? <span className="tick">✓ Fait</span> : <span className="muted small">{l.duration_min ? `${l.duration_min} min` : ''}</span>}
                     </Link>
                   ) : (
-                    <span className="row-lesson">{l.title}</span>
+                    <span className="row-lesson locked-lesson">
+                      <span>{l.title}</span>
+                      <span className="badge grey">🔒 Verrouillée</span>
+                    </span>
                   )}
                 </li>
               ))}

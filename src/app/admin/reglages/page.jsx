@@ -7,8 +7,10 @@ import { getSetting, getSettingSource, getPulseSecrets } from '@/lib/settings.js
 import { maskSecret } from '@/lib/crypto.js';
 import { getSiteUrl } from '@/lib/context.js';
 import * as A from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 export default async function Settings({ searchParams }) {
+  await requireAdmin();
   const sp = await searchParams;
   const db = getDb();
   const [apiKey, apiSource, secrets, resend, from, support, siteName] = await Promise.all([

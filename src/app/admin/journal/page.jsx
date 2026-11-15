@@ -1,7 +1,9 @@
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 export default async function Journal() {
+  await requireAdmin();
   const rows = await store.listAdminLog(getDb(), { limit: 100 });
   return (
     <>

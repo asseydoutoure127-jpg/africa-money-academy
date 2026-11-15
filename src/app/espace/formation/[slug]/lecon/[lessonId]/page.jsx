@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import Flash from '@/components/Flash.jsx';
-import RichText from '@/components/RichText.jsx';
+import RichText, { slugifyHeading } from '@/components/RichText.jsx';
 import { requireUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress, findUnlockedLesson, flattenLessons } from '@/lib/progress.js';
-import { markLessonDone } from '@/app/actions/learn.js';
+import { markLessonDone, submitExercise } from '@/app/actions/learn.js';
 
 export const metadata = { title: 'Leçon' };
 
@@ -33,50 +33,110 @@ export default async function LessonPage({ params, searchParams }) {
   const base = `/espace/formation/${slug}`;
   const mark = `${user.email} · Africa Money Academy`;
 
+  const answer = lesson.exercise?.trim() ? await store.getExerciseAnswer(db, user.id, lessonId) : null;
+  const words = String(lesson.content || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '').split(/\s+/).filter(Boolean).length;
+  const pages = Math.max(1, Math.round(words / 300));
+  const toc = String(lesson.content || '')
+    .split('\n')
+    .map((l) => l.match(/^##\s+(.+)$/))
+    .filter(Boolean)
+    .map((m) => m[1].trim());
+  const moduleLabel = String(found.module.title).replace(/^Module\s*\d+\s*:\s*/i, '');
+  const lessonNumber = idx + 1;
+
   return (
-    <main>
+    <main className="doc-page">
       <div className="wrap">
         <p>
           <Link href={base}>← {course.title}</Link>
         </p>
-        <p className="muted small">{found.module.title}</p>
-        <h1>{lesson.title}</h1>
-        <Flash code={sp.m} />
-        <div className="protected">
-          <div className="wm" aria-hidden="true">
-            {Array.from({ length: 60 }, (_, i) => (
-              <span key={i}>{mark}</span>
-            ))}
-          </div>
-          <RichText text={lesson.content} />
-          <p className="licence">
-            <img src="/logo-mark.svg" alt="" width="22" height="22" />
-            <span>
-              © Africa Money Academy. Leçon réservée à {user.email}. Toute copie, diffusion ou revente est interdite et peut
-              donner lieu à des poursuites.
-            </span>
-          </p>
-        </div>
-        <div className="actions" style={{ marginTop: 28 }}>
-          {found.lesson.done ? (
-            <span className="badge">✓ Leçon terminée</span>
-          ) : (
-            <form action={markLessonDone}>
-              <input type="hidden" name="lessonId" value={lessonId} />
-              <button className="btn gold" type="submit">
-                J’ai terminé cette leçon
-              </button>
-            </form>
+        <article className="paper">
+          <header className="paper-head">
+            <div className="paper-brand">
+              <img src="/logo-mark.svg" alt="" width="26" height="26" />
+              <span>Africa Money Academy</span>
+            </div>
+            <p className="paper-kicker">
+              Leçon {lessonNumber} sur {flat.length} · {moduleLabel}
+            </p>
+            <h1>{lesson.title}</h1>
+            <p className="paper-meta">
+              Environ {pages} {pages > 1 ? 'pages' : 'page'} · {lesson.duration_min || Math.max(2, Math.round(words / 200))} min de lecture
+              {lesson.exercise?.trim() ? ' · avec exercice' : ''}
+            </p>
+          </header>
+          <Flash code={sp.m} />
+          {toc.length > 2 && (
+            <nav className="toc" aria-label="Sommaire">
+              <strong>Dans cette leçon</strong>
+              <ol>
+                {toc.map((t) => (
+                  <li key={t}>
+                    <a href={`#${slugifyHeading(t)}`}>{t}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
           )}
+          <div className="protected">
+            <div className="wm" aria-hidden="true">
+              {Array.from({ length: 60 }, (_, i) => (
+                <span key={i}>{mark}</span>
+              ))}
+            </div>
+            <RichText text={lesson.content} />
+            {lesson.exercise?.trim() && (
+              <section className="exercise" id="exercice">
+                <h2>Exercice</h2>
+                <RichText text={lesson.exercise} />
+                <form action={submitExercise}>
+                  <input type="hidden" name="lessonId" value={lessonId} />
+                  <label htmlFor="answer">Votre réponse</label>
+                  <textarea id="answer" name="answer" defaultValue={answer?.answer || ''} minLength={20} maxLength={5000} required placeholder="Écrivez ici, avec vos propres mots (20 caractères au minimum)." />
+                  <p className="hint">
+                    {found.lesson.done
+                      ? 'Vous avez déjà terminé cette leçon. Vous pouvez modifier votre réponse.'
+                      : 'La leçon suivante s’ouvre dès que vous envoyez votre réponse.'}
+                  </p>
+                  <button className="btn gold" type="submit">
+                    {found.lesson.done ? 'Mettre à jour ma réponse' : 'Envoyer ma réponse et terminer la leçon'}
+                  </button>
+                </form>
+              </section>
+            )}
+            <p className="licence">
+              <img src="/logo-mark.svg" alt="" width="22" height="22" />
+              <span>
+                © Africa Money Academy. Leçon réservée à {user.email}. Toute copie, diffusion ou revente est interdite et peut
+                donner lieu à des poursuites.
+              </span>
+            </p>
+          </div>
+        </article>
+        <div className="actions lesson-nav">
+          {!lesson.exercise?.trim() &&
+            (found.lesson.done ? (
+              <span className="badge">✓ Leçon terminée</span>
+            ) : (
+              <form action={markLessonDone}>
+                <input type="hidden" name="lessonId" value={lessonId} />
+                <button className="btn gold" type="submit">
+                  J’ai terminé cette leçon
+                </button>
+              </form>
+            ))}
+          {lesson.exercise?.trim() && found.lesson.done && <span className="badge">✓ Leçon terminée</span>}
           {prev && (
             <Link className="btn ghost" href={`${base}/lecon/${prev.id}`}>
               ← Précédente
             </Link>
           )}
-          {next && (
+          {next ? (
             <Link className="btn" href={`${base}/lecon/${next.id}`}>
               Suivante →
             </Link>
+          ) : (
+            idx < flat.length - 1 && !found.lesson.done && <span className="muted small">Terminez cette leçon pour ouvrir la suivante.</span>
           )}
         </div>
       </div>

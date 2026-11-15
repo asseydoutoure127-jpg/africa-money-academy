@@ -3,10 +3,12 @@ import Flash from '@/components/Flash.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { createCourseAction } from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 const STATUS = { draft: 'Brouillon', published: 'Publiée', hidden: 'Masquée' };
 
 export default async function AdminCourses({ searchParams }) {
+  await requireAdmin();
   const sp = await searchParams;
   const courses = await store.listAllCourses(getDb());
   return (

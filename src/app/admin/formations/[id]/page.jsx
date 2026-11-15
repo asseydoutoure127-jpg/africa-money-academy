@@ -5,8 +5,10 @@ import TestButton from '@/components/TestButton.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import * as A from '@/app/actions/admin.js';
+import { requireAdmin } from '@/lib/auth.js';
 
 export default async function EditCourse({ params, searchParams }) {
+  await requireAdmin();
   const { id } = await params;
   const sp = await searchParams;
   const db = getDb();

@@ -56,3 +56,19 @@ test('ouverture d\'une leçon : autorisée, verrouillée ou inconnue', () => {
   assert.equal(findUnlockedLesson(p, 'inconnue'), null);
   assert.deepEqual(flattenLessons(p).map((l) => l.id), ['l1', 'l2', 'l3', 'l4', 'l5']);
 });
+
+test('leçon par leçon : la 2e leçon reste verrouillée tant que la 1re n\'est pas terminée', () => {
+  const p = computeProgress(mods, new Set());
+  const flat = flattenLessons(p);
+  assert.deepEqual(flat.map((l) => l.unlocked), [true, false, false, false, false]);
+  assert.equal(findUnlockedLesson(p, 'l2').locked, true);
+  const p2 = computeProgress(mods, new Set(['l1']));
+  assert.deepEqual(flattenLessons(p2).map((l) => l.unlocked), [true, true, false, false, false]);
+  assert.equal(findUnlockedLesson(p2, 'l2').lesson.id, 'l2');
+});
+
+test('sauter une leçon est impossible : terminer l3 sans l1/l2 ne l\'ouvre pas', () => {
+  const p = computeProgress(mods, new Set(['l3']));
+  assert.equal(findUnlockedLesson(p, 'l3').locked, true);
+  assert.deepEqual(p.nextLesson, { moduleId: 'm1', lessonId: 'l1' });
+});

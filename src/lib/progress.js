@@ -1,6 +1,6 @@
 // Règles de progression, appliquées CÔTÉ SERVEUR (jamais fiées à l'adresse tapée dans le navigateur).
-// Un module se débloque quand le précédent est entièrement terminé. (Devoirs obligatoires et examens :
-// étape suivante du projet ; leur validation s'ajoutera ici comme condition supplémentaire.)
+// Une leçon se débloque quand TOUTES les leçons précédentes sont terminées (et une leçon avec exercice
+// n'est terminée qu'une fois la réponse envoyée). Un module se débloque quand le précédent est terminé.
 
 /**
  * @param {Array<{id:string, lessons:Array<{id:string}>}>} modules  modules dans l'ordre
@@ -16,6 +16,13 @@ export function computeProgress(modules, completedIds) {
     const total = m.lessons.length;
     const done = m.lessons.filter((l) => completedIds.has(l.id)).length;
     const unlocked = previousFinished;
+    let allBeforeDone = true;
+    const lessons = m.lessons.map((l) => {
+      const isDone = completedIds.has(l.id);
+      const open = unlocked && allBeforeDone;
+      allBeforeDone = allBeforeDone && isDone;
+      return { ...l, done: isDone, unlocked: open };
+    });
     const finished = done === total;
     if (unlocked && !nextLesson) {
       const pending = m.lessons.find((l) => !completedIds.has(l.id));
@@ -31,7 +38,7 @@ export function computeProgress(modules, completedIds) {
       doneLessons: done,
       totalLessons: total,
       percent: total === 0 ? (unlocked ? 100 : 0) : Math.round((done / total) * 100),
-      lessons: m.lessons.map((l) => ({ ...l, done: completedIds.has(l.id) })),
+      lessons,
     };
   });
 
@@ -45,16 +52,16 @@ export function computeProgress(modules, completedIds) {
   };
 }
 
-/** Une leçon peut-elle être ouverte / terminée ? Retourne le module qui la contient s'il est débloqué. */
+/** Une leçon peut-elle être ouverte / terminée ? Elle l'est si toutes les leçons avant elle sont terminées. */
 export function findUnlockedLesson(progress, lessonId) {
   for (const m of progress.modules) {
     const lesson = m.lessons.find((l) => l.id === lessonId);
-    if (lesson) return m.unlocked ? { module: m, lesson } : { locked: true, module: m, lesson };
+    if (lesson) return lesson.unlocked ? { module: m, lesson } : { locked: true, module: m, lesson };
   }
   return null;
 }
 
 /** Liste à plat des leçons (pour « précédent / suivant »). */
 export function flattenLessons(progress) {
-  return progress.modules.flatMap((m) => m.lessons.map((l) => ({ ...l, moduleId: m.id, unlocked: m.unlocked })));
+  return progress.modules.flatMap((m) => m.lessons.map((l) => ({ ...l, moduleId: m.id })));
 }
