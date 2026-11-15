@@ -4,7 +4,7 @@ const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance:
 
 export default function CourseCard({ course }) {
   return (
-    <article className="card course-card">
+    <article className={`card course-card${course.is_free ? ' is-free' : ''}`}>
       {course.image_url && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={course.image_url} alt="" loading="lazy" decoding="async" />
@@ -16,7 +16,7 @@ export default function CourseCard({ course }) {
       <h3>{course.title}</h3>
       <p className="grow muted">{course.summary}</p>
       <div className="actions">
-        {!course.is_free && course.price_label && <strong>{course.price_label}</strong>}
+        {!course.is_free && course.price_label && <span className="price">{course.price_label}</span>}
         <Link className="btn small" href={`/formations/${course.slug}`}>
           Voir la formation
         </Link>
