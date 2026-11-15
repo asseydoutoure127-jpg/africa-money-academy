@@ -1,12 +1,12 @@
 import './globals.css';
-import { Bricolage_Grotesque, Public_Sans } from 'next/font/google';
+import { Fraunces, Nunito_Sans } from 'next/font/google';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
 import { getDb } from '@/lib/db.js';
 import { getSiteName } from '@/lib/context.js';
 
-const title = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-title', display: 'swap' });
-const body = Public_Sans({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
+const title = Fraunces({ subsets: ['latin'], variable: '--font-title', display: 'swap', style: ['normal', 'italic'] });
+const body = Nunito_Sans({ subsets: ['latin'], variable: '--font-body', display: 'swap', style: ['normal', 'italic'] });
 
 export const dynamic = 'force-dynamic';
 
