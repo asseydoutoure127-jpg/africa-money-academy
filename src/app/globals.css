@@ -71,7 +71,7 @@ main { padding: 40px 0 72px; min-height: 60vh; }
 .site-header { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
 .site-header .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; padding-top: 4px; padding-bottom: 4px; }
 .brand { color: var(--indigo); font-family: var(--font-title, system-ui), system-ui, sans-serif; font-weight: 600; font-size: 1.08rem; letter-spacing: -0.01em; text-decoration: none; min-height: 48px; display: inline-flex; align-items: center; gap: 10px; }
-.brand::before { content: ''; width: 26px; height: 26px; flex: none; border-radius: 7px; background: linear-gradient(135deg, var(--saffron) 50%, var(--indigo) 50%); }
+.brand::before { content: ""; width: 30px; height: 30px; flex: none; background: url(/logo-mark.svg) center / contain no-repeat; }
 .brand b { font-weight: 700; font-style: italic; }
 .nav { display: flex; flex-wrap: wrap; gap: 0 4px; margin-left: auto; align-items: center; }
 .nav a, .nav button.link { color: var(--ink); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; background: none; border: 0; font: inherit; font-weight: 500; font-size: .92rem; cursor: pointer; padding: 0 12px; border-radius: 999px; }
@@ -238,3 +238,13 @@ details > summary { cursor: pointer; font-weight: 600; min-height: 44px; display
 .card { padding: 22px; }
 .hero .carnet .hint, .hero .carnet .carnet-msg { font-style: italic; }
 strong, b { font-weight: 700; }
+
+/* Protection des leçons : filigrane personnalisé (adresse e-mail de l'élève) + mention de licence */
+.protected { position: relative; overflow: hidden; border-radius: 16px; }
+.protected .prose { position: relative; z-index: 1; }
+.protected .wm { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around; gap: 120px 40px; transform: rotate(-22deg) scale(1.4); }
+.protected .wm span { font-size: .95rem; font-style: italic; color: var(--indigo); opacity: .07; white-space: nowrap; user-select: none; }
+.licence { position: relative; z-index: 1; display: flex; gap: 10px; align-items: flex-start; margin-top: 32px; padding: 14px 16px; border: 1px dashed #b8bfd6; border-radius: 14px; background: #fff; font-size: .85rem; font-style: italic; color: var(--muted); max-width: 66ch; }
+.licence img { flex: none; border-radius: 6px; margin-top: 2px; }
+.prose img { display: block; width: 100%; margin: 1.4em 0; border-radius: 16px; border: 1px solid var(--line); background: #fff; }
+@media print { .protected .wm span { opacity: .12; } }

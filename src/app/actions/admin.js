@@ -60,7 +60,7 @@ export async function saveCourse(formData) {
     audience: longText(formData, 'audience', 3000),
     prerequisites: longText(formData, 'prerequisites', 3000),
     faq: longText(formData, 'faq', 10000),
-    image_url: image ? httpsUrlOrNull(image) : null,
+    image_url: image ? (/^\/illustrations\/[\w.-]+\.svg$/.test(image) ? image : httpsUrlOrNull(image)) : null,
     level,
     duration_label: text(formData, 'duration_label', 60),
     price_label: text(formData, 'price_label', 60),

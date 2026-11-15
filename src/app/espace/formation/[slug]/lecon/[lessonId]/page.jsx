@@ -31,6 +31,7 @@ export default async function LessonPage({ params, searchParams }) {
   const prev = idx > 0 && flat[idx - 1].unlocked ? flat[idx - 1] : null;
   const next = idx < flat.length - 1 && flat[idx + 1].unlocked ? flat[idx + 1] : null;
   const base = `/espace/formation/${slug}`;
+  const mark = `${user.email} · Africa Money Academy`;
 
   return (
     <main>
@@ -41,8 +42,20 @@ export default async function LessonPage({ params, searchParams }) {
         <p className="muted small">{found.module.title}</p>
         <h1>{lesson.title}</h1>
         <Flash code={sp.m} />
-        <div className="prose">
+        <div className="protected">
+          <div className="wm" aria-hidden="true">
+            {Array.from({ length: 60 }, (_, i) => (
+              <span key={i}>{mark}</span>
+            ))}
+          </div>
           <RichText text={lesson.content} />
+          <p className="licence">
+            <img src="/logo-mark.svg" alt="" width="22" height="22" />
+            <span>
+              © Africa Money Academy. Leçon réservée à {user.email}. Toute copie, diffusion ou revente est interdite et peut
+              donner lieu à des poursuites.
+            </span>
+          </p>
         </div>
         <div className="actions" style={{ marginTop: 28 }}>
           {found.lesson.done ? (

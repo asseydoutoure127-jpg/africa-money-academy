@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 
 // Affichage sûr du texte des leçons et des pages : on construit des éléments React (jamais de HTML brut),
 // donc aucun script ne peut passer. Syntaxe : # Titre, ## Sous-titre, - liste, > encadré, **gras**,
-// [texte](https://lien), ![description](https://image), @video https://youtube.com/watch?v=... (YouTube ou Vimeo).
+// [texte](https://lien), ![description](https://image ou /illustrations/nom.svg), @video https://youtube.com/watch?v=... (YouTube ou Vimeo).
 
 const INLINE = /(\*\*[^*]+\*\*|\[[^\]]+\]\(https?:\/\/[^\s)]+\))/g;
 
@@ -71,7 +71,7 @@ export default function RichText({ text }) {
             </ul>
           );
         }
-        const img = block.match(/^!\[([^\]]*)\]\((https:\/\/[^\s)]+)\)$/);
+        const img = block.match(/^!\[([^\]]*)\]\((https:\/\/[^\s)]+|\/illustrations\/[\w.-]+\.svg)\)$/);
         if (img) {
           // eslint-disable-next-line @next/next/no-img-element
           return <img key={key} src={img[2]} alt={img[1]} loading="lazy" decoding="async" />;
