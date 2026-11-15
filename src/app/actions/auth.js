@@ -1,12 +1,13 @@
 'use server';
 // Actions de compte : inscription, connexion, e-mail, mot de passe, profil.
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getCtx } from '@/lib/context.js';
 import * as store from '@/lib/store.js';
 import { hashPassword, verifyPassword, newToken, hashToken } from '@/lib/crypto.js';
 import { createLoginSession, destroySession, requireUser, getCurrentUser } from '@/lib/auth.js';
 import { claimPendingForUser } from '@/lib/chariow/sales.js';
+import { registerReferral, REF_COOKIE } from '@/lib/referral.js';
 import { cleanText, validEmail, validPassword, safeInternalPath, clientIp } from '@/lib/validate.js';
 
 const HOUR = 3600;
@@ -55,6 +56,17 @@ export async function signup(formData) {
     throw e;
   }
   await sendVerification(ctx, user);
+  // Parrainage : le lien /r/CODE a laissé un cookie. Une erreur ici ne doit jamais empêcher l'inscription.
+  try {
+    const jar = await cookies();
+    const refCode = jar.get(REF_COOKIE)?.value;
+    if (refCode) {
+      await registerReferral(ctx.db, user, refCode);
+      jar.delete(REF_COOKIE);
+    }
+  } catch {
+    // ignoré volontairement
+  }
   await createLoginSession(user.id, (await headers()).get('user-agent'));
   const dest = safeInternalPath(formData.get('suite'), '/espace');
   redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=inscrit`);

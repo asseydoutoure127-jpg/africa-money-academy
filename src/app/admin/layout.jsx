@@ -13,6 +13,7 @@ export default async function AdminLayout({ children }) {
           <Link href="/admin/formations">Formations</Link>
           <Link href="/admin/apprenants">Apprenants</Link>
           <Link href="/admin/paiements">Paiements</Link>
+          <Link href="/admin/parrainage">Parrainage</Link>
           <Link href="/admin/reglages">Réglages</Link>
           <Link href="/admin/textes">Textes du site</Link>
           <Link href="/admin/journal">Journal</Link>

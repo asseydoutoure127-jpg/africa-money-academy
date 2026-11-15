@@ -33,9 +33,9 @@ export default async function Dashboard() {
       <h1>Tableau de bord</h1>
       {alerts.length > 0 && (
         <section>
-          <h2>À traiter</h2>
+          <h2>À traiter et nouveautés</h2>
           {alerts.map((a) => (
-            <div key={a.id} className="flash err">
+            <div key={a.id} className={a.kind === 'referral' ? 'flash ok' : 'flash err'}>
               <p style={{ margin: 0 }}>{a.message}</p>
               <form action={resolveAlertAction} style={{ marginTop: 8 }}>
                 <input type="hidden" name="id" value={String(a.id)} />

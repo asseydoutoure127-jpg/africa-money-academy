@@ -5,6 +5,9 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress } from '@/lib/progress.js';
 import { resendVerification } from '@/app/actions/auth.js';
+import CopyButton from '@/components/CopyButton.jsx';
+import { ensureReferralCode, countReferred } from '@/lib/referral.js';
+import { getSiteUrl } from '@/lib/context.js';
 
 export const metadata = { title: 'Mon espace' };
 
@@ -13,6 +16,9 @@ export default async function Espace({ searchParams }) {
   const user = await requireUser('/espace');
   const db = getDb();
   const enrollments = await store.listUserEnrollments(db, user.id);
+  const refCode = await ensureReferralCode(db, user.id);
+  const referred = await countReferred(db, user.id);
+  const refLink = `${getSiteUrl()}/r/${refCode}`;
   const rows = [];
   for (const e of enrollments) {
     const modules = await store.listModulesWithLessons(db, e.course_id);
@@ -62,6 +68,17 @@ export default async function Espace({ searchParams }) {
             ))}
           </div>
         )}
+        <section className="card" style={{ marginTop: 24 }}>
+          <h2 style={{ marginTop: 0 }}>Inviter des amis</h2>
+          <p>Partagez votre lien personnel. Quand quelqu’un s’inscrit grâce à lui, nous le savons.</p>
+          <div className="copybox">
+            <code>{refLink}</code>
+            <CopyButton value={refLink} />
+          </div>
+          <p className="muted small" style={{ marginBottom: 0 }}>
+            {referred === 0 ? 'Personne ne s’est encore inscrit avec votre lien.' : `${referred} personne${referred > 1 ? 's' : ''} inscrite${referred > 1 ? 's' : ''} avec votre lien.`}
+          </p>
+        </section>
         <p style={{ marginTop: 24 }}>
           <Link href="/espace/profil">Mon profil</Link>
         </p>
