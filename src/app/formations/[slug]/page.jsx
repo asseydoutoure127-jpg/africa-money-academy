@@ -37,24 +37,95 @@ export default async function CoursePage({ params, searchParams }) {
   const directUrl = httpsUrlOrNull(course.chariow_product_url);
   const next = `/formations/${course.slug}`;
 
-  return (
-    <main>
-      <div className="wrap">
-        <Flash code={sp.m} />
-        {course.status !== 'published' && <p className="notice">Aperçu administrateur : cette formation n’est pas publiée (statut : {course.status}).</p>}
-        <div className="grid" style={{ gridTemplateColumns: 'minmax(0,1fr)' }}>
-          <div>
-            <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>{' '}
-            {course.duration_label && <span className="badge grey">{course.duration_label}</span>}{' '}
-            {course.is_free && <span className="badge gold">Gratuit</span>}
-            <h1 style={{ marginTop: 10 }}>{course.title}</h1>
-            {course.image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={course.image_url} alt="" style={{ width: '100%', maxHeight: 340, objectFit: 'cover', marginBottom: 16 }} />
-            )}
-            {course.summary && <p style={{ fontSize: '1.1rem' }}>{course.summary}</p>}
+  const counts = (await store.courseCounts(db, [course.id])).get(course.id);
 
-            <div className="card gold" style={{ margin: '18px 0' }}>
+  return (
+    <main style={{ padding: 0 }}>
+      <section className="course-hero">
+        <div className="wrap">
+          <div>
+            <Flash code={sp.m} />
+            {course.status !== 'published' && <p className="notice" style={{ color: '#12172b' }}>Aperçu administrateur : cette formation n’est pas publiée (statut : {course.status}).</p>}
+            <div>
+              <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>{' '}
+              {course.duration_label && <span className="badge">{course.duration_label}</span>}{' '}
+              {course.is_free && <span className="badge gold">Gratuit</span>}
+            </div>
+            <h1 style={{ marginTop: 12 }}>{course.title}</h1>
+            {course.summary && <p style={{ fontSize: '1.08rem' }}>{course.summary}</p>}
+            {counts && (
+              <ul className="stats-line" aria-label="Contenu de la formation">
+                <li><strong>{counts.modules}</strong> modules</li>
+                <li><strong>{counts.lessons}</strong> leçons</li>
+                <li><strong>{counts.exercises}</strong> exercices</li>
+                <li><strong>{counts.pages}</strong> pages</li>
+              </ul>
+            )}
+          </div>
+          {course.image_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={course.image_url} alt="" />
+          )}
+          <div className="pattern" aria-hidden="true" />
+        </div>
+      </section>
+
+      <div className="wrap course-body">
+        <div>
+            {course.objectives && (
+              <section className="objectives">
+                <h2>Ce que vous allez apprendre</h2>
+                <RichText text={course.objectives} />
+              </section>
+            )}
+            {course.audience && (
+              <section>
+                <h2>À qui s’adresse cette formation</h2>
+                <RichText text={course.audience} />
+              </section>
+            )}
+            {course.prerequisites && (
+              <section>
+                <h2>Ce qu’il faut avoir</h2>
+                <RichText text={course.prerequisites} />
+              </section>
+            )}
+            {course.description && (
+              <section>
+                <h2>Présentation</h2>
+                <RichText text={course.description} />
+              </section>
+            )}
+
+            <section>
+              <h2>Programme</h2>
+              {modules.length === 0 ? (
+                <p className="muted">Le programme sera publié bientôt.</p>
+              ) : (
+                modules.map((m, i) => (
+                  <article key={m.id} className="program-module">
+                    <h3>Module {i + 1} : {String(m.title).replace(/^Module\s*\d+\s*:\s*/i, '')}</h3>
+                    {m.description && <p className="muted small" style={{ margin: 0 }}>{m.description}</p>}
+                    <ol>
+                      {m.lessons.map((l) => (
+                        <li key={l.id}>{l.title}</li>
+                      ))}
+                    </ol>
+                  </article>
+                ))
+              )}
+              <p className="hint">Le contenu des leçons est réservé aux personnes qui ont accès à la formation.</p>
+            </section>
+
+            {course.faq && (
+              <section>
+                <h2>Questions sur cette formation</h2>
+                <RichText text={course.faq} />
+              </section>
+            )}
+        </div>
+        <aside>
+            <div className="card gold buy-card">
               {!course.is_free && course.price_label && (
                 <p style={{ fontSize: '1.4rem', margin: '0 0 10px' }}>
                   <strong>{course.price_label}</strong>
@@ -98,57 +169,7 @@ export default async function CoursePage({ params, searchParams }) {
               )}
             </div>
 
-            {course.objectives && (
-              <section>
-                <h2>Ce que vous allez apprendre</h2>
-                <RichText text={course.objectives} />
-              </section>
-            )}
-            {course.audience && (
-              <section>
-                <h2>À qui s’adresse cette formation</h2>
-                <RichText text={course.audience} />
-              </section>
-            )}
-            {course.prerequisites && (
-              <section>
-                <h2>Ce qu’il faut avoir</h2>
-                <RichText text={course.prerequisites} />
-              </section>
-            )}
-            {course.description && (
-              <section>
-                <h2>Présentation</h2>
-                <RichText text={course.description} />
-              </section>
-            )}
-
-            <section>
-              <h2>Programme</h2>
-              {modules.length === 0 ? (
-                <p className="muted">Le programme sera publié bientôt.</p>
-              ) : (
-                <ol style={{ paddingLeft: '1.2em' }}>
-                  {modules.map((m) => (
-                    <li key={m.id} style={{ marginBottom: 10 }}>
-                      <strong>{m.title}</strong>
-                      <span className="muted"> — {m.lessons.length} leçon{m.lessons.length > 1 ? 's' : ''}</span>
-                      {m.description && <div className="muted small">{m.description}</div>}
-                    </li>
-                  ))}
-                </ol>
-              )}
-              <p className="hint">Le contenu des leçons est réservé aux personnes qui ont accès à la formation.</p>
-            </section>
-
-            {course.faq && (
-              <section>
-                <h2>Questions sur cette formation</h2>
-                <RichText text={course.faq} />
-              </section>
-            )}
-          </div>
-        </div>
+        </aside>
       </div>
     </main>
   );

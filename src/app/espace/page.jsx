@@ -53,7 +53,12 @@ export default async function Espace({ searchParams }) {
         ) : (
           <div className="grid cols-2">
             {rows.map(({ e, progress }) => (
-              <article className="card" key={e.id}>
+              <article className="card my-course" key={e.id}>
+                {e.image_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={e.image_url} alt="" loading="lazy" />
+                )}
+                <div className="my-body">
                 <h3>{e.title}</h3>
                 <div className="bar" aria-hidden="true">
                   <span style={{ width: `${progress.percent}%` }} />
@@ -64,6 +69,7 @@ export default async function Espace({ searchParams }) {
                 <Link className="btn small" href={`/espace/formation/${e.slug}`}>
                   {progress.doneLessons > 0 ? 'Continuer' : 'Commencer'}
                 </Link>
+                </div>
               </article>
             ))}
           </div>

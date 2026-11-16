@@ -145,6 +145,36 @@ export async function listPublishedCourses(db) {
   return (await db.query(`select ${COURSE_COLS} from courses where status = 'published' order by position, created_at`)).rows;
 }
 
+/** Formations pas encore ouvertes à la vente mais déjà rédigées : affichées « Bientôt » (jamais leur contenu). */
+export async function listUpcomingCourses(db) {
+  return (
+    await db.query(
+      `select ${COURSE_COLS} from courses c
+       where status = 'draft'
+         and exists (select 1 from modules m join lessons l on l.module_id = m.id where m.course_id = c.id)
+       order by position, created_at`,
+    )
+  ).rows;
+}
+
+/** Chiffres réels du catalogue (modules, leçons, exercices) pour une liste de formations. */
+export async function courseCounts(db, courseIds) {
+  if (!courseIds.length) return new Map();
+  const rows = (
+    await db.query(
+      `select m.course_id,
+              count(distinct m.id)::int as modules,
+              count(l.id)::int as lessons,
+              count(l.id) filter (where l.exercise <> '')::int as exercises,
+              coalesce(sum(array_length(regexp_split_to_array(trim(l.content), '\s+'), 1)), 0)::int as words
+       from modules m left join lessons l on l.module_id = m.id
+       where m.course_id = any($1::uuid[]) group by m.course_id`,
+      [courseIds],
+    )
+  ).rows;
+  return new Map(rows.map((r) => [r.course_id, { modules: Number(r.modules), lessons: Number(r.lessons), exercises: Number(r.exercises), pages: Math.max(1, Math.round(Number(r.words) / 300)) }]));
+}
+
 export async function listAllCourses(db) {
   return (
     await db.query(
