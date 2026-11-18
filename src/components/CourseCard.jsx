@@ -6,14 +6,16 @@ const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance:
 export default function CourseCard({ course, counts, upcoming = false }) {
   const body = (
     <>
-      {(photoForCourse(course.slug) || course.image_url) && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={photoForCourse(course.slug)?.s || course.image_url} alt="" loading="lazy" decoding="async" width="720" height="402" />
-      )}
-      <div>
-        <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>{' '}
-        {course.is_free && <span className="badge gold">Gratuit · Commencez ici</span>}
-        {upcoming && <span className="badge grey">Bientôt disponible</span>}
+      <div className="thumb">
+        {(photoForCourse(course.slug) || course.image_url) && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={photoForCourse(course.slug)?.s || course.image_url} alt="" loading="lazy" decoding="async" width="720" height="402" />
+        )}
+        <div className="thumb-badges">
+          {course.is_free && <span className="badge gold">Gratuit · Commencez ici</span>}
+          {upcoming && <span className="badge grey">Bientôt disponible</span>}
+          <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>
+        </div>
       </div>
       <h3>{course.title}</h3>
       <p className="grow muted">{course.summary}</p>

@@ -40,7 +40,10 @@ export default async function Home({ searchParams }) {
             </div>
             <p className="install-hint"><Link href="/installer">Installer l’application sur mon téléphone</Link></p>
           </div>
-          <Carnet />
+          <div className="hero-visual">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={PHOTOS.equipe.l} alt="Des personnes échangent autour d’une table, ordinateurs ouverts" width="1400" height="781" />
+          </div>
         </div>
         <div className="pattern" aria-hidden="true" />
       </section>
@@ -52,6 +55,19 @@ export default async function Home({ searchParams }) {
             <div><Icon name="pen" /><strong>{total.exercises} exercices</strong><span>à faire pour avancer</span></div>
             <div><Icon name="phone" /><strong>Sur téléphone</strong><span>lisible avec une connexion lente</span></div>
             <div><Icon name="coins" /><strong>Exemples en FCFA</strong><span>des situations que vous connaissez</span></div>
+          </div>
+        </section>
+
+        <section className="section tinted">
+          <div className="wrap split try-it">
+            <div>
+              <h2>Essayez tout de suite</h2>
+              <p className="muted">
+                Voici la première habitude que nous enseignons : <strong>ce que vous recevez, moins ce que vous dépensez, égale ce qu’il vous reste</strong>. Changez les chiffres pour voir.
+              </p>
+              <Link className="btn ghost" href="/outils">Voir tous les outils gratuits</Link>
+            </div>
+            <Carnet />
           </div>
         </section>
 
@@ -134,8 +150,6 @@ export default async function Home({ searchParams }) {
         <section className="section tinted">
           <div className="wrap">
             <h2>Comment ça marche</h2>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="photo-banner" src={PHOTOS.equipe.l} alt="Des personnes échangent autour d’une table, ordinateurs ouverts" loading="lazy" width="1400" height="781" />
             <ol className="steps">
               <li>
                 <strong>Choisissez une formation</strong> et créez votre compte avec une adresse e-mail que vous utilisez.
