@@ -7,6 +7,7 @@ import Icon from '@/components/Icon.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { getPageText } from '@/lib/pages.js';
+import { PHOTOS } from '@/lib/photos.js';
 
 export default async function Home({ searchParams }) {
   const sp = await searchParams;
@@ -58,6 +59,8 @@ export default async function Home({ searchParams }) {
             <p className="muted" style={{ maxWidth: '60ch' }}>
               Pour celles et ceux qui cherchent une première source de revenu en Afrique francophone, sans diplôme ni capital de départ.
             </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="photo-banner" src={PHOTOS.groupe.l} alt="Un groupe de jeunes travaille ensemble sur des ordinateurs et des téléphones" loading="lazy" width="1400" height="781" />
             <div className="persona">
               <article>
                 <Icon name="book" size={30} />
@@ -129,6 +132,8 @@ export default async function Home({ searchParams }) {
         <section className="section tinted">
           <div className="wrap">
             <h2>Comment ça marche</h2>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="photo-banner" src={PHOTOS.equipe.l} alt="Des personnes échangent autour d’une table, ordinateurs ouverts" loading="lazy" width="1400" height="781" />
             <ol className="steps">
               <li>
                 <strong>Choisissez une formation</strong> et créez votre compte avec une adresse e-mail que vous utilisez.
@@ -159,7 +164,7 @@ export default async function Home({ searchParams }) {
 
         <section className="section">
           <div className="wrap">
-            <div className="cta-band">
+            <div className="cta-band has-photo" style={{ backgroundImage: `linear-gradient(rgba(14, 18, 48, .78), rgba(14, 18, 48, .86)), url(${PHOTOS.bureau.l})` }}>
               <h2>Prêt à commencer ?</h2>
               <p>Créez votre compte gratuitement, vous ne payez que si vous choisissez une formation.</p>
               <Link className="btn gold" href="/inscription">

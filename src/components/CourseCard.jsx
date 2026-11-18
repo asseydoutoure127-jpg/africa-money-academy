@@ -1,13 +1,14 @@
 import Link from 'next/link';
+import { photoForCourse } from '@/lib/photos.js';
 
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
 
 export default function CourseCard({ course, counts, upcoming = false }) {
   const body = (
     <>
-      {course.image_url && (
+      {(photoForCourse(course.slug) || course.image_url) && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={course.image_url} alt="" loading="lazy" decoding="async" />
+        <img src={photoForCourse(course.slug)?.s || course.image_url} alt="" loading="lazy" decoding="async" width="720" height="402" />
       )}
       <div>
         <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>{' '}

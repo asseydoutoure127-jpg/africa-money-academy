@@ -4,6 +4,7 @@ import Icon from '@/components/Icon.jsx';
 import { getCurrentUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import { getSiteUrl } from '@/lib/context.js';
+import { PHOTOS } from '@/lib/photos.js';
 import * as store from '@/lib/store.js';
 import { REFERRAL_RATE_PERCENT, commissionFor, ensureReferralCode, listReferredWithPurchases } from '@/lib/referral.js';
 
@@ -51,7 +52,7 @@ export default async function Parrainage() {
             )}
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/illustrations/scene-parrainage.svg" alt="" />
+          <img src={PHOTOS.amis.l} alt="Des amis regardent ensemble un téléphone et un ordinateur" width="1400" height="781" />
         </div>
       </section>
 

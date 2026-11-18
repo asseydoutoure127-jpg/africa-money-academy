@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/lib/auth.js';
 import * as store from '@/lib/store.js';
 import { httpsUrlOrNull } from '@/lib/validate.js';
 import { enrollFree } from '@/app/actions/learn.js';
+import { photoForCourse } from '@/lib/photos.js';
 
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
 
@@ -101,9 +102,9 @@ export default async function CoursePage({ params, searchParams }) {
               </ul>
             )}
           </div>
-          {course.image_url && (
+          {(photoForCourse(course.slug) || course.image_url) && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={course.image_url.replace('/cover-', '/scene-')} alt="" />
+            <img src={photoForCourse(course.slug)?.l || course.image_url.replace('/cover-', '/scene-')} alt="" width="1400" height="781" />
           )}
           <div className="pattern" aria-hidden="true" />
         </div>

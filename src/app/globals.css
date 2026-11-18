@@ -454,3 +454,9 @@ details.faq p { margin: 0 0 12px; color: var(--muted); }
   .buy-bar .btn { flex: none; }
   body:has(.buy-bar) { padding-bottom: 150px; }
 }
+
+/* Photos */
+.photo-banner { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 420px; object-fit: cover; border-radius: 18px; margin: 18px 0 24px; box-shadow: 0 14px 32px rgba(18, 23, 43, .14); }
+@media (min-width: 860px) { .photo-banner { aspect-ratio: 21 / 8; } }
+.cta-band.has-photo { background-size: cover; background-position: center; }
+.sale-hero img, .ref-hero img { object-position: center 35%; }
