@@ -37,6 +37,7 @@ export default async function Home({ searchParams }) {
                 Créer un compte
               </Link>
             </div>
+            <p className="install-hint"><Link href="/installer">Installer l’application sur mon téléphone</Link></p>
           </div>
           <Carnet />
         </div>
