@@ -5,6 +5,7 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress } from '@/lib/progress.js';
 import { resendVerification } from '@/app/actions/auth.js';
+import { enrollFree } from '@/app/actions/learn.js';
 import { ensureReferralCode, countReferred } from '@/lib/referral.js';
 
 export const metadata = { title: 'Mon espace' };
@@ -22,6 +23,20 @@ export default async function Espace({ searchParams }) {
     const progress = computeProgress(modules, await store.listCompletedLessonIds(db, user.id, e.course_id));
     rows.push({ e, progress });
   }
+  // Parcours conseillé : 1) la formation gratuite, 2) une formation payante, 3) le parrainage.
+  const published = await store.listPublishedCourses(db);
+  const free = published.find((c) => c.is_free) || null;
+  const freeRow = free ? rows.find((r) => r.e.slug === free.slug) : null;
+  const freeDone = Boolean(freeRow && freeRow.progress.totalLessons > 0 && freeRow.progress.percent >= 100);
+  const freeStarted = Boolean(freeRow && freeRow.progress.doneLessons > 0);
+  const owned = new Set(rows.map((r) => r.e.slug));
+  const ownsPaid = rows.some((r) => !published.find((c) => c.slug === r.e.slug)?.is_free);
+  const nextPaid = published.find((c) => !c.is_free && !owned.has(c.slug)) || null;
+  const steps = [
+    { n: 1, title: 'Apprendre les bases', text: 'La formation gratuite, pour partir du bon pied.', state: freeDone ? 'done' : freeStarted ? 'now' : 'todo' },
+    { n: 2, title: 'Choisir votre formation', text: 'Celle qui correspond à ce que vous voulez faire.', state: ownsPaid ? 'done' : freeDone ? 'now' : 'todo' },
+    { n: 3, title: 'Inviter vos amis', text: 'Gagnez 50 % quand un ami achète.', state: referred > 0 ? 'done' : 'todo' },
+  ];
   return (
     <main>
       <div className="wrap">
@@ -39,6 +54,40 @@ export default async function Espace({ searchParams }) {
             </form>
           </div>
         )}
+        {free && !freeStarted && (
+          <section className="card gold start-card">
+            <span className="badge gold">Commencez ici</span>
+            <h2>{free.title}</h2>
+            <p>C’est la formation gratuite, la première à suivre. Elle explique les bases dont tout le reste dépend. Vous lisez, vous faites un exercice, puis la leçon suivante s’ouvre.</p>
+            {freeRow ? (
+              <Link className="btn gold" href={`/espace/formation/${free.slug}`}>Commencer la première leçon</Link>
+            ) : (
+              <form action={enrollFree}>
+                <input type="hidden" name="slug" value={free.slug} />
+                <button className="btn gold" type="submit">Commencer gratuitement</button>
+              </form>
+            )}
+          </section>
+        )}
+        {freeDone && nextPaid && (
+          <section className="card gold start-card">
+            <span className="badge gold">Prochaine étape</span>
+            <h2>Bravo, vous avez terminé les bases.</h2>
+            <p>Pour aller plus loin, nous vous conseillons : <strong>{nextPaid.title}</strong>{nextPaid.price_label ? ` (${nextPaid.price_label})` : ''}.</p>
+            <Link className="btn gold" href={`/formations/${nextPaid.slug}`}>Voir cette formation</Link>
+          </section>
+        )}
+        <ol className="path" aria-label="Votre parcours">
+          {steps.map((st) => (
+            <li key={st.n} className={st.state}>
+              <span className="dot">{st.state === 'done' ? '✓' : st.n}</span>
+              <div><strong>{st.title}</strong><span>{st.text}</span></div>
+            </li>
+          ))}
+        </ol>
+        <p>
+          <Link className="btn ghost small" href="/outils">Ouvrir la boîte à outils (calculs gratuits)</Link>
+        </p>
         <h2>Mes formations</h2>
         {rows.length === 0 ? (
           <div className="card soft">

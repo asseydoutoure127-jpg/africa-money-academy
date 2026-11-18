@@ -16,6 +16,7 @@ export default async function Home({ searchParams }) {
   const upcoming = await store.listUpcomingCourses(db);
   const counts = await store.courseCounts(db, [...published, ...upcoming].map((c) => c.id));
   const courses = published.slice(0, 3);
+  const freeCourse = published.find((c) => c.is_free) || null;
   const total = [...counts.values()].reduce((a, c) => ({ lessons: a.lessons + c.lessons, exercises: a.exercises + c.exercises }), { lessons: 0, exercises: 0 });
   const faq = await getPageText(db, 'faq');
   return (
@@ -30,11 +31,11 @@ export default async function Home({ searchParams }) {
               méthodes concrètes, appliquées à votre quotidien.
             </p>
             <div className="actions">
-              <Link className="btn gold" href="/formations">
-                Voir les formations
+              <Link className="btn gold" href={freeCourse ? `/formations/${freeCourse.slug}` : '/formations'}>
+                {freeCourse ? 'Commencer gratuitement' : 'Voir les formations'}
               </Link>
-              <Link className="btn ghost" href="/inscription">
-                Créer un compte
+              <Link className="btn ghost" href="/formations">
+                Voir les formations
               </Link>
             </div>
             <p className="install-hint"><Link href="/installer">Installer l’application sur mon téléphone</Link></p>

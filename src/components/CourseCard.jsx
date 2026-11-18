@@ -12,7 +12,7 @@ export default function CourseCard({ course, counts, upcoming = false }) {
       )}
       <div>
         <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>{' '}
-        {course.is_free && <span className="badge gold">Gratuit</span>}
+        {course.is_free && <span className="badge gold">Gratuit · Commencez ici</span>}
         {upcoming && <span className="badge grey">Bientôt disponible</span>}
       </div>
       <h3>{course.title}</h3>

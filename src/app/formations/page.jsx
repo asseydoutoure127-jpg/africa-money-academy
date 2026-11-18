@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import CourseCard from '@/components/CourseCard.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
@@ -18,6 +19,16 @@ export default async function Catalogue() {
             Des parcours pour apprendre à gagner de l’argent pas à pas, avec des exemples en FCFA et un exercice à chaque leçon.
           </p>
         </header>
+        {courses.some((c) => c.is_free) && (
+          <section className="card soft where-start">
+            <h2 style={{ marginTop: 0 }}>Par où commencer ?</h2>
+            <ol>
+              <li><strong>Commencez par la formation gratuite</strong> : « {courses.find((c) => c.is_free).title} ». Elle explique les bases, sans rien payer.</li>
+              <li><strong>Ensuite, choisissez</strong> la formation qui correspond à ce que vous voulez faire : vendre, travailler en freelance, lancer une activité ou créer un produit.</li>
+              <li><strong>Utilisez la <Link href="/outils">boîte à outils</Link></strong> pour faire vos calculs en FCFA.</li>
+            </ol>
+          </section>
+        )}
         {courses.length === 0 && upcoming.length === 0 ? (
           <div className="card soft">
             <p style={{ margin: 0 }}>
