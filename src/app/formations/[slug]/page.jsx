@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Flash from '@/components/Flash.jsx';
 import RichText from '@/components/RichText.jsx';
+import Icon from '@/components/Icon.jsx';
 import { getDb } from '@/lib/db.js';
 import { getCurrentUser } from '@/lib/auth.js';
 import * as store from '@/lib/store.js';
@@ -9,6 +10,15 @@ import { httpsUrlOrNull } from '@/lib/validate.js';
 import { enrollFree } from '@/app/actions/learn.js';
 
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
+
+// Schéma de méthode affiché dans la page de présentation, selon la formation.
+const SCHEMAS = {
+  'bases-de-largent': ['/illustrations/schema-revenu-depenses.svg', 'Le principe de départ : ce qui entre, ce qui sort, ce qui reste.'],
+  'vendre-sur-whatsapp-et-reseaux-sociaux': ['/illustrations/schema-parcours-vente.svg', 'Le parcours d’une vente : du premier message au client qui revient.'],
+  'freelance-vendre-ses-competences-en-ligne': ['/illustrations/schema-formule-prix.svg', 'Comment un prix se construit : votre coût, votre temps, votre marge.'],
+  'lancer-une-petite-activite-rentable': ['/illustrations/schema-boucle-activite.svg', 'La boucle d’une petite activité : tester, vendre, mesurer, améliorer.'],
+  'creer-et-vendre-un-produit-numerique': ['/illustrations/schema-parcours-vente.svg', 'Le parcours d’une vente : de l’idée au client satisfait.'],
+};
 
 async function loadCourse(slug) {
   const db = getDb();
@@ -41,7 +51,7 @@ export default async function CoursePage({ params, searchParams }) {
 
   return (
     <main style={{ padding: 0 }}>
-      <section className="course-hero">
+      <section className="sale-hero">
         <div className="wrap">
           <div>
             <Flash code={sp.m} />
@@ -51,10 +61,39 @@ export default async function CoursePage({ params, searchParams }) {
               {course.duration_label && <span className="badge">{course.duration_label}</span>}{' '}
               {course.is_free && <span className="badge gold">Gratuit</span>}
             </div>
-            <h1 style={{ marginTop: 12 }}>{course.title}</h1>
+            <h1>{course.title}</h1>
             {course.summary && <p style={{ fontSize: '1.08rem' }}>{course.summary}</p>}
+            <div className="price-row">
+              {course.is_free ? (
+                <div className="price-tag">Gratuit<small>Aucun paiement</small></div>
+              ) : course.price_label ? (
+                <div className="price-tag">{course.price_label}<small>Paiement unique, sécurisé</small></div>
+              ) : null}
+              {hasAccess ? (
+                <Link className="btn gold" href={`/espace/formation/${course.slug}`}>Accéder à la formation</Link>
+              ) : course.is_free ? (
+                user ? (
+                  <form action={enrollFree}>
+                    <input type="hidden" name="slug" value={course.slug} />
+                    <button className="btn gold" type="submit">S’inscrire gratuitement</button>
+                  </form>
+                ) : (
+                  <Link className="btn gold" href={`/inscription?suite=${encodeURIComponent(next)}`}>Commencer gratuitement</Link>
+                )
+              ) : course.purchase_mode === 'api' ? (
+                <Link className="btn gold" href={`/achat/${course.slug}`}>Acheter cette formation</Link>
+              ) : directUrl ? (
+                <a className="btn gold" href={directUrl} rel="noopener noreferrer">Acheter cette formation</a>
+              ) : null}
+              <a className="btn ghost" href="#programme">Voir le programme</a>
+            </div>
+            <ul className="trust">
+              <li>Accès ouvert automatiquement après paiement</li>
+              <li>Lisible sur téléphone</li>
+              <li>Exercices dans chaque leçon</li>
+            </ul>
             {counts && (
-              <ul className="stats-line" aria-label="Contenu de la formation">
+              <ul className="stats-line" aria-label="Contenu de la formation" style={{ marginTop: 18 }}>
                 <li><strong>{counts.modules}</strong> modules</li>
                 <li><strong>{counts.lessons}</strong> leçons</li>
                 <li><strong>{counts.exercises}</strong> exercices</li>
@@ -64,7 +103,7 @@ export default async function CoursePage({ params, searchParams }) {
           </div>
           {course.image_url && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={course.image_url} alt="" />
+            <img src={course.image_url.replace('/cover-', '/scene-')} alt="" />
           )}
           <div className="pattern" aria-hidden="true" />
         </div>
@@ -72,6 +111,24 @@ export default async function CoursePage({ params, searchParams }) {
 
       <div className="wrap course-body">
         <div>
+            <section>
+              <h2>Ce que vous recevez</h2>
+              <div className="benefits">
+                <div className="benefit"><span className="ico"><Icon name="book" size={24} /></span><div><h3>{counts ? `${counts.lessons} leçons au format document` : 'Des leçons au format document'}</h3><p>Des textes clairs de plusieurs pages, avec exemples en FCFA, à lire sur votre téléphone.</p></div></div>
+                <div className="benefit"><span className="ico"><Icon name="pen" size={24} /></span><div><h3>{counts ? `${counts.exercises} exercices à faire` : 'Des exercices à faire'}</h3><p>Chaque leçon se termine par un exercice concret. Vous passez à la suivante quand il est fait.</p></div></div>
+                <div className="benefit"><span className="ico"><Icon name="target" size={24} /></span><div><h3>Un parcours pas à pas</h3><p>Les leçons s’ouvrent dans l’ordre : vous ne vous perdez pas et vous voyez votre progression.</p></div></div>
+                <div className="benefit"><span className="ico"><Icon name="shield" size={24} /></span><div><h3>Un accès personnel</h3><p>Votre accès est lié à votre compte. Les leçons sont réservées aux personnes qui ont acheté.</p></div></div>
+              </div>
+            </section>
+            {SCHEMAS[course.slug] && (
+              <section>
+                <figure className="method-fig">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={SCHEMAS[course.slug][0]} alt="" loading="lazy" />
+                  <figcaption>{SCHEMAS[course.slug][1]}</figcaption>
+                </figure>
+              </section>
+            )}
             {course.objectives && (
               <section className="objectives">
                 <h2>Ce que vous allez apprendre</h2>
@@ -97,7 +154,7 @@ export default async function CoursePage({ params, searchParams }) {
               </section>
             )}
 
-            <section>
+            <section id="programme">
               <h2>Programme</h2>
               {modules.length === 0 ? (
                 <p className="muted">Le programme sera publié bientôt.</p>
@@ -116,6 +173,17 @@ export default async function CoursePage({ params, searchParams }) {
               )}
               <p className="hint">Le contenu des leçons est réservé aux personnes qui ont accès à la formation.</p>
             </section>
+
+            {!course.is_free && !hasAccess && (
+              <section>
+                <h2>Comment ça se passe</h2>
+                <ol className="how-steps">
+                  <li><strong>Créez votre compte</strong>Gratuit, avec votre adresse e-mail.</li>
+                  <li><strong>Payez en toute sécurité</strong>Le paiement se fait sur la page de paiement Chariow.</li>
+                  <li><strong>Commencez tout de suite</strong>Votre accès s’ouvre automatiquement avec la même adresse e-mail.</li>
+                </ol>
+              </section>
+            )}
 
             {course.faq && (
               <section>
@@ -167,10 +235,26 @@ export default async function CoursePage({ params, searchParams }) {
               ) : (
                 <p style={{ margin: 0 }}>L’achat sera bientôt disponible.</p>
               )}
+              {!course.is_free && (
+                <Link className="ref-promo" href="/parrainage">
+                  <Icon name="gift" size={24} />
+                  <span><strong>Parrainez un ami, gagnez 50 %.</strong> Voir comment ça marche.</span>
+                </Link>
+              )}
             </div>
 
         </aside>
       </div>
+      {!hasAccess && !course.is_free && course.price_label && (course.purchase_mode === 'api' || directUrl) && (
+        <div className="buy-bar">
+          <span className="price">{course.price_label}</span>
+          {course.purchase_mode === 'api' ? (
+            <Link className="btn gold" href={`/achat/${course.slug}`}>Acheter</Link>
+          ) : (
+            <a className="btn gold" href={directUrl} rel="noopener noreferrer">Acheter</a>
+          )}
+        </div>
+      )}
     </main>
   );
 }

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Flash from '@/components/Flash.jsx';
 import { requireUser } from '@/lib/auth.js';
-import { updateProfile, changePassword, deleteAccount } from '@/app/actions/auth.js';
+import { updateProfile, changePassword, deleteAccount, logout } from '@/app/actions/auth.js';
 
 export const metadata = { title: 'Mon profil' };
 
@@ -42,6 +42,11 @@ export default async function Profil({ searchParams }) {
               Changer le mot de passe
             </button>
           </p>
+        </form>
+        <form action={logout} style={{ marginTop: 28 }}>
+          <button className="btn ghost" type="submit">
+            Me déconnecter
+          </button>
         </form>
         <details style={{ marginTop: 28 }}>
           <summary>Supprimer mon compte</summary>

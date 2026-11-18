@@ -5,9 +5,7 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress } from '@/lib/progress.js';
 import { resendVerification } from '@/app/actions/auth.js';
-import CopyButton from '@/components/CopyButton.jsx';
 import { ensureReferralCode, countReferred } from '@/lib/referral.js';
-import { getSiteUrl } from '@/lib/context.js';
 
 export const metadata = { title: 'Mon espace' };
 
@@ -16,9 +14,8 @@ export default async function Espace({ searchParams }) {
   const user = await requireUser('/espace');
   const db = getDb();
   const enrollments = await store.listUserEnrollments(db, user.id);
-  const refCode = await ensureReferralCode(db, user.id);
+  await ensureReferralCode(db, user.id);
   const referred = await countReferred(db, user.id);
-  const refLink = `${getSiteUrl()}/r/${refCode}`;
   const rows = [];
   for (const e of enrollments) {
     const modules = await store.listModulesWithLessons(db, e.course_id);
@@ -74,15 +71,12 @@ export default async function Espace({ searchParams }) {
             ))}
           </div>
         )}
-        <section className="card" style={{ marginTop: 24 }}>
-          <h2 style={{ marginTop: 0 }}>Inviter des amis</h2>
-          <p>Partagez votre lien personnel. Quand quelqu’un s’inscrit grâce à lui, nous le savons.</p>
-          <div className="copybox">
-            <code>{refLink}</code>
-            <CopyButton value={refLink} />
-          </div>
-          <p className="muted small" style={{ marginBottom: 0 }}>
-            {referred === 0 ? 'Personne ne s’est encore inscrit avec votre lien.' : `${referred} personne${referred > 1 ? 's' : ''} inscrite${referred > 1 ? 's' : ''} avec votre lien.`}
+        <section className="card gold" style={{ marginTop: 24 }}>
+          <h2 style={{ marginTop: 0 }}>Parrainez vos amis, gagnez 50 %</h2>
+          <p>Quand un ami s’inscrit avec votre lien et achète une formation, vous recevez la moitié du prix.</p>
+          <p style={{ marginBottom: 0 }}>
+            <Link className="btn gold small" href="/parrainage">Voir mon lien et les détails</Link>{' '}
+            <span className="muted small">{referred === 0 ? 'Aucun ami inscrit pour l’instant.' : `${referred} ami${referred > 1 ? 's' : ''} inscrit${referred > 1 ? 's' : ''}.`}</span>
           </p>
         </section>
         <p style={{ marginTop: 24 }}>

@@ -9,6 +9,22 @@ export const REF_CODE_RE = /^[A-Z0-9]{6,12}$/;
 
 const first = (r) => r.rows[0] ?? null;
 
+// Part du prix de la formation reversée au parrain. Les commissions sont versées à la main par l'équipe.
+export const REFERRAL_RATE_PERCENT = 50;
+
+/** Lit un prix comme « 10 000 FCFA » et renvoie 10000 ; renvoie null si le prix n'est pas lisible. */
+export function priceFromLabel(label) {
+  const digits = String(label || '').replace(/[^0-9]/g, '');
+  const n = Number(digits);
+  return digits && Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/** Commission estimée (en FCFA) pour l'achat d'une formation, d'après son prix affiché. */
+export function commissionFor(priceLabel, rate = REFERRAL_RATE_PERCENT) {
+  const price = priceFromLabel(priceLabel);
+  return price === null ? null : Math.round((price * rate) / 100);
+}
+
 function randomCode(length = 8) {
   let s = '';
   for (let i = 0; i < length; i++) s += ALPHABET[randomInt(ALPHABET.length)];
@@ -88,7 +104,7 @@ export async function listReferredWithPurchases(db, referrerId) {
   return (
     await db.query(
       `select f.id, f.name, f.email, f.referred_at, f.email_verified_at,
-              coalesce(json_agg(json_build_object('titre', c.title, 'date', e.granted_at) order by e.granted_at)
+              coalesce(json_agg(json_build_object('titre', c.title, 'date', e.granted_at, 'prix', c.price_label) order by e.granted_at)
                        filter (where e.id is not null), '[]'::json) as achats
        from users f
        left join enrollments e on e.user_id = f.id and e.status = 'active' and e.source in ('pulse', 'reconciliation')

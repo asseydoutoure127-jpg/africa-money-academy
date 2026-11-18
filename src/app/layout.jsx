@@ -2,6 +2,8 @@ import './globals.css';
 import { Fraunces, Nunito_Sans } from 'next/font/google';
 import Header from '@/components/Header.jsx';
 import Footer from '@/components/Footer.jsx';
+import BottomNav from '@/components/BottomNav.jsx';
+import { getCurrentUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import { getSiteName } from '@/lib/context.js';
 
@@ -25,13 +27,20 @@ export async function generateMetadata() {
 
 export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#1b2a5c' };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  let loggedIn = false;
+  try {
+    loggedIn = Boolean(await getCurrentUser());
+  } catch {
+    // base indisponible : on affiche la barre pour les visiteurs
+  }
   return (
     <html lang="fr" className={`${title.variable} ${body.variable}`}>
       <body>
         <Header />
         {children}
         <Footer />
+        <BottomNav loggedIn={loggedIn} />
       </body>
     </html>
   );

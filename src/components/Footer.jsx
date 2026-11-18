@@ -21,6 +21,7 @@ export default async function Footer() {
         <nav aria-label="Formations">
           <strong>Apprendre</strong>
           <Link href="/formations">Toutes les formations</Link>
+          <Link href="/parrainage">Parrainage : gagnez 50 %</Link>
           <Link href="/inscription">Créer un compte</Link>
           <Link href="/connexion">Connexion</Link>
         </nav>
