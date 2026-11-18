@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Flash from '@/components/Flash.jsx';
 import CourseCard from '@/components/CourseCard.jsx';
 import Carnet from '@/components/Carnet.jsx';
+import PhoneMock from '@/components/PhoneMock.jsx';
 import RichText from '@/components/RichText.jsx';
 import Icon from '@/components/Icon.jsx';
 import { getDb } from '@/lib/db.js';
@@ -38,12 +39,14 @@ export default async function Home({ searchParams }) {
                 Voir les formations
               </Link>
             </div>
+            <ul className="hero-proof">
+              <li>Gratuit pour commencer</li>
+              <li>Prix affichés en FCFA</li>
+              <li>Un exercice à chaque leçon</li>
+            </ul>
             <p className="install-hint"><Link href="/installer">Installer l’application sur mon téléphone</Link></p>
           </div>
-          <div className="hero-visual">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={PHOTOS.equipe.l} alt="Des personnes échangent autour d’une table, ordinateurs ouverts" width="1400" height="781" />
-          </div>
+          <PhoneMock />
         </div>
         <div className="pattern" aria-hidden="true" />
       </section>
