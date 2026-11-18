@@ -18,7 +18,7 @@ export default async function Retour({ searchParams }) {
         {slug && <Poller slug={slug} />}
         {!user.email_verified_at && (
           <p className="notice">
-            Pensez à confirmer votre adresse e-mail (lien reçu à l’inscription) : l’accès s’ouvre dès qu’elle est confirmée.
+            Pensez à confirmer votre adresse e-mail (lien reçu à l’inscription, regardez aussi dans vos spams) : l’accès s’ouvre dès qu’elle est confirmée.
           </p>
         )}
         <form action={verifyPurchase} className="card">
@@ -28,6 +28,9 @@ export default async function Retour({ searchParams }) {
             J’ai payé, vérifier mon achat
           </button>
         </form>
+        <p className="hint">
+          Si votre paiement a bien été pris mais que l’accès ne s’ouvre pas, écrivez-nous depuis la page <Link href="/contact">Contact</Link> avec l’adresse e-mail utilisée pour payer. Nous réglons ce genre de problème dans les 24 heures.
+        </p>
         <p>
           <Link href="/espace">Aller à mon espace</Link>
         </p>

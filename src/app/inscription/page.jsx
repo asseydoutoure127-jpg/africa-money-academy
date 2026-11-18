@@ -22,7 +22,7 @@ export default async function Inscription({ searchParams }) {
           <input id="name" name="name" type="text" autoComplete="name" required minLength={2} maxLength={100} />
           <label htmlFor="email">Adresse e-mail</label>
           <input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />
-          <p className="hint">Utilisez la même adresse pour payer : c’est elle qui ouvre votre accès.</p>
+          <p className="hint">Utilisez la même adresse pour payer : c’est elle qui ouvre votre accès. Nous vous écrirons pour la confirmer : le message peut arriver dans vos spams.</p>
           <label htmlFor="password">Mot de passe (8 caractères minimum)</label>
           <input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} />
           <label className="check" htmlFor="cgu">

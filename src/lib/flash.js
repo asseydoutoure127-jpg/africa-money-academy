@@ -2,7 +2,7 @@
 export const FLASH = {
   // Comptes
   parrain: ['ok', 'Vous êtes invité par un ami. Créez votre compte pour commencer.'],
-  inscrit: ['ok', 'Votre compte est créé. Nous vous avons envoyé un e-mail pour confirmer votre adresse.'],
+  inscrit: ['ok', 'Votre compte est créé. Nous vous avons envoyé un e-mail pour confirmer votre adresse. Il peut arriver dans vos courriers indésirables (spam) : regardez-y si vous ne le voyez pas.'],
   email_ok: ['ok', 'Votre adresse e-mail est confirmée. Merci !'],
   email_lien: ['err', "Ce lien de confirmation n'est plus valable. Connectez-vous et demandez un nouvel e-mail."],
   verif_envoyee: ['ok', 'E-mail envoyé. Regardez aussi dans vos courriers indésirables (spam).'],
