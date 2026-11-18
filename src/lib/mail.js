@@ -94,3 +94,125 @@ export async function sendViaResend({ apiKey, from, to, subject, html, text, fet
     return { ok: false, reason: 'network' };
   }
 }
+
+// ---------------------------------------------------------------------------------------------
+// Envoi par SMTP (par exemple Gmail avec un « mot de passe d'application »), sans aucune dépendance.
+// Connexion chiffrée directe (port 465), identification AUTH PLAIN, message texte + HTML en UTF-8.
+import tls from 'node:tls';
+import net from 'node:net';
+import { randomBytes } from 'node:crypto';
+
+const b64 = (s) => Buffer.from(String(s), 'utf8').toString('base64');
+const wrap76 = (s) => s.replace(/(.{76})/g, '$1\r\n');
+const hasCtl = (s) => /[\r\n\0]/.test(String(s));
+const encodeWord = (s) => (/^[\x20-\x7e]*$/.test(s) ? s : `=?UTF-8?B?${b64(s)}?=`);
+
+/** Construit le message complet (en-têtes + corps), prêt à être envoyé après la commande DATA. */
+export function buildMimeMessage({ from, fromName, to, subject, html, text }) {
+  const boundary = `b_${randomBytes(12).toString('hex')}`;
+  const name = fromName ? `${encodeWord(fromName)} ` : '';
+  const lines = [
+    `From: ${name}<${from}>`,
+    `To: <${to}>`,
+    `Subject: ${encodeWord(subject)}`,
+    `Date: ${new Date().toUTCString()}`,
+    `Message-ID: <${randomBytes(12).toString('hex')}@${from.split('@')[1] || 'localhost'}>`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    '',
+    `--${boundary}`,
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    wrap76(b64(text || '')),
+    `--${boundary}`,
+    'Content-Type: text/html; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    wrap76(b64(html || '')),
+    `--${boundary}--`,
+    '',
+  ];
+  return lines.join('\r\n');
+}
+
+/**
+ * Envoie un e-mail par SMTP. Ne lève jamais d'erreur : renvoie { ok } ou { ok:false, reason, detail }.
+ * Raisons : not_configured, rejected (refus du serveur ou mot de passe), network.
+ * `secure:false` (tests seulement) ouvre une connexion non chiffrée.
+ */
+export async function sendViaSmtp({ host = 'smtp.gmail.com', port = 465, user, pass, from, fromName, to, subject, html, text, secure = true, timeoutMs = 20000 }) {
+  if (!user || !pass || !from) return { ok: false, reason: 'not_configured' };
+  if ([from, to, subject, user, fromName || ''].some(hasCtl)) return { ok: false, reason: 'rejected', detail: 'caractères interdits dans les en-têtes' };
+  const message = buildMimeMessage({ from, fromName, to, subject, html, text }).replace(/\r?\n\./g, '\r\n..');
+
+  return new Promise((resolve) => {
+    let settled = false;
+    let buffer = '';
+    let waiter = null;
+    const socket = secure ? tls.connect({ host, port, servername: host }) : net.connect({ host, port });
+    const done = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try {
+        socket.destroy();
+      } catch {
+        // déjà fermé
+      }
+      resolve(result);
+    };
+    const timer = setTimeout(() => done({ ok: false, reason: 'network', detail: 'délai dépassé' }), timeoutMs);
+    socket.setEncoding('utf8');
+    socket.on('error', () => done({ ok: false, reason: 'network' }));
+    socket.on('close', () => done({ ok: false, reason: 'network' }));
+
+    // Lit une réponse SMTP complète (les lignes « 250-… » continuent jusqu'à « 250 … »).
+    const readReply = () =>
+      new Promise((res) => {
+        const check = () => {
+          const lines = buffer.split('\r\n');
+          for (let i = 0; i < lines.length - 1; i++) {
+            if (/^\d{3} /.test(lines[i])) {
+              const reply = { code: Number(lines[i].slice(0, 3)), text: lines.slice(0, i + 1).join(' ') };
+              buffer = lines.slice(i + 1).join('\r\n');
+              waiter = null;
+              return res(reply);
+            }
+          }
+          waiter = check;
+        };
+        check();
+      });
+    socket.on('data', (chunk) => {
+      buffer += chunk;
+      if (waiter) waiter();
+    });
+
+    (async () => {
+      const send = async (line, ok) => {
+        socket.write(`${line}\r\n`);
+        const r = await readReply();
+        if (!ok.includes(r.code)) throw Object.assign(new Error('rejected'), { reply: r });
+        return r;
+      };
+      try {
+        const hello = await readReply();
+        if (hello.code !== 220) throw Object.assign(new Error('rejected'), { reply: hello });
+        await send('EHLO africa-money-academy', [250]);
+        await send(`AUTH PLAIN ${Buffer.from(`\0${user}\0${pass}`, 'utf8').toString('base64')}`, [235]);
+        await send(`MAIL FROM:<${from}>`, [250]);
+        await send(`RCPT TO:<${to}>`, [250, 251]);
+        await send('DATA', [354]);
+        socket.write(`${message}\r\n.\r\n`);
+        const sent = await readReply();
+        if (sent.code !== 250) throw Object.assign(new Error('rejected'), { reply: sent });
+        socket.write('QUIT\r\n');
+        done({ ok: true });
+      } catch (e) {
+        const detail = e?.reply ? `${e.reply.code}`.concat(e.reply.code === 535 ? ' : identifiants refusés' : '') : '';
+        done({ ok: false, reason: e?.reply ? 'rejected' : 'network', detail });
+      }
+    })();
+  });
+}

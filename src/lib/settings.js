@@ -8,6 +8,8 @@ export const SECRET_KEYS = new Set(['chariow_api_key', 'resend_api_key']);
 const ENV_NAMES = {
   chariow_api_key: 'CHARIOW_API_KEY',
   resend_api_key: 'RESEND_API_KEY',
+  smtp_user: 'SMTP_USER',
+  smtp_password: 'SMTP_PASSWORD',
   mail_from: 'MAIL_FROM',
   site_name: 'SITE_NAME',
   support_email: 'SUPPORT_EMAIL',
