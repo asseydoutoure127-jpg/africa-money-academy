@@ -647,3 +647,32 @@ h2 { font-weight: 700; }
 .ref-example strong { font-size: 1.4rem; color: var(--ok); }
 .ref-visual img { width: 100%; height: auto; display: block; border-radius: 22px; box-shadow: 0 22px 44px rgba(27, 42, 92, .25); }
 .faq-box { margin: 0 auto; }
+
+/* ===== Page de formation v2 ===== */
+.sale-hero h1 { font-size: clamp(2rem, 6.5vw, 3.2rem); font-weight: 700; line-height: 1.07; letter-spacing: -0.02em; }
+.sale-hero .stats-line strong { color: #fff; }
+.sale-hero .stats-line li { color: #cfd6f0; }
+.sale-hero .price-tag { font-size: 2rem; font-weight: 800; }
+
+/* panneaux colorés pour rythmer la page */
+.course-body .panel { border-radius: 22px; padding: 24px 22px; margin: 28px 0; }
+.course-body .panel h2 { margin-top: 0; }
+.course-body .p-saffron { background: var(--saffron-soft); }
+.course-body .p-indigo { background: var(--indigo-soft); }
+.course-body section.objectives { background: var(--teal-soft); border-radius: 22px; padding: 24px 22px; margin: 28px 0; }
+.course-body section.objectives h2 { margin-top: 0; color: #0b5e50; }
+.course-body section.objectives ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+@media (min-width: 760px) { .course-body section.objectives ul { grid-template-columns: 1fr 1fr; } }
+.course-body section.objectives li { position: relative; padding-left: 36px; line-height: 1.45; }
+.course-body section.objectives li::before { content: '✓'; position: absolute; left: 0; top: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: .85rem; }
+.course-body .panel ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+
+/* programme : numéros de module bien visibles */
+.program-module { border-left: 0; padding: 18px 18px 18px 18px; border-radius: 18px; }
+.program-module h3 { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; font-size: 1.15rem; }
+.program-module .mod-n { flex: none; width: 36px; height: 36px; border-radius: 11px; background: var(--indigo); color: var(--saffron); display: grid; place-items: center; font-weight: 800; }
+.program-module ol { margin: 8px 0 0; padding: 0; list-style: none; counter-reset: les; display: grid; gap: 6px; }
+.program-module ol li { counter-increment: les; display: flex; gap: 10px; align-items: baseline; padding: 8px 12px; background: var(--paper); border-radius: 10px; }
+.program-module ol li::before { content: counter(les); flex: none; min-width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1px solid var(--line); color: var(--indigo); display: inline-grid; place-items: center; font-size: .75rem; font-weight: 700; }
+
+.buy-card .btn { width: 100%; }

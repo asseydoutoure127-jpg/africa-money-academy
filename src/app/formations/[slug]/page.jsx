@@ -137,13 +137,13 @@ export default async function CoursePage({ params, searchParams }) {
               </section>
             )}
             {course.audience && (
-              <section>
+              <section className="panel p-saffron">
                 <h2>À qui s’adresse cette formation</h2>
                 <RichText text={course.audience} />
               </section>
             )}
             {course.prerequisites && (
-              <section>
+              <section className="panel p-indigo">
                 <h2>Ce qu’il faut avoir</h2>
                 <RichText text={course.prerequisites} />
               </section>
@@ -162,7 +162,7 @@ export default async function CoursePage({ params, searchParams }) {
               ) : (
                 modules.map((m, i) => (
                   <article key={m.id} className="program-module">
-                    <h3>Module {i + 1} : {String(m.title).replace(/^Module\s*\d+\s*:\s*/i, '')}</h3>
+                    <h3><span className="mod-n">{i + 1}</span><span>{String(m.title).replace(/^Module\s*\d+\s*:\s*/i, '')}</span></h3>
                     {m.description && <p className="muted small" style={{ margin: 0 }}>{m.description}</p>}
                     <ol>
                       {m.lessons.map((l) => (
