@@ -801,3 +801,4 @@ h2 { font-weight: 700; }
 .lesson-tips summary { cursor: pointer; font-weight: 700; padding: 12px 0; min-height: 44px; color: var(--indigo); }
 .lesson-tips ul { margin: 0 0 8px; padding-left: 20px; }
 .lesson-tips p { margin: 0 0 12px; font-size: .92rem; }
+.re-cta .btn.ghost { background: transparent; color: #fff; border: 2px solid #fff; box-shadow: none; }
