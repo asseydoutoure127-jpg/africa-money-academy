@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { typo } from '@/lib/typo.js';
 
 // Affichage sûr du texte des leçons et des pages : on construit des éléments React (jamais de HTML brut),
 // donc aucun script ne peut passer. Syntaxe : # Titre, ## Sous-titre, - liste, > encadré, **gras**,
@@ -18,7 +19,7 @@ function inline(text, keyBase) {
         </a>
       );
     }
-    return <Fragment key={key}>{part}</Fragment>;
+    return <Fragment key={key}>{typo(part)}</Fragment>;
   });
 }
 

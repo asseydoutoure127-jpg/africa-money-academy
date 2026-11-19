@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { typo } from '@/lib/typo.js';
 import { photoForCourse } from '@/lib/photos.js';
 
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
@@ -17,7 +18,7 @@ export default function CourseCard({ course, counts, upcoming = false }) {
           <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>
         </div>
       </div>
-      <h3>{course.title}</h3>
+      <h3>{typo(course.title)}</h3>
       <p className="grow muted">{course.summary}</p>
       {counts && (
         <ul className="stats-line" aria-label="Contenu de la formation">

@@ -4,7 +4,7 @@ import CourseCard from '@/components/CourseCard.jsx';
 import Carnet from '@/components/Carnet.jsx';
 import PhoneMock from '@/components/PhoneMock.jsx';
 import LessonMock from '@/components/LessonMock.jsx';
-import RichText from '@/components/RichText.jsx';
+import FaqAccordion from '@/components/FaqAccordion.jsx';
 import Icon from '@/components/Icon.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
@@ -57,7 +57,7 @@ export default async function Home({ searchParams }) {
           <div className="wrap strip-grid">
             <div><Icon name="book" /><strong>{published.length + upcoming.length} formations</strong><span>{published.length} ouverte{published.length > 1 ? 's' : ''}, {upcoming.length} à venir</span></div>
             <div><Icon name="pen" /><strong>{total.exercises} exercices</strong><span>à faire pour avancer</span></div>
-            <div><Icon name="phone" /><strong>Sur téléphone</strong><span>lisible avec une connexion lente</span></div>
+            <div><Icon name="phone" /><strong>Sur téléphone</strong><span>pensé pour les petits écrans</span></div>
             <div><Icon name="coins" /><strong>Exemples en FCFA</strong><span>des situations que vous connaissez</span></div>
           </div>
         </section>
@@ -183,7 +183,7 @@ export default async function Home({ searchParams }) {
         <section className="section">
           <div className="wrap faq-box" style={{ maxWidth: 820 }}>
             <h2>Questions fréquentes</h2>
-            <RichText text={faq.body} />
+            <FaqAccordion text={faq.body} />
           </div>
         </section>
 

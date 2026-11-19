@@ -7,6 +7,7 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress, findUnlockedLesson, flattenLessons } from '@/lib/progress.js';
 import { markLessonDone, submitExercise } from '@/app/actions/learn.js';
+import { typo } from '@/lib/typo.js';
 
 export const metadata = { title: 'Leçon' };
 
@@ -59,7 +60,8 @@ export default async function LessonPage({ params, searchParams }) {
             <p className="paper-kicker">
               Leçon {lessonNumber} sur {flat.length} · {moduleLabel}
             </p>
-            <h1>{lesson.title}</h1>
+            <div className="lesson-progress" role="img" aria-label={`Leçon ${lessonNumber} sur ${flat.length}`}><i style={{ width: `${Math.round((lessonNumber / flat.length) * 100)}%` }} /></div>
+            <h1>{typo(lesson.title)}</h1>
             <p className="paper-meta">
               Environ {pages} {pages > 1 ? 'pages' : 'page'} · {lesson.duration_min || Math.max(2, Math.round(words / 200))} min de lecture
               {lesson.exercise?.trim() ? ' · avec exercice' : ''}

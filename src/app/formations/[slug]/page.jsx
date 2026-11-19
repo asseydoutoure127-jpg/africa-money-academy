@@ -9,6 +9,7 @@ import * as store from '@/lib/store.js';
 import { httpsUrlOrNull } from '@/lib/validate.js';
 import { enrollFree } from '@/app/actions/learn.js';
 import { photoForCourse } from '@/lib/photos.js';
+import { typo } from '@/lib/typo.js';
 
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
 
@@ -62,7 +63,7 @@ export default async function CoursePage({ params, searchParams }) {
               {course.duration_label && <span className="badge">{course.duration_label}</span>}{' '}
               {course.is_free && <span className="badge gold">Gratuit</span>}
             </div>
-            <h1>{course.title}</h1>
+            <h1>{typo(course.title)}</h1>
             {course.summary && <p style={{ fontSize: '1.08rem' }}>{course.summary}</p>}
             <div className="price-row">
               {course.is_free ? (

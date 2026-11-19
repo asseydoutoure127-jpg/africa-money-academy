@@ -1,4 +1,4 @@
-import RichText from '@/components/RichText.jsx';
+import FaqAccordion from '@/components/FaqAccordion.jsx';
 import { getDb } from '@/lib/db.js';
 import { getPageText } from '@/lib/pages.js';
 
@@ -8,9 +8,9 @@ export default async function Faq() {
   const page = await getPageText(getDb(), 'faq');
   return (
     <main>
-      <div className="wrap">
+      <div className="wrap" style={{ maxWidth: 820 }}>
         <h1>{page.title}</h1>
-        <RichText text={page.body} />
+        <FaqAccordion text={page.body} />
       </div>
     </main>
   );

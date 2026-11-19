@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Flash from '@/components/Flash.jsx';
+import PasswordField from '@/components/PasswordField.jsx';
 import { signup } from '@/app/actions/auth.js';
 import { getCurrentUser } from '@/lib/auth.js';
 import { redirect } from 'next/navigation';
@@ -13,8 +14,19 @@ export default async function Inscription({ searchParams }) {
   const suite = safeInternalPath(sp.suite, '');
   return (
     <main>
-      <div className="narrow">
+      <div className="auth">
+        <aside className="auth-side">
+          <h2>Un compte gratuit, tout de suite.</h2>
+          <ul>
+            <li>La formation « Les bases de l’argent » est gratuite</li>
+            <li>Votre progression est enregistrée</li>
+            <li>Vous gagnez 50 % en invitant vos amis</li>
+            <li>Vous ne payez que si vous choisissez une formation</li>
+          </ul>
+        </aside>
+      <div className="auth-main">
         <h1>Créer mon compte</h1>
+        <p className="auth-lead">C’est gratuit. La formation « Les bases de l’argent » vous est offerte.</p>
         <Flash code={sp.m} />
         <form action={signup} className="card">
           <input type="hidden" name="suite" value={suite} />
@@ -23,8 +35,7 @@ export default async function Inscription({ searchParams }) {
           <label htmlFor="email">Adresse e-mail</label>
           <input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />
           <p className="hint">Utilisez la même adresse pour payer : c’est elle qui ouvre votre accès. Nous vous écrirons pour la confirmer : le message peut arriver dans vos spams.</p>
-          <label htmlFor="password">Mot de passe (8 caractères minimum)</label>
-          <input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} />
+          <PasswordField label="Mot de passe (8 caractères minimum)" autoComplete="new-password" minLength={8} />
           <label className="check" htmlFor="cgu">
             <input id="cgu" name="cgu" type="checkbox" required />
             <span>
@@ -33,7 +44,7 @@ export default async function Inscription({ searchParams }) {
             </span>
           </label>
           <p style={{ marginTop: 18 }}>
-            <button className="btn" type="submit">
+            <button className="btn gold block" type="submit">
               Créer mon compte
             </button>
           </p>
@@ -41,6 +52,7 @@ export default async function Inscription({ searchParams }) {
         <p>
           Déjà inscrit ? <Link href={`/connexion${suite ? `?suite=${encodeURIComponent(suite)}` : ''}`}>Se connecter</Link>
         </p>
+      </div>
       </div>
     </main>
   );

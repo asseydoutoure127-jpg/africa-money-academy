@@ -6,7 +6,7 @@ import BottomNav from '@/components/BottomNav.jsx';
 import { InstallBanner } from '@/components/PwaInstall.jsx';
 import { getCurrentUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
-import { getSiteName } from '@/lib/context.js';
+import { getSiteName, getSiteUrl } from '@/lib/context.js';
 
 const title = Fraunces({ subsets: ['latin'], variable: '--font-title', display: 'swap', style: ['normal', 'italic'] });
 const body = Nunito_Sans({ subsets: ['latin'], variable: '--font-body', display: 'swap', style: ['normal', 'italic'] });
@@ -21,11 +21,21 @@ export async function generateMetadata() {
     // titre par défaut
   }
   return {
+    metadataBase: new URL(getSiteUrl()),
     title: { default: name, template: `%s – ${name}` },
+    openGraph: {
+      type: 'website',
+      locale: 'fr_FR',
+      siteName: name,
+      title: name,
+      description: 'Formations en français pour apprendre, pas à pas, à gagner de l’argent depuis votre téléphone. Gratuit pour commencer.',
+      images: [{ url: '/og.png', width: 1200, height: 630, alt: name }],
+    },
+    twitter: { card: 'summary_large_image', images: ['/og.png'] },
     applicationName: 'Africa Money Academy',
     appleWebApp: { capable: true, title: 'Money Academy', statusBarStyle: 'black-translucent' },
     icons: { icon: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }, { url: '/icon.svg', type: 'image/svg+xml' }], apple: '/icons/apple-touch-icon.png' },
-    description: "Apprenez pas à pas à gagner de l'argent sur Internet, en partant de zéro. Formations écrites en français, pensées pour le téléphone.",
+    description: 'Apprenez pas à pas à gagner de l’argent sur Internet, en partant de zéro. Formations écrites en français, pensées pour le téléphone.',
   };
 }
 
