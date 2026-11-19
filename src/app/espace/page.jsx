@@ -17,6 +17,7 @@ export default async function Espace({ searchParams }) {
   const enrollments = await store.listUserEnrollments(db, user.id);
   await ensureReferralCode(db, user.id);
   const referred = await countReferred(db, user.id);
+  const lastDone = await store.lastLessonDoneAt(db, user.id);
   const rows = [];
   for (const e of enrollments) {
     const modules = await store.listModulesWithLessons(db, e.course_id);
@@ -32,6 +33,16 @@ export default async function Espace({ searchParams }) {
   const owned = new Set(rows.map((r) => r.e.slug));
   const ownsPaid = rows.some((r) => !published.find((c) => c.slug === r.e.slug)?.is_free);
   const nextPaid = published.find((c) => !c.is_free && !owned.has(c.slug)) || null;
+  // Encouragement selon le rythme : seulement pour quelqu'un qui a déjà terminé une leçon et n'a pas fini.
+  const inProgress = rows.find((r) => r.progress.doneLessons > 0 && r.progress.percent < 100) || null;
+  const daysAway = lastDone ? Math.floor((Date.now() - lastDone.getTime()) / 86400000) : null;
+  const rhythm = inProgress && daysAway !== null
+    ? daysAway === 0
+      ? { tone: 'ok', title: 'Bravo, vous avez avancé aujourd’hui.', text: 'Revenez demain pour la leçon suivante : c’est la régularité qui fait réussir.' }
+      : daysAway >= 3
+        ? { tone: 'back', title: `Cela fait ${daysAway} jours.`, text: 'Dix minutes aujourd’hui suffisent pour reprendre. Vous n’avez rien perdu, vos réponses sont gardées.' }
+        : null
+    : null;
   const steps = [
     { n: 1, title: 'Apprendre les bases', text: 'La formation gratuite, pour partir du bon pied.', state: freeDone ? 'done' : freeStarted ? 'now' : 'todo' },
     { n: 2, title: 'Choisir votre formation', text: 'Celle qui correspond à ce que vous voulez faire.', state: ownsPaid ? 'done' : freeDone ? 'now' : 'todo' },
@@ -53,6 +64,15 @@ export default async function Espace({ searchParams }) {
               </button>
             </form>
           </div>
+        )}
+        {rhythm && (
+          <section className={`card rhythm ${rhythm.tone}`}>
+            <div>
+              <strong>{rhythm.title}</strong>
+              <p>{rhythm.text}</p>
+            </div>
+            <Link className="btn small gold" href={`/espace/formation/${inProgress.e.slug}`}>Continuer ma formation</Link>
+          </section>
         )}
         {free && !freeStarted && (
           <section className="card gold start-card">
@@ -86,7 +106,8 @@ export default async function Espace({ searchParams }) {
           ))}
         </ol>
         <p>
-          <Link className="btn ghost small" href="/outils">Ouvrir la boîte à outils (calculs gratuits)</Link>
+          <Link className="btn ghost small" href="/outils">Ouvrir la boîte à outils (calculs gratuits)</Link>{' '}
+          <Link className="btn ghost small" href="/reussir">Conseils pour réussir</Link>
         </p>
         <h2>Mes formations</h2>
         {rows.length === 0 ? (

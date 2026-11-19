@@ -801,3 +801,9 @@ export async function setExerciseValidated(db, { userId, lessonId, adminId, vali
     ),
   );
 }
+
+// Date de la dernière leçon terminée par un élève (pour l'encourager à garder son rythme).
+export async function lastLessonDoneAt(db, userId) {
+  const r = first(await db.query(`select max(completed_at) as t from lesson_progress where user_id = $1`, [userId]));
+  return r && r.t ? new Date(r.t) : null;
+}

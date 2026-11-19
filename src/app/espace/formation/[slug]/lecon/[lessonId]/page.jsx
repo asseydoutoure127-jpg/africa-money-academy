@@ -86,6 +86,15 @@ export default async function LessonPage({ params, searchParams }) {
                 <span key={i}>{mark}</span>
               ))}
             </div>
+            <details className="lesson-tips">
+              <summary>Conseils pour réussir cette leçon</summary>
+              <ul>
+                <li>Lisez en deux fois si vous êtes fatigué : une moitié maintenant, l’autre plus tard.</li>
+                <li>Gardez un papier ou une note sur votre téléphone pour y mettre vos vrais chiffres.</li>
+                <li>À la fin, faites l’exercice sans attendre : c’est lui qui ancre la leçon.</li>
+              </ul>
+              <p><Link href="/reussir">Voir toute la méthode pour réussir</Link></p>
+            </details>
             <RichText text={lesson.content} />
             {lesson.exercise?.trim() && (
               <section className="exercise" id="exercice">
