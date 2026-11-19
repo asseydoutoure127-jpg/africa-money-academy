@@ -754,3 +754,10 @@ h2 { font-weight: 700; }
 .spark-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; }
 .spark-col i { display: block; width: 100%; background: var(--indigo); border-radius: 4px 4px 0 0; }
 .spark-col small, .spark-n { font-size: .68rem; color: #5d6784; }
+
+/* Validation des exercices */
+.badge.ok { background: #dff4e9; color: #0f6a45; }
+.validate { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.validate input[type="text"] { flex: 1; min-width: 200px; margin: 0; }
+.validate p { margin: 0; flex-basis: 100%; }
+.exercise-ok { margin: 10px 0; }

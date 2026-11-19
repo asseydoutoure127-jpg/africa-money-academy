@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import Flash from '@/components/Flash.jsx';
+import ValidateExercise from '@/components/ValidateExercise.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { requireAdmin } from '@/lib/auth.js';
@@ -22,6 +24,7 @@ export default async function Exercises({ searchParams }) {
   return (
     <>
       <h1>Exercices des élèves</h1>
+      <Flash code={sp.m} />
       <form method="get" className="admin-search">
         <label htmlFor="f" className="sr-only">Formation</label>
         <select id="f" name="f" defaultValue={courseId || ''}>
@@ -41,6 +44,7 @@ export default async function Exercises({ searchParams }) {
           </header>
           {r.exercise && <p className="muted"><strong>Consigne :</strong> {r.exercise}</p>}
           <p className="answer-text">{r.answer}</p>
+          <ValidateExercise userId={r.user_id} lessonId={r.lesson_id} validatedAt={r.validated_at} feedback={r.feedback} back={link(page)} />
         </article>
       ))}
       {pages > 1 && (

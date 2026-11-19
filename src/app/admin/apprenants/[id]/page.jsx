@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import Flash from '@/components/Flash.jsx';
+import ValidateExercise from '@/components/ValidateExercise.jsx';
 import ConfirmButton from '@/components/ConfirmButton.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
@@ -9,9 +11,10 @@ import { requireAdmin } from '@/lib/auth.js';
 const fmt = (d) => (d ? new Date(d).toLocaleString('fr-FR', { timeZone: 'Africa/Bamako', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—');
 const UUID = /^[0-9a-f-]{36}$/i;
 
-export default async function LearnerPage({ params }) {
+export default async function LearnerPage({ params, searchParams }) {
   await requireAdmin();
   const { id } = await params;
+  const sp = await searchParams;
   if (!UUID.test(id)) notFound();
   const data = await store.getLearnerDetail(getDb(), id);
   if (!data) notFound();
@@ -19,6 +22,7 @@ export default async function LearnerPage({ params }) {
   return (
     <>
       <p><Link href="/admin/apprenants">← Tous les apprenants</Link></p>
+      <Flash code={sp.m} />
       <h1>{user.name}</h1>
       <p className="muted">{user.email} · inscrit le {fmt(user.created_at)}{' '}
         {!user.email_verified_at && <span className="badge red">e-mail non confirmé</span>} {user.blocked_at && <span className="badge red">bloqué</span>}
@@ -48,6 +52,7 @@ export default async function LearnerPage({ params }) {
                     <div className="answer">
                       {l.exercise && <p className="muted"><strong>Consigne :</strong> {l.exercise}</p>}
                       <p className="answer-text">{l.answer}</p>
+                      <ValidateExercise userId={user.id} lessonId={l.id} validatedAt={l.validated_at} feedback={l.feedback} back={`/admin/apprenants/${user.id}`} />
                       <p className="muted">Rendu le {fmt(l.submitted_at)}{l.updated_at && String(l.updated_at) !== String(l.submitted_at) ? ` · modifié le ${fmt(l.updated_at)}` : ''}</p>
                     </div>
                   ) : l.exercise ? <p className="muted ll-none">Exercice pas encore rendu.</p> : null}

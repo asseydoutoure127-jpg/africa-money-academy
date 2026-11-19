@@ -91,6 +91,9 @@ export default async function LessonPage({ params, searchParams }) {
               <section className="exercise" id="exercice">
                 <h2>Exercice</h2>
                 <RichText text={lesson.exercise} />
+                {answer?.validated_at && (
+                  <p className="exercise-ok"><span className="badge ok">✓ Exercice validé par votre formateur</span>{answer.feedback ? <> <em>« {answer.feedback} »</em></> : null}</p>
+                )}
                 <form action={submitExercise}>
                   <input type="hidden" name="lessonId" value={lessonId} />
                   <label htmlFor="answer">Votre réponse</label>

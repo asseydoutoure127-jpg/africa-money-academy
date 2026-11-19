@@ -258,6 +258,21 @@ export async function toggleBlock(formData) {
   redirect('/admin/apprenants?m=admin_ok');
 }
 
+// Valider (ou annuler la validation d') l'exercice d'un élève. `back` : page où revenir (liste blanche).
+export async function validateExercise(formData) {
+  const { admin, ctx } = await start();
+  const userId = id(formData, 'userId');
+  const lessonId = id(formData, 'lessonId');
+  const validated = formData.get('validated') === '1';
+  const back = String(formData.get('back') || '');
+  const dest = /^\/admin\/(exercices|apprenants)[A-Za-z0-9/?=&_-]*$/.test(back) ? back : '/admin/exercices';
+  if (!userId || !lessonId) redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=admin_erreur`);
+  const feedback = longText(formData, 'feedback', 600).trim();
+  const done = await store.setExerciseValidated(ctx.db, { userId, lessonId, adminId: admin.id, validated, feedback });
+  if (done) await store.logAdmin(ctx.db, { adminId: admin.id, action: validated ? 'exercise.validate' : 'exercise.unvalidate', target: userId, detail: { lessonId } });
+  redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=${done ? 'admin_ok' : 'admin_erreur'}`);
+}
+
 // ------------------------------------------------------------ Paiements
 
 export async function retryDelivery(formData) {
