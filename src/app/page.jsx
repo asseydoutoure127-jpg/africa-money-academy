@@ -3,12 +3,13 @@ import Flash from '@/components/Flash.jsx';
 import CourseCard from '@/components/CourseCard.jsx';
 import Carnet from '@/components/Carnet.jsx';
 import PhoneMock from '@/components/PhoneMock.jsx';
+import LessonMock from '@/components/LessonMock.jsx';
 import RichText from '@/components/RichText.jsx';
 import Icon from '@/components/Icon.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { getPageText } from '@/lib/pages.js';
-import { PHOTOS } from '@/lib/photos.js';
+import { PHOTOS, COURSE_PHOTOS } from '@/lib/photos.js';
 
 export default async function Home({ searchParams }) {
   const sp = await searchParams;
@@ -80,23 +81,21 @@ export default async function Home({ searchParams }) {
             <p className="muted" style={{ maxWidth: '60ch' }}>
               Pour celles et ceux qui cherchent une première source de revenu en Afrique francophone, sans diplôme ni capital de départ.
             </p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="photo-banner" src={PHOTOS.groupe.l} alt="Un groupe de jeunes travaille ensemble sur des ordinateurs et des téléphones" loading="lazy" width="1400" height="781" />
-            <div className="persona">
+            <div className="persona persona-ill">
               <article>
-                <Icon name="book" size={30} />
-                <h3>Étudiants</h3>
-                <p>Un complément de revenu à construire à côté des cours, avec un petit budget et un téléphone.</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={PHOTOS.groupe.s} alt="Des étudiants travaillent ensemble" loading="lazy" width="720" height="402" />
+                <div><h3>Étudiants</h3><p>Un complément de revenu à construire à côté des cours, avec un petit budget et un téléphone.</p></div>
               </article>
               <article>
-                <Icon name="target" size={30} />
-                <h3>Personnes sans emploi</h3>
-                <p>Des méthodes concrètes pour démarrer une activité, étape par étape, sans promesse magique.</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={COURSE_PHOTOS['freelance-vendre-ses-competences-en-ligne'].s} alt="Une jeune femme travaille sur son ordinateur" loading="lazy" width="720" height="402" />
+                <div><h3>Personnes sans emploi</h3><p>Des méthodes concrètes pour démarrer une activité, étape par étape, sans promesse magique.</p></div>
               </article>
               <article>
-                <Icon name="coins" size={30} />
-                <h3>Petits commerçants</h3>
-                <p>Mieux vendre, mieux encaisser, mieux tenir ses comptes pour que l’activité dure.</p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={COURSE_PHOTOS['lancer-une-petite-activite-rentable'].s} alt="Un jeune commerçant emballe une commande" loading="lazy" width="720" height="402" />
+                <div><h3>Petits commerçants</h3><p>Mieux vendre, mieux encaisser, mieux tenir ses comptes pour que l’activité dure.</p></div>
               </article>
             </div>
           </div>
@@ -141,43 +140,50 @@ export default async function Home({ searchParams }) {
                 <li><Icon name="shield" size={20} /> Votre progression est enregistrée</li>
               </ul>
             </div>
-            <div className="mock-doc" aria-hidden="true">
-              <div className="mock-bar" />
-              <div className="mock-title" />
-              <div className="mock-line" /><div className="mock-line short" /><div className="mock-line" />
-              <div className="mock-ex"><span>Exercice</span><div className="mock-line" /><div className="mock-btn" /></div>
-            </div>
+            <LessonMock />
           </div>
         </section>
 
         <section className="section tinted">
           <div className="wrap">
             <h2>Comment ça marche</h2>
-            <ol className="steps">
-              <li>
-                <strong>Choisissez une formation</strong> et créez votre compte avec une adresse e-mail que vous utilisez.
+            <ol className="steps steps-color">
+              <li className="s1">
+                <span className="s-ico"><Icon name="book" size={26} /></span>
+                <strong>Choisissez une formation.</strong> Créez votre compte avec une adresse e-mail que vous utilisez.
               </li>
-              <li>
-                <strong>Payez en toute sécurité</strong> avec le moyen de paiement proposé dans votre pays. L’accès s’ouvre tout seul après le paiement.
+              <li className="s2">
+                <span className="s-ico"><Icon name="lock" size={26} /></span>
+                <strong>Payez en toute sécurité.</strong> Utilisez le moyen de paiement proposé dans votre pays. L’accès s’ouvre tout seul après le paiement.
               </li>
-              <li>
-                <strong>Avancez à votre rythme</strong>, leçon après leçon, et reprenez là où vous vous êtes arrêté.
+              <li className="s3">
+                <span className="s-ico"><Icon name="target" size={26} /></span>
+                <strong>Avancez à votre rythme.</strong> Leçon après leçon, et reprenez là où vous vous êtes arrêté.
               </li>
             </ol>
           </div>
         </section>
 
-        <section className="section">
+        <section className="section ref-feature">
           <div className="wrap split">
             <div>
-              <h2>Invitez vos amis</h2>
-              <p className="muted">Chaque compte a un lien personnel. Quand un ami s’inscrit grâce à lui, nous le savons.</p>
-              <Link className="btn ghost" href="/inscription">Créer mon compte pour l’obtenir</Link>
+              <span className="badge gold">Parrainage</span>
+              <h2>Invitez un ami. Gagnez 50 %.</h2>
+              <p className="muted">Chaque compte a un lien personnel. Quand un ami s’inscrit avec votre lien puis achète une formation, vous recevez la moitié du prix.</p>
+              <p className="ref-example"><span>Un ami achète une formation à 10 000 FCFA</span><strong>Vous gagnez 5 000 FCFA</strong></p>
+              <Link className="btn gold" href="/parrainage">Voir comment ça marche</Link>
             </div>
-            <div className="faq-box">
-              <h2>Questions fréquentes</h2>
-              <RichText text={faq.body} />
+            <div className="ref-visual">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={PHOTOS.amis.l} alt="Des amis regardent ensemble un téléphone et un ordinateur" loading="lazy" width="1400" height="781" />
             </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="wrap faq-box" style={{ maxWidth: 820 }}>
+            <h2>Questions fréquentes</h2>
+            <RichText text={faq.body} />
           </div>
         </section>
 
