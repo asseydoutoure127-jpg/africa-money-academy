@@ -678,3 +678,109 @@ export async function listRecentEnrollments(db, limit = 8) {
     )
   ).rows;
 }
+
+// ============================ Admin : suivi des élèves (lecture seule) ============================
+
+// Pour chaque élève : formations suivies, leçons terminées / total, exercices rendus, dernière activité.
+export async function listLearnersOverview(db, { q = '', limit = 40, offset = 0 } = {}) {
+  const like = `%${q.trim().toLowerCase()}%`;
+  const users = (
+    await db.query(
+      `select u.id, u.email, u.name, u.role, u.email_verified_at, u.blocked_at, u.created_at,
+        (select max(t) from (
+           select max(completed_at) as t from lesson_progress where user_id = u.id
+           union all select max(updated_at) from lesson_exercises where user_id = u.id
+         ) x) as last_activity
+       from users u where lower(u.email) like $1 or lower(u.name) like $1
+       order by u.created_at desc limit $2 offset $3`,
+      [like, limit, offset],
+    )
+  ).rows;
+  const total = Number(first(await db.query(`select count(*)::int as n from users u where lower(u.email) like $1 or lower(u.name) like $1`, [like])).n);
+  if (!users.length) return { rows: [], total };
+  const ids = users.map((u) => u.id);
+  const prog = (
+    await db.query(
+      `select e.user_id, c.id as course_id, c.title, e.status,
+        (select count(*)::int from lessons l join modules m on m.id = l.module_id where m.course_id = c.id) as lessons,
+        (select count(*)::int from lesson_progress p join lessons l on l.id = p.lesson_id join modules m on m.id = l.module_id
+           where m.course_id = c.id and p.user_id = e.user_id) as done,
+        (select count(*)::int from lesson_exercises x join lessons l on l.id = x.lesson_id join modules m on m.id = l.module_id
+           where m.course_id = c.id and x.user_id = e.user_id) as answers
+       from enrollments e join courses c on c.id = e.course_id
+       where e.user_id = any($1::uuid[]) order by e.granted_at desc`,
+      [ids],
+    )
+  ).rows;
+  const byUser = new Map();
+  for (const p of prog) {
+    if (!byUser.has(p.user_id)) byUser.set(p.user_id, []);
+    byUser.get(p.user_id).push(p);
+  }
+  return { rows: users.map((u) => ({ ...u, courses: byUser.get(u.id) || [] })), total };
+}
+
+// Fiche d'un élève : pour chaque formation, chaque leçon avec état et réponse à l'exercice.
+export async function getLearnerDetail(db, userId) {
+  const user = first(await db.query(`select id, email, name, role, email_verified_at, blocked_at, created_at from users where id = $1`, [userId]));
+  if (!user) return null;
+  const enrollments = await listCourseEnrollments(db, userId);
+  const lessons = (
+    await db.query(
+      `select m.course_id, m.title as module_title, m.position as mpos, l.id, l.title, l.position as lpos, l.exercise,
+              p.completed_at, x.answer, x.submitted_at, x.updated_at
+       from lessons l join modules m on m.id = l.module_id
+       left join lesson_progress p on p.lesson_id = l.id and p.user_id = $1
+       left join lesson_exercises x on x.lesson_id = l.id and x.user_id = $1
+       where m.course_id = any($2::uuid[]) order by m.position, l.position`,
+      [userId, enrollments.map((e) => e.course_id)],
+    )
+  ).rows;
+  return { user, enrollments, lessons };
+}
+
+// Toutes les réponses aux exercices, les plus récentes d'abord (filtre par formation possible).
+export async function listExerciseAnswers(db, { courseId = null, limit = 50, offset = 0 } = {}) {
+  const params = [limit, offset];
+  let where = '';
+  if (courseId) { params.push(courseId); where = 'where c.id = $3'; }
+  const rows = (
+    await db.query(
+      `select x.user_id, x.lesson_id, x.answer, x.submitted_at, x.updated_at, u.name, u.email,
+              l.title as lesson_title, l.exercise, c.title as course_title
+       from lesson_exercises x join users u on u.id = x.user_id join lessons l on l.id = x.lesson_id
+       join modules m on m.id = l.module_id join courses c on c.id = m.course_id
+       ${where} order by x.updated_at desc limit $1 offset $2`,
+      params,
+    )
+  ).rows;
+  const total = Number(first(await db.query(`select count(*)::int as n from lesson_exercises x join lessons l on l.id = x.lesson_id join modules m on m.id = l.module_id join courses c on c.id = m.course_id ${courseId ? 'where c.id = $1' : ''}`, courseId ? [courseId] : [])).n);
+  return { rows, total };
+}
+
+// Inscriptions des 14 derniers jours (pour le tableau de bord).
+export async function signupsByDay(db, days = 14) {
+  return (
+    await db.query(
+      `select to_char(d::date, 'YYYY-MM-DD') as day, coalesce(n, 0)::int as n
+       from generate_series(current_date - ($1::int - 1), current_date, interval '1 day') d
+       left join (select created_at::date as j, count(*) as n from users where role = 'learner' group by 1) s on s.j = d::date
+       order by d`,
+      [days],
+    )
+  ).rows;
+}
+
+export async function activitySummary(db) {
+  return first(
+    await db.query(
+      `select
+        (select count(*)::int from lesson_progress where completed_at > now() - interval '7 days') as lessons_7d,
+        (select count(*)::int from lesson_exercises where updated_at > now() - interval '7 days') as answers_7d,
+        (select count(distinct user_id)::int from (
+           select user_id from lesson_progress where completed_at > now() - interval '7 days'
+           union select user_id from lesson_exercises where updated_at > now() - interval '7 days') a) as active_7d,
+        (select count(*)::int from users where role = 'learner' and created_at > now() - interval '7 days') as signups_7d`,
+    ),
+  );
+}

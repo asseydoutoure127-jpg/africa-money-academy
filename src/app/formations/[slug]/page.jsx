@@ -14,13 +14,6 @@ import { typo } from '@/lib/typo.js';
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
 
 // Schéma de méthode affiché dans la page de présentation, selon la formation.
-const SCHEMAS = {
-  'bases-de-largent': ['/illustrations/schema-revenu-depenses.svg', 'Le principe de départ : ce qui entre, ce qui sort, ce qui reste.'],
-  'vendre-sur-whatsapp-et-reseaux-sociaux': ['/illustrations/schema-parcours-vente.svg', 'Le parcours d’une vente : du premier message au client qui revient.'],
-  'freelance-vendre-ses-competences-en-ligne': ['/illustrations/schema-formule-prix.svg', 'Comment un prix se construit : votre coût, votre temps, votre marge.'],
-  'lancer-une-petite-activite-rentable': ['/illustrations/schema-boucle-activite.svg', 'La boucle d’une petite activité : tester, vendre, mesurer, améliorer.'],
-  'creer-et-vendre-un-produit-numerique': ['/illustrations/schema-parcours-vente.svg', 'Le parcours d’une vente : de l’idée au client satisfait.'],
-};
 
 async function loadCourse(slug) {
   const db = getDb();
@@ -122,15 +115,6 @@ export default async function CoursePage({ params, searchParams }) {
                 <div className="benefit"><span className="ico"><Icon name="shield" size={24} /></span><div><h3>Un accès personnel</h3><p>Votre accès est lié à votre compte. Les leçons sont réservées aux personnes qui ont acheté.</p></div></div>
               </div>
             </section>
-            {SCHEMAS[course.slug] && (
-              <section>
-                <figure className="method-fig">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={SCHEMAS[course.slug][0]} alt="" loading="lazy" />
-                  <figcaption>{SCHEMAS[course.slug][1]}</figcaption>
-                </figure>
-              </section>
-            )}
             {course.objectives && (
               <section className="objectives">
                 <h2>Ce que vous allez apprendre</h2>

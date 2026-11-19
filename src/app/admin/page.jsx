@@ -10,7 +10,7 @@ import { requireAdmin } from '@/lib/auth.js';
 export default async function Dashboard() {
   await requireAdmin();
   const db = getDb();
-  const [stats, alerts, recent, apiKey, secrets, testPulse, courses, resend] = await Promise.all([
+  const [stats, alerts, recent, apiKey, secrets, testPulse, courses, resend, smtpUser, activity, signups, lastAnswers] = await Promise.all([
     store.dashboardStats(db),
     store.listOpenAlerts(db),
     store.listRecentEnrollments(db),
@@ -19,14 +19,19 @@ export default async function Dashboard() {
     getSetting(db, 'last_test_pulse_at'),
     store.listAllCourses(db),
     getSetting(db, 'resend_api_key'),
+    getSetting(db, 'smtp_user'),
+    store.activitySummary(db),
+    store.signupsByDay(db, 14),
+    store.listExerciseAnswers(db, { limit: 4 }),
   ]);
+  const maxSignups = Math.max(1, ...signups.map((d) => d.n));
   const siteUrl = getSiteUrl();
   const steps = [
     { ok: Boolean(apiKey), text: 'Clé API Chariow enregistrée', href: '/admin/reglages' },
     { ok: secrets.length > 0, text: 'Secret du Pulse (whsec_…) enregistré', href: '/admin/reglages' },
     { ok: Boolean(testPulse), text: 'Pulse de test reçu depuis Chariow', href: '/admin/reglages' },
     { ok: siteUrl.startsWith('https://'), text: 'Adresse du site en HTTPS (obligatoire pour Chariow)', href: '/admin/reglages' },
-    { ok: Boolean(resend), text: 'E-mails (Resend) configurés', href: '/admin/reglages' },
+    { ok: Boolean(resend || smtpUser), text: 'E-mails configurés (Gmail ou Resend)', href: '/admin/reglages' },
     { ok: courses.length > 0, text: 'Une formation créée', href: '/admin/formations' },
     { ok: stats.published_courses > 0, text: 'Une formation publiée', href: '/admin/formations' },
   ];
@@ -53,6 +58,35 @@ export default async function Dashboard() {
         <div className="card"><h3>Accès actifs</h3><p style={{ fontSize: '1.8rem', margin: 0 }}>{stats.active_enrollments}</p></div>
         <div className="card"><h3>Achats en attente de compte</h3><p style={{ fontSize: '1.8rem', margin: 0 }}>{stats.pending_purchases}</p></div>
       </div>
+      <section className="card" style={{ marginTop: 20 }}>
+        <h2>Les 7 derniers jours</h2>
+        <div className="grid cols-3">
+          <div><p className="big-n">{activity.signups_7d}</p><p className="muted">nouvelles inscriptions</p></div>
+          <div><p className="big-n">{activity.active_7d}</p><p className="muted">élèves actifs (leçon ou exercice)</p></div>
+          <div><p className="big-n">{activity.lessons_7d}</p><p className="muted">leçons terminées, {activity.answers_7d} exercices rendus</p></div>
+        </div>
+        <h3 style={{ marginTop: 18 }}>Inscriptions par jour (14 jours)</h3>
+        <div className="spark" role="img" aria-label={`Inscriptions par jour : ${signups.map((d) => d.n).join(', ')}`}>
+          {signups.map((d) => (
+            <div key={d.day} className="spark-col" title={`${d.day} : ${d.n}`}>
+              <span className="spark-n">{d.n || ''}</span>
+              <i style={{ height: `${Math.max(4, (d.n / maxSignups) * 70)}px` }} />
+              <small>{d.day.slice(8)}</small>
+            </div>
+          ))}
+        </div>
+        <p className="muted" style={{ marginTop: 10 }}>Les visites du site (personnes qui ne s’inscrivent pas) ne sont pas encore comptées.</p>
+      </section>
+      <section style={{ marginTop: 20 }}>
+        <h2>Derniers exercices rendus</h2>
+        {lastAnswers.rows.length === 0 ? <p className="muted">Aucun pour l’instant.</p> : lastAnswers.rows.map((r) => (
+          <article className="card answer-card" key={`${r.user_id}-${r.lesson_id}`}>
+            <header><strong><Link href={`/admin/apprenants/${r.user_id}`}>{r.name}</Link></strong><span className="muted">{r.lesson_title}</span></header>
+            <p className="answer-text">{r.answer.length > 220 ? `${r.answer.slice(0, 220)}…` : r.answer}</p>
+          </article>
+        ))}
+        <p><Link href="/admin/exercices">Voir tous les exercices</Link></p>
+      </section>
       <section className="card" style={{ marginTop: 20 }}>
         <h2>Mise en route</h2>
         <ul className="checklist">

@@ -720,3 +720,37 @@ h2 { font-weight: 700; }
 /* Leçon : barre de progression dans le parcours */
 .lesson-progress { height: 6px; background: var(--indigo-soft); border-radius: 9px; overflow: hidden; margin: 10px 0 14px; }
 .lesson-progress i { display: block; height: 100%; background: var(--saffron); border-radius: 9px; }
+
+/* ---------- Administration : suivi des élèves ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.admin-search { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.admin-search input, .admin-search select { flex: 1; min-width: 200px; margin: 0; }
+.big-n { font-size: 2rem; font-weight: 700; margin: 0; color: var(--indigo); }
+.learner-list { display: grid; gap: 12px; }
+.learner header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.learner h2 { margin: 0; font-size: 1.1rem; }
+.learner header p { margin: 2px 0 0; }
+.learner-badges { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-start; }
+.learner-course { margin-top: 12px; }
+.learner-course p { margin: 2px 0 0; font-size: .88rem; }
+.lc-top { display: flex; justify-content: space-between; gap: 10px; }
+.learner footer { margin-top: 12px; font-size: .85rem; }
+.learner-lessons { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; }
+.learner-lessons li { border-left: 3px solid var(--line); padding-left: 12px; }
+.learner-lessons li.done { border-left-color: #1f9d6a; }
+.ll-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.ll-state { color: #1f9d6a; font-weight: 700; }
+.ll-none { margin: 4px 0 0; font-size: .88rem; }
+.answer { margin-top: 8px; background: #f6f7fb; border-radius: 8px; padding: 10px 12px; }
+.answer p { margin: 4px 0; font-size: .92rem; }
+.answer-text { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+.answer-card { margin-bottom: 12px; }
+.answer-card header { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-bottom: 6px; }
+.answer-card .answer-text { background: #f6f7fb; border-radius: 8px; padding: 10px 12px; margin: 8px 0 0; }
+.danger-zone { border: 1px solid var(--danger) !important; }
+.danger-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+.pager { display: flex; gap: 14px; align-items: center; justify-content: center; margin: 18px 0; }
+.spark { display: flex; align-items: flex-end; gap: 4px; height: 110px; margin-top: 8px; }
+.spark-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; }
+.spark-col i { display: block; width: 100%; background: var(--indigo); border-radius: 4px 4px 0 0; }
+.spark-col small, .spark-n { font-size: .68rem; color: #5d6784; }
