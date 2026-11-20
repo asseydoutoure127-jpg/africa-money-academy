@@ -1053,3 +1053,17 @@ table { border-radius: 14px; }
   body:has(.admin-area) { padding-bottom: 24px; }
 }
 .admin-banner { border-radius: 0 0 var(--r-lg) var(--r-lg); }
+
+/* Corrections après relecture des vraies pages */
+input:not([type]), input[type=search] { border-radius: 16px; border: 1.5px solid transparent; background: #fff; box-shadow: 0 1px 6px rgba(27, 42, 92, .1); min-height: 52px; padding-left: 18px; }
+.faq-list details.faq { border: 0; border-radius: var(--r-lg); box-shadow: var(--shadow); }
+.faq-list details.faq[open] { box-shadow: 0 0 0 2px var(--saffron), var(--shadow); }
+.faq-list summary, .faq summary { display: block; padding: 16px 38px 16px 2px; min-height: 0; }
+.faq-list summary::after { right: 6px; }
+.pcard.course-card::before { background: linear-gradient(180deg, rgba(15, 24, 56, .05) 0%, rgba(15, 24, 56, .6) 38%, rgba(15, 24, 56, .94) 100%); }
+.pcard.course-card .pc-body p:first-of-type { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pcard.course-card { min-height: 380px; }
+.pcard .pc-body h2, .pcard .pc-body h3 { text-shadow: 0 1px 8px rgba(15, 24, 56, .5); }
+.how-steps { margin-bottom: 8px; }
+main h2 { margin-top: 1.6em; }
+.card > h2:first-child, .sec-title h2, .hero-app h2, .pcard h2, .promo-ref h2 { margin-top: 0; }
