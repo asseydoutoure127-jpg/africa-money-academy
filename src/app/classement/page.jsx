@@ -46,7 +46,7 @@ export default async function Classement() {
 
         <div className="podium" aria-label="Les trois premiers">
           {[2, 1, 3].map((n) => {
-            const r = top.find((x) => x.rank === n && x.points > 0);
+            const r = top.find((x) => x.rank === n);
             return (
               <div key={n} className={`pd p${n}${r ? '' : ' empty'}`}>
                 <div className="pav">{r ? r.name.charAt(0).toUpperCase() : '?'}</div>
