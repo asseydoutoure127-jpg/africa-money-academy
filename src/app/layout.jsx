@@ -34,7 +34,7 @@ export async function generateMetadata() {
     twitter: { card: 'summary_large_image', images: ['/og.png'] },
     applicationName: 'Waypoint',
     appleWebApp: { capable: true, title: 'Waypoint', statusBarStyle: 'black-translucent' },
-    icons: { icon: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }, { url: '/icon.svg', type: 'image/svg+xml' }], apple: '/icons/apple-touch-icon.png' },
+    icons: { icon: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }], apple: '/icons/apple-touch-icon.png' },
     description: 'Apprenez pas à pas à gagner de l’argent sur Internet, en partant de zéro. Formations écrites en français, pensées pour le téléphone.',
   };
 }

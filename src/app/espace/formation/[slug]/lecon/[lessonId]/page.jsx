@@ -60,7 +60,7 @@ export default async function LessonPage({ params, searchParams }) {
         <article className="paper">
           <header className="paper-head">
             <div className="paper-brand">
-              <img src="/logo-mark.svg" alt="" width="26" height="26" />
+              <img src="/brand/mark.png" alt="" width="48" height="26" />
               <span>Waypoint</span>
             </div>
             <p className="paper-kicker">
@@ -117,7 +117,7 @@ export default async function LessonPage({ params, searchParams }) {
               </section>
             )}
             <p className="licence">
-              <img src="/logo-mark.svg" alt="" width="22" height="22" />
+              <img src="/brand/mark.png" alt="" width="40" height="22" />
               <span>
                 © Waypoint · Africa Money Academy. Leçon réservée à {user.email}. Toute copie, diffusion ou revente est interdite et peut
                 donner lieu à des poursuites.

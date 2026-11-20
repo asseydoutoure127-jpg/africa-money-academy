@@ -14,7 +14,8 @@ export default async function Footer() {
       <div className="pattern" aria-hidden="true" />
       <div className="wrap footer-grid">
         <div className="footer-brand">
-          <span className="footer-name">{siteName}</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="footer-logo" src="/brand/lockup-light.png" alt={siteName} width="190" height="124" />
           <p>Apprendre à gagner de l’argent, pas à pas, en français et depuis votre téléphone.</p>
           <p className="footer-by">Une application d’Africa Money Academy.</p>
         </div>

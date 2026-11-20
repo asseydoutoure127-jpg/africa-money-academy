@@ -16,8 +16,11 @@ export default async function Header() {
   return (
     <header className="site-header">
       <div className="wrap">
-        <Link href="/" className="brand">
-          <b>{siteName}</b>
+        <Link href="/" className="brand" aria-label={siteName}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-mark" src="/brand/mark-sm.png" alt="" width="52" height="28" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-word" src="/brand/wordmark-sm.png" alt={siteName} width="134" height="18" />
         </Link>
         {user && (
           <Link href="/espace/profil" className="avatar" aria-label="Mon profil">
