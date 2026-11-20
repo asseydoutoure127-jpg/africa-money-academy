@@ -1072,3 +1072,12 @@ input:not([type]), input[type=search] { border-radius: 16px; border: 1.5px solid
 .excerpt-cta .btn { width: 100%; max-width: 420px; }
 .footer-name { display: block; font: 700 1.9rem/1.1 var(--font-title, system-ui); font-style: italic; color: #fff; }
 .footer-by { font-size: .85rem; opacity: .75; }
+
+/* Nom de l'application : écriture soignée */
+.brand { font-size: 1.28rem; gap: 10px; }
+.brand b { font-style: normal; font-weight: 800; letter-spacing: -.025em; }
+@media (max-width: 859px) { .brand { font-size: 1.2rem; gap: 9px; } .brand::before { width: 32px; height: 32px; } }
+.site-footer .footer-grid { padding-top: 38px; }
+.footer-name { display: inline-flex; align-items: center; gap: 10px; font: 800 1.7rem/1 var(--font-title, system-ui); font-style: normal; letter-spacing: -.025em; color: #fff; }
+.footer-name::before { content: ''; width: 34px; height: 34px; background: url(/logo-mark.svg) center / contain no-repeat; }
+.footer-brand p { margin-top: 14px; }
