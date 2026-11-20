@@ -155,22 +155,6 @@ export default async function Home({ searchParams }) {
           </div>
         </section>
 
-        <section className="section ref-feature">
-          <div className="wrap split">
-            <div>
-              <span className="badge gold">Parrainage</span>
-              <h2>Invitez un ami. Gagnez 50 %.</h2>
-              <p className="muted">Chaque compte a un lien personnel. Quand un ami s’inscrit avec votre lien puis achète une formation, vous recevez la moitié du prix.</p>
-              <p className="ref-example"><span>Un ami achète une formation à 10 000 FCFA</span><strong>Vous gagnez 5 000 FCFA</strong></p>
-              <Link className="btn gold" href="/parrainage">Voir comment ça marche</Link>
-            </div>
-            <div className="ref-visual">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={PHOTOS.amis.l} alt="Des amis regardent ensemble un téléphone et un ordinateur" loading="lazy" width="1400" height="781" />
-            </div>
-          </div>
-        </section>
-
         <section className="section">
           <div className="wrap faq-box" style={{ maxWidth: 820 }}>
             <h2>Questions fréquentes</h2>
@@ -186,6 +170,22 @@ export default async function Home({ searchParams }) {
               <Link className="btn gold" href="/inscription">
                 Créer mon compte
               </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section ref-feature">
+          <div className="wrap split">
+            <div>
+              <span className="badge gold">Parrainage</span>
+              <h2>Invitez un ami. Gagnez 50 %.</h2>
+              <p className="muted">Chaque compte a un lien personnel. Quand un ami s’inscrit avec votre lien puis achète une formation, vous recevez la moitié du prix.</p>
+              <p className="ref-example"><span>Un ami achète une formation à 10 000 FCFA</span><strong>Vous gagnez 5 000 FCFA</strong></p>
+              <Link className="btn gold" href="/parrainage">Voir comment ça marche</Link>
+            </div>
+            <div className="ref-visual">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={PHOTOS.amis.l} alt="Des amis regardent ensemble un téléphone et un ordinateur" loading="lazy" width="1400" height="781" />
             </div>
           </div>
         </section>

@@ -27,7 +27,6 @@ export default async function Header() {
         )}
         <nav className="nav" aria-label="Menu principal">
           <Link href="/formations">Formations</Link>
-          <Link href="/parrainage">Parrainage</Link>
           {user ? (
             <>
               <Link href="/espace">Mon espace</Link>
