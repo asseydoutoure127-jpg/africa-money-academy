@@ -1,4 +1,5 @@
 // Assemble ce dont les traitements ont besoin : base, adresse du site, envoi d'e-mails, client Chariow.
+import { cache } from 'react';
 import { getDb } from './db.js';
 import * as store from './store.js';
 import { getSetting } from './settings.js';
@@ -14,9 +15,8 @@ export function getSiteUrl(env = process.env) {
   return raw.replace(/\/+$/, '');
 }
 
-export async function getSiteName(db) {
-  return (await getSetting(db, 'site_name')) || 'Africa Money Academy';
-}
+// Mis en cache le temps d'une requête : l'en-tête, le pied de page et le titre le demandent chacun.
+export const getSiteName = cache(async (db) => (await getSetting(db, 'site_name')) || 'Africa Money Academy');
 
 const MAIL_FAILURES = {
   not_configured: "Aucun service d'e-mails n'est configuré : un e-mail n'a pas pu partir. Renseignez la clé Resend et l'adresse d'expéditeur dans Réglages > Connexions.",
