@@ -3,7 +3,7 @@ import CourseCard from '@/components/CourseCard.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 
-export const metadata = { title: 'Formations', description: 'Toutes les formations Africa Money Academy.' };
+export const metadata = { title: 'Formations', description: 'Toutes les formations Waypoint.' };
 
 export default async function Catalogue() {
   const db = getDb();

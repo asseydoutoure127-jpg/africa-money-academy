@@ -1070,3 +1070,5 @@ input:not([type]), input[type=search] { border-radius: 16px; border: 1.5px solid
 .excerpt-fade { height: 120px; margin-top: -120px; position: relative; background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff); pointer-events: none; }
 .excerpt-cta { margin-top: 18px; text-align: center; }
 .excerpt-cta .btn { width: 100%; max-width: 420px; }
+.footer-name { display: block; font: 700 1.9rem/1.1 var(--font-title, system-ui); font-style: italic; color: #fff; }
+.footer-by { font-size: .85rem; opacity: .75; }

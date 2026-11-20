@@ -6,19 +6,18 @@ import { logout } from '@/app/actions/auth.js';
 
 export default async function Header() {
   let user = null;
-  let siteName = 'Africa Money Academy';
+  let siteName = 'Waypoint';
   try {
     user = await getCurrentUser();
     siteName = await getSiteName(getDb());
   } catch {
     // Base indisponible : le site affiche quand même l'en-tête.
   }
-  const [first, ...rest] = siteName.split(' ');
   return (
     <header className="site-header">
       <div className="wrap">
         <Link href="/" className="brand">
-          <b>{first}</b>&nbsp;{rest.join(' ')}
+          <b>{siteName}</b>
         </Link>
         {user && (
           <Link href="/espace/profil" className="avatar" aria-label="Mon profil">

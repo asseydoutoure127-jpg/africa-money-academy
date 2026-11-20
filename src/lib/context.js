@@ -16,7 +16,7 @@ export function getSiteUrl(env = process.env) {
 }
 
 // Mis en cache le temps d'une requête : l'en-tête, le pied de page et le titre le demandent chacun.
-export const getSiteName = cache(async (db) => (await getSetting(db, 'site_name')) || 'Africa Money Academy');
+export const getSiteName = cache(async (db) => (await getSetting(db, 'site_name')) || 'Waypoint');
 
 const MAIL_FAILURES = {
   not_configured: "Aucun service d'e-mails n'est configuré : un e-mail n'a pas pu partir. Renseignez la clé Resend et l'adresse d'expéditeur dans Réglages > Connexions.",

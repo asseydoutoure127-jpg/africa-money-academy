@@ -38,7 +38,7 @@ export default async function LessonPage({ params, searchParams }) {
   const prev = idx > 0 && flat[idx - 1].unlocked ? flat[idx - 1] : null;
   const next = idx < flat.length - 1 && flat[idx + 1].unlocked ? flat[idx + 1] : null;
   const base = `/espace/formation/${slug}`;
-  const mark = `${user.email} · Africa Money Academy`;
+  const mark = `${user.email} · Waypoint`;
 
   const answer = lesson.exercise?.trim() ? await store.getExerciseAnswer(db, user.id, lessonId) : null;
   const words = String(lesson.content || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '').split(/\s+/).filter(Boolean).length;
@@ -61,7 +61,7 @@ export default async function LessonPage({ params, searchParams }) {
           <header className="paper-head">
             <div className="paper-brand">
               <img src="/logo-mark.svg" alt="" width="26" height="26" />
-              <span>Africa Money Academy</span>
+              <span>Waypoint</span>
             </div>
             <p className="paper-kicker">
               Leçon {lessonNumber} sur {flat.length} · {moduleLabel}
@@ -119,7 +119,7 @@ export default async function LessonPage({ params, searchParams }) {
             <p className="licence">
               <img src="/logo-mark.svg" alt="" width="22" height="22" />
               <span>
-                © Africa Money Academy. Leçon réservée à {user.email}. Toute copie, diffusion ou revente est interdite et peut
+                © Waypoint · Africa Money Academy. Leçon réservée à {user.email}. Toute copie, diffusion ou revente est interdite et peut
                 donner lieu à des poursuites.
               </span>
             </p>

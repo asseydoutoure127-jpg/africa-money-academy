@@ -32,7 +32,7 @@ export default async function Parrainage() {
   }
   const buyers = filleuls.filter((f) => f.achats.length > 0).length;
   const shareText = refLink
-    ? `Je te recommande Africa Money Academy : des formations simples, en français, pour gagner de l’argent à partir de ton téléphone. Inscris-toi avec mon lien : ${refLink}`
+    ? `Je te recommande Waypoint : des formations simples, en français, pour gagner de l’argent à partir de ton téléphone. Inscris-toi avec mon lien : ${refLink}`
     : '';
 
   return (

@@ -4,7 +4,7 @@ import Icon from '@/components/Icon.jsx';
 
 export const metadata = {
   title: 'Installer l’application',
-  description: 'Ajoutez Africa Money Academy sur l’écran d’accueil de votre téléphone, en 3 gestes.',
+  description: 'Ajoutez Waypoint sur l’écran d’accueil de votre téléphone, en 3 gestes.',
 };
 
 export default function Installer() {

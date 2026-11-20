@@ -3,7 +3,7 @@ import { getDb } from '@/lib/db.js';
 import { getSiteName } from '@/lib/context.js';
 
 export default async function Footer() {
-  let siteName = 'Africa Money Academy';
+  let siteName = 'Waypoint';
   try {
     siteName = await getSiteName(getDb());
   } catch {
@@ -14,9 +14,9 @@ export default async function Footer() {
       <div className="pattern" aria-hidden="true" />
       <div className="wrap footer-grid">
         <div className="footer-brand">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-clair.svg" alt={siteName} width="200" height="40" />
+          <span className="footer-name">{siteName}</span>
           <p>Apprendre à gagner de l’argent, pas à pas, en français et depuis votre téléphone.</p>
+          <p className="footer-by">Une application d’Africa Money Academy.</p>
         </div>
         <nav aria-label="Formations">
           <strong>Apprendre</strong>

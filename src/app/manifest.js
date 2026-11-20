@@ -1,8 +1,8 @@
 // Fichier qui permet d'installer le site comme une application sur le téléphone.
 export default function manifest() {
   return {
-    name: 'Africa Money Academy',
-    short_name: 'Money Academy',
+    name: 'Waypoint',
+    short_name: 'Waypoint',
     description: 'Formations en français pour apprendre à gagner de l’argent, pas à pas, depuis votre téléphone.',
     lang: 'fr',
     start_url: '/?source=app',
