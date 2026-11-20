@@ -942,3 +942,40 @@ h2 { font-weight: 700; }
 .pcard.course-card > img.bg { margin: 0; }
 .pcard .pc-top { margin: 0 !important; }
 @media (max-width: 859px) { .site-header .brand { white-space: nowrap; } .site-header .avatar ~ .nav a:not(.nav-admin), .site-header .avatar ~ .nav form { display: none !important; } }
+
+/* ---- Design v2 : habillage commun à toutes les pages ---- */
+.tag { text-decoration: none; }
+.card { border: 0; border-radius: var(--r-lg); padding: 20px; }
+.card.soft { background: #fff; }
+.card.gold { background: var(--saffron-soft); }
+input[type=text], input[type=email], input[type=password], input[type=tel], input[type=url], input[type=number], select, textarea { border-radius: 16px; border: 1.5px solid transparent; background: #fff; box-shadow: 0 1px 6px rgba(27, 42, 92, .1); min-height: 52px; padding-left: 18px; }
+textarea { min-height: 140px; padding-top: 14px; }
+input:focus, select:focus, textarea:focus { border-color: var(--indigo); }
+.btn.block { border-radius: var(--pill); min-height: 56px; }
+.badge { border-radius: var(--pill); }
+.page-head h1, main > .wrap > h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); }
+.module { border: 0; border-left: 0; border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 18px; }
+.module.locked { opacity: .75; box-shadow: none; }
+.lesson-list li { border-top: 1px solid var(--indigo-soft); }
+.lesson-list a, .lesson-list span.row-lesson { border-radius: 14px; padding: 8px 8px; }
+.wallet { display: flex; align-items: center; justify-content: space-between; margin: 12px 0 20px; padding: 22px 24px; border-radius: var(--r-xl); color: #fff; background: linear-gradient(135deg, var(--indigo-deep), var(--indigo-2)); box-shadow: var(--shadow-lift); }
+.wallet span { font-weight: 600; color: rgba(255, 255, 255, .85); }
+.wallet strong { font: 700 2.2rem/1 var(--font-title, system-ui); color: var(--saffron); }
+.shop-item { border-radius: var(--r-lg); }
+.program-module { border-radius: var(--r-lg); border: 0; box-shadow: var(--shadow); }
+.site-footer { border-radius: var(--r-xl) var(--r-xl) 0 0; margin-top: 30px; }
+.site-footer .pattern { display: none; }
+.where-start { border-radius: var(--r-lg); }
+.ref-hero { border-radius: 0 0 var(--r-xl) var(--r-xl); }
+.paper, .doc-page { border-radius: var(--r-lg); }
+.exercise { border-radius: var(--r-lg); }
+.persona article, .benefit, .panel { border-radius: var(--r-lg); }
+@media (max-width: 899px) {
+  .auth { padding: 0 0 24px; gap: 0; }
+  .auth-side { display: flex; flex-direction: column; justify-content: flex-end; min-height: 200px; padding: 26px 24px 48px; border-radius: 0 0 var(--r-xl) var(--r-xl); color: #fff; position: relative; overflow: hidden; background: var(--indigo-deep) url(/photos/amis-graphiques-s.jpg) center / cover; }
+  .auth-side::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 24, 56, .25), rgba(15, 24, 56, .88)); }
+  .auth-side > * { position: relative; }
+  .auth-side h2 { color: #fff; font-size: 1.7rem; margin: 0; }
+  .auth-side ul { display: none; }
+  .auth-main { background: var(--paper); margin-top: -28px; position: relative; border-radius: var(--r-xl) var(--r-xl) 0 0; padding: 26px 18px 10px; }
+}

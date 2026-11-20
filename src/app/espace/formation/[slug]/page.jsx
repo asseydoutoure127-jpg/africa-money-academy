@@ -5,6 +5,7 @@ import { requireUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress } from '@/lib/progress.js';
+import { photoForCourse } from '@/lib/photos.js';
 
 export const metadata = { title: 'Ma formation' };
 
@@ -23,22 +24,22 @@ export default async function CourseSpace({ params, searchParams }) {
   return (
     <main>
       <div className="wrap">
-        <p>
-          <Link href="/espace">← Mes formations</Link>
-        </p>
-        <h1>{course.title}</h1>
+        <article className="pcard" style={{ minHeight: 280, marginBottom: 18 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="bg" src={photoForCourse(slug)?.s || course.image_url || '/photos/groupe-s.jpg'} alt="" />
+          <div className="pc-top"><Link href="/espace" className="tag">← Accueil</Link><span className="tag gold">{progress.percent} %</span></div>
+          <div className="pc-body">
+            <h1 style={{ color: '#fff', fontSize: '1.45rem', margin: '0 0 8px' }}>{course.title}</h1>
+            <div className="pbar" aria-hidden="true"><span style={{ width: `${progress.percent}%` }} /></div>
+            <p>{progress.doneLessons} leçon{progress.doneLessons > 1 ? 's' : ''} terminée{progress.doneLessons > 1 ? 's' : ''} sur {progress.totalLessons}</p>
+            {progress.nextLesson && (
+              <Link className="btn go gold" href={`/espace/formation/${slug}/lecon/${progress.nextLesson.lessonId}`}>
+                {progress.doneLessons > 0 ? 'Continuer où j’en étais' : 'Commencer la formation'}
+              </Link>
+            )}
+          </div>
+        </article>
         <Flash code={sp.m} />
-        <div className="bar" aria-hidden="true">
-          <span style={{ width: `${progress.percent}%` }} />
-        </div>
-        <p className="muted">Progression : {progress.percent} %</p>
-        {progress.nextLesson && (
-          <p>
-            <Link className="btn gold" href={`/espace/formation/${slug}/lecon/${progress.nextLesson.lessonId}`}>
-              {progress.doneLessons > 0 ? 'Continuer où j’en étais' : 'Commencer la formation'}
-            </Link>
-          </p>
-        )}
         {progress.complete && <p className="flash ok">Bravo, vous avez terminé toutes les leçons !</p>}
         {progress.modules.length === 0 && <p className="muted">Le contenu arrive bientôt.</p>}
         {progress.modules.map((m, i) => (

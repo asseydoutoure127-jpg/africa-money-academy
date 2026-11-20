@@ -44,7 +44,7 @@ export default async function Inscription({ searchParams }) {
             </span>
           </label>
           <p style={{ marginTop: 18 }}>
-            <button className="btn gold block" type="submit">
+            <button className="btn gold block go" type="submit">
               Créer mon compte
             </button>
           </p>

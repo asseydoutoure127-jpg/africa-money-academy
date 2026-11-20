@@ -18,12 +18,11 @@ export default async function Boutique({ searchParams }) {
   return (
     <main>
       <div className="wrap" style={{ maxWidth: 960 }}>
-        <span className="badge gold">Boutique</span>
         <h1>Boutique</h1>
         <Flash code={sp.m} />
         <p className="lead">Chaque point que vous gagnez en apprenant vous rapporte aussi une pièce. Les pièces s’accumulent, elles ne sont jamais remises à zéro, et vous les échangez ici.</p>
         {user ? (
-          <p className="coin-balance card"><span>Vos pièces</span><strong>{balance}</strong></p>
+          <p className="coin-balance wallet"><span>Vos pièces</span><strong>{balance}</strong></p>
         ) : (
           <p><Link className="btn gold" href="/inscription">Créer un compte pour gagner des pièces</Link></p>
         )}

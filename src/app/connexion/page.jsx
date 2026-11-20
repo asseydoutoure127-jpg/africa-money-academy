@@ -33,7 +33,7 @@ export default async function Connexion({ searchParams }) {
           <input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />
           <PasswordField label="Mot de passe" autoComplete="current-password" />
           <p style={{ marginTop: 18 }}>
-            <button className="btn gold block" type="submit">
+            <button className="btn gold block go" type="submit">
               Me connecter
             </button>
           </p>
