@@ -110,7 +110,7 @@ export default async function LessonPage({ params, searchParams }) {
                       ? 'Vous avez déjà terminé cette leçon. Vous pouvez modifier votre réponse.'
                       : 'La leçon suivante s’ouvre dès que vous envoyez votre réponse.'}
                   </p>
-                  <button className="btn gold" type="submit">
+                  <button className="btn go gold" type="submit">
                     {found.lesson.done ? 'Mettre à jour ma réponse' : 'Envoyer ma réponse et terminer la leçon'}
                   </button>
                 </form>
@@ -132,20 +132,20 @@ export default async function LessonPage({ params, searchParams }) {
             ) : (
               <form action={markLessonDone}>
                 <input type="hidden" name="lessonId" value={lessonId} />
-                <button className="btn gold" type="submit">
+                <button className="btn go gold" type="submit">
                   J’ai terminé cette leçon
                 </button>
               </form>
             ))}
           {lesson.exercise?.trim() && found.lesson.done && <span className="badge">✓ Leçon terminée</span>}
           {prev && (
-            <Link className="btn ghost" href={`${base}/lecon/${prev.id}`}>
+            <Link className="btn ghost pill" href={`${base}/lecon/${prev.id}`}>
               ← Précédente
             </Link>
           )}
           {next ? (
-            <Link className="btn" href={`${base}/lecon/${next.id}`}>
-              Suivante →
+            <Link className="btn go" href={`${base}/lecon/${next.id}`}>
+              Leçon suivante
             </Link>
           ) : (
             idx < flat.length - 1 && !found.lesson.done && <span className="muted small">Terminez cette leçon pour ouvrir la suivante.</span>

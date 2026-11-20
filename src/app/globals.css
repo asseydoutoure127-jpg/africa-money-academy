@@ -979,3 +979,18 @@ input:focus, select:focus, textarea:focus { border-color: var(--indigo); }
   .auth-side ul { display: none; }
   .auth-main { background: var(--paper); margin-top: -28px; position: relative; border-radius: var(--r-xl) var(--r-xl) 0 0; padding: 26px 18px 10px; }
 }
+
+/* Page de leçon : feuille arrondie, lecture confortable sur téléphone */
+.doc-page { background: var(--paper); }
+.paper { border-top: 0; border-radius: var(--r-xl); box-shadow: var(--shadow-lift); padding: 24px 20px 30px; }
+.paper-brand { display: none; }
+.paper-kicker { font-weight: 700; color: var(--indigo); }
+.paper .prose { font-size: 1.08rem; line-height: 1.85; }
+.paper .prose img { border-radius: 18px; }
+.toc { border-radius: var(--r-lg); background: var(--indigo-soft); }
+.exercise { border: 0; border-radius: var(--r-lg); background: var(--saffron-soft); }
+.exercise textarea { min-height: 160px; }
+.lesson-nav { display: grid; gap: 10px; }
+.lesson-nav .btn { width: 100%; }
+.lesson-nav .badge { justify-self: start; }
+@media (min-width: 700px) { .lesson-nav { display: flex; flex-wrap: wrap; } .lesson-nav .btn { width: auto; } }
