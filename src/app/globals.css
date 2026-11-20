@@ -1041,3 +1041,15 @@ html { scroll-behavior: auto; }
 .benefit, .panel { border: 0; box-shadow: var(--shadow); }
 table { border-radius: 14px; }
 .page-head { margin-top: 6px; }
+
+/* Administration : même famille de formes, menu qui défile sur téléphone */
+.admin-area .card { border-radius: var(--r-lg); box-shadow: var(--shadow); }
+.admin-nav a { border: 0; border-radius: var(--pill); box-shadow: var(--shadow); padding: 8px 16px; }
+.admin-nav a:hover { background: var(--saffron-soft); }
+@media (max-width: 859px) {
+  .admin-nav { flex-wrap: nowrap; overflow-x: auto; margin-left: -18px; margin-right: -18px; padding: 2px 18px 8px; scrollbar-width: none; }
+  .admin-nav::-webkit-scrollbar { display: none; }
+  .admin-nav a { flex: none; }
+  body:has(.admin-area) { padding-bottom: 24px; }
+}
+.admin-banner { border-radius: 0 0 var(--r-lg) var(--r-lg); }
