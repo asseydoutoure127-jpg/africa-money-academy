@@ -90,6 +90,7 @@ export default async function CoursePage({ params, searchParams }) {
             ) : directUrl ? (
               <a className="btn go" href={directUrl} rel="noopener noreferrer">Acheter cette formation</a>
             ) : null}
+            {course.is_free && !hasAccess && <Link className="btn ghost pill" href={`/formations/${slug}/extrait`}>Lire un extrait</Link>}
             <a className="btn ghost pill" href="#programme">Voir le programme</a>
           </div>
           <ul className="trust">
