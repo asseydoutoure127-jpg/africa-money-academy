@@ -6,6 +6,14 @@ import * as store from '@/lib/store.js';
 import { requireUser } from '@/lib/auth.js';
 import { computeProgress, findUnlockedLesson } from '@/lib/progress.js';
 import { verifyMyPurchase } from '@/lib/chariow/reconcile.js';
+import { award, awardLessonDone, removeAward, safe, BAREME } from '@/lib/points.js';
+
+// Points après une leçon terminée (et bonus si la formation est finie).
+async function pointsForLessonDone(ctx, userId, lessonId, courseId) {
+  const modules = await store.listModulesWithLessons(ctx.db, courseId);
+  const after = computeProgress(modules, await store.listCompletedLessonIds(ctx.db, userId, courseId));
+  await awardLessonDone(ctx.db, { userId, lessonId, courseId, percentAfter: after.percent });
+}
 
 export async function markLessonDone(formData) {
   const ctx = getCtx();
@@ -26,6 +34,7 @@ export async function markLessonDone(formData) {
   if (String(lesson.exercise || '').trim()) redirect(`${base}/lecon/${lessonId}?m=exercice_requis#exercice`);
 
   await store.markLessonDone(ctx.db, user.id, lessonId);
+  await safe(() => pointsForLessonDone(ctx, user.id, lessonId, course.id));
   redirect(`${base}/lecon/${lessonId}?m=lecon_ok`);
 }
 
@@ -54,6 +63,13 @@ export async function submitExercise(formData) {
 
   await store.saveExerciseAnswer(ctx.db, user.id, lessonId, answer);
   await store.markLessonDone(ctx.db, user.id, lessonId);
+  await safe(async () => {
+    await award(ctx.db, { userId: user.id, kind: 'exercise', ref: lessonId, points: BAREME.exercise });
+    // Réponse modifiée : la validation tombe, donc les points de validation aussi (jusqu'à nouvelle validation).
+    const saved = await store.getExerciseAnswer(ctx.db, user.id, lessonId);
+    if (!saved?.validated_at) await removeAward(ctx.db, { userId: user.id, kind: 'validated', ref: lessonId });
+    await pointsForLessonDone(ctx, user.id, lessonId, course.id);
+  });
   redirect(`${base}/lecon/${lessonId}?m=exercice_ok`);
 }
 

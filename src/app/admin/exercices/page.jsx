@@ -44,7 +44,7 @@ export default async function Exercises({ searchParams }) {
           </header>
           {r.exercise && <p className="muted"><strong>Consigne :</strong> {r.exercise}</p>}
           <p className="answer-text">{r.answer}</p>
-          <ValidateExercise userId={r.user_id} lessonId={r.lesson_id} validatedAt={r.validated_at} feedback={r.feedback} back={link(page)} />
+          <ValidateExercise userId={r.user_id} lessonId={r.lesson_id} validatedAt={r.validated_at} feedback={r.feedback} grade={r.grade} back={link(page)} />
         </article>
       ))}
       {pages > 1 && (

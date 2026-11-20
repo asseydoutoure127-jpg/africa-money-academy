@@ -7,6 +7,7 @@ import { computeProgress } from '@/lib/progress.js';
 import { resendVerification } from '@/app/actions/auth.js';
 import { enrollFree } from '@/app/actions/learn.js';
 import { ensureReferralCode, countReferred } from '@/lib/referral.js';
+import { touchDaily, safe, myStanding, coinBalance, currentStreak, periodOf } from '@/lib/points.js';
 
 export const metadata = { title: 'Mon espace' };
 
@@ -14,7 +15,11 @@ export default async function Espace({ searchParams }) {
   const sp = await searchParams;
   const user = await requireUser('/espace');
   const db = getDb();
+  await safe(() => touchDaily(db, user.id));
   const enrollments = await store.listUserEnrollments(db, user.id);
+  const standing = await safe(() => myStanding(db, user.id, periodOf()));
+  const coins = (await safe(() => coinBalance(db, user.id))) ?? 0;
+  const streak = (await safe(() => currentStreak(db, user.id))) ?? 0;
   await ensureReferralCode(db, user.id);
   const referred = await countReferred(db, user.id);
   const rows = [];
@@ -54,6 +59,15 @@ export default async function Espace({ searchParams }) {
             </form>
           </div>
         )}
+        <section className="card points-card" aria-label="Mes points">
+          <div className="pc-grid">
+            <div><strong>{standing ? standing.points : 0}</strong><span>points ce mois-ci</span></div>
+            <div><strong>{standing ? `${standing.rank}ᵉ` : '—'}</strong><span>au classement</span></div>
+            <div><strong>{coins}</strong><span>pièces pour la boutique</span></div>
+            <div><strong>{streak} jour{streak > 1 ? 's' : ''}</strong><span>de suite sur le site</span></div>
+          </div>
+          <p style={{ margin: 0 }}><Link href="/classement">Voir le classement</Link> · <Link href="/boutique">Boutique</Link> · <Link href="/classement/reglement">Comment gagner des points</Link></p>
+        </section>
         {free && !freeStarted && (
           <section className="card gold start-card">
             <span className="badge gold">Commencez ici</span>

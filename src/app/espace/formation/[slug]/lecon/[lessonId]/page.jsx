@@ -8,6 +8,8 @@ import * as store from '@/lib/store.js';
 import { computeProgress, findUnlockedLesson, flattenLessons } from '@/lib/progress.js';
 import { markLessonDone, submitExercise } from '@/app/actions/learn.js';
 import { typo } from '@/lib/typo.js';
+import ReadingTimer from '@/components/ReadingTimer.jsx';
+import { award, touchDaily, safe, BAREME } from '@/lib/points.js';
 
 export const metadata = { title: 'Leçon' };
 
@@ -27,6 +29,10 @@ export default async function LessonPage({ params, searchParams }) {
   if (found.locked) redirect(`/espace/formation/${slug}?m=acces_verrouille`);
 
   const lesson = await store.getLesson(db, lessonId);
+  await safe(async () => {
+    await touchDaily(db, user.id);
+    await award(db, { userId: user.id, kind: 'lesson_open', ref: lessonId, points: BAREME.lessonOpen });
+  });
   const flat = flattenLessons(progress);
   const idx = flat.findIndex((l) => l.id === lessonId);
   const prev = idx > 0 && flat[idx - 1].unlocked ? flat[idx - 1] : null;
@@ -86,13 +92,14 @@ export default async function LessonPage({ params, searchParams }) {
                 <span key={i}>{mark}</span>
               ))}
             </div>
+            <ReadingTimer />
             <RichText text={lesson.content} />
             {lesson.exercise?.trim() && (
               <section className="exercise" id="exercice">
                 <h2>Exercice</h2>
                 <RichText text={lesson.exercise} />
                 {answer?.validated_at && (
-                  <p className="exercise-ok"><span className="badge ok">✓ Exercice validé par votre formateur</span>{answer.feedback ? <> <em>« {answer.feedback} »</em></> : null}</p>
+                  <p className="exercise-ok"><span className="badge ok">✓ Exercice validé{answer.grade !== null && answer.grade !== undefined ? ` · note ${answer.grade}/10` : ''}</span>{answer.feedback ? <> <em>« {answer.feedback} »</em></> : null}</p>
                 )}
                 <form action={submitExercise}>
                   <input type="hidden" name="lessonId" value={lessonId} />

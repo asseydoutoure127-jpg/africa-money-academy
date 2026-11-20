@@ -321,7 +321,7 @@ export async function listCompletedLessonIds(db, userId, courseId) {
 }
 
 export async function getExerciseAnswer(db, userId, lessonId) {
-  return first(await db.query(`select answer, submitted_at, updated_at, validated_at, feedback from lesson_exercises where user_id = $1 and lesson_id = $2`, [userId, lessonId]));
+  return first(await db.query(`select answer, submitted_at, updated_at, validated_at, feedback, grade from lesson_exercises where user_id = $1 and lesson_id = $2`, [userId, lessonId]));
 }
 
 export async function saveExerciseAnswer(db, userId, lessonId, answer) {
@@ -330,6 +330,7 @@ export async function saveExerciseAnswer(db, userId, lessonId, answer) {
      on conflict (user_id, lesson_id) do update set
        validated_at = case when lesson_exercises.answer is distinct from excluded.answer then null else lesson_exercises.validated_at end,
        validated_by = case when lesson_exercises.answer is distinct from excluded.answer then null else lesson_exercises.validated_by end,
+       grade = case when lesson_exercises.answer is distinct from excluded.answer then null else lesson_exercises.grade end,
        answer = excluded.answer, updated_at = now()`,
     [userId, lessonId, answer],
   );
@@ -731,7 +732,7 @@ export async function getLearnerDetail(db, userId) {
   const lessons = (
     await db.query(
       `select m.course_id, m.title as module_title, m.position as mpos, l.id, l.title, l.position as lpos, l.exercise,
-              p.completed_at, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.feedback
+              p.completed_at, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.feedback, x.grade
        from lessons l join modules m on m.id = l.module_id
        left join lesson_progress p on p.lesson_id = l.id and p.user_id = $1
        left join lesson_exercises x on x.lesson_id = l.id and x.user_id = $1
@@ -749,7 +750,7 @@ export async function listExerciseAnswers(db, { courseId = null, limit = 50, off
   if (courseId) { params.push(courseId); where = 'where c.id = $3'; }
   const rows = (
     await db.query(
-      `select x.user_id, x.lesson_id, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.feedback, u.name, u.email,
+      `select x.user_id, x.lesson_id, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.feedback, x.grade, u.name, u.email,
               l.title as lesson_title, l.exercise, c.title as course_title
        from lesson_exercises x join users u on u.id = x.user_id join lessons l on l.id = x.lesson_id
        join modules m on m.id = l.module_id join courses c on c.id = m.course_id
@@ -789,15 +790,16 @@ export async function activitySummary(db) {
 }
 
 // Valide (ou annule la validation d') la réponse d'un élève à un exercice.
-export async function setExerciseValidated(db, { userId, lessonId, adminId, validated, feedback = '' }) {
+export async function setExerciseValidated(db, { userId, lessonId, adminId, validated, feedback = '', grade = null }) {
   return first(
     await db.query(
       `update lesson_exercises
          set validated_at = case when $4::boolean then now() else null end,
              validated_by = case when $4::boolean then $3::uuid else null end,
-             feedback = case when $4::boolean then $5 else '' end
+             feedback = case when $4::boolean then $5 else '' end,
+             grade = case when $4::boolean then $6::smallint else null end
        where user_id = $1 and lesson_id = $2 returning user_id`,
-      [userId, lessonId, adminId, validated, feedback],
+      [userId, lessonId, adminId, validated, feedback, grade],
     ),
   );
 }

@@ -48,6 +48,10 @@ export const FLASH = {
 
   // Admin
   admin_ok: ['ok', 'Enregistré.'],
+  note_requise: ['err', 'Choisissez une note sur 10 pour valider l’exercice.'],
+  achat_ok: ['ok', 'Achat enregistré. Vos pièces ont été débitées.'],
+  achat_solde: ['err', 'Vous n’avez pas assez de pièces pour cet article.'],
+  achat_epuise: ['err', 'Cet article n’est plus disponible.'],
   admin_erreur: ['err', "L'opération a échoué. Vérifiez les informations."],
   admin_publie: ['ok', 'La formation est publiée.'],
   admin_sans_produit: ['err', "Impossible de publier : collez d'abord l'identifiant du produit Chariow, puis cliquez sur « Vérifier le produit »."],

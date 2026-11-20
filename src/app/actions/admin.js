@@ -11,6 +11,7 @@ import { reconcile } from '@/lib/chariow/reconcile.js';
 import { applyPaidSale } from '@/lib/chariow/sales.js';
 import { cleanText, slugify, validEmail, httpsUrlOrNull } from '@/lib/validate.js';
 import { PAGE_DEFAULTS } from '@/lib/defaults.js';
+import { award, removeAward, validatedPoints, safe } from '@/lib/points.js';
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const id = (formData, name = 'id') => {
@@ -268,8 +269,17 @@ export async function validateExercise(formData) {
   const dest = /^\/admin\/(exercices|apprenants)[A-Za-z0-9/?=&_-]*$/.test(back) ? back : '/admin/exercices';
   if (!userId || !lessonId) redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=admin_erreur`);
   const feedback = longText(formData, 'feedback', 600).trim();
-  const done = await store.setExerciseValidated(ctx.db, { userId, lessonId, adminId: admin.id, validated, feedback });
-  if (done) await store.logAdmin(ctx.db, { adminId: admin.id, action: validated ? 'exercise.validate' : 'exercise.unvalidate', target: userId, detail: { lessonId } });
+  const gradeRaw = String(formData.get('grade') ?? '');
+  const grade = /^(10|[0-9])$/.test(gradeRaw) ? Number(gradeRaw) : null;
+  // Valider demande une note sur 10 : le classement en dépend.
+  if (validated && grade === null) redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=note_requise`);
+  const done = await store.setExerciseValidated(ctx.db, { userId, lessonId, adminId: admin.id, validated, feedback, grade });
+  if (done) {
+    await safe(() => (validated
+      ? award(ctx.db, { userId, kind: 'validated', ref: lessonId, points: validatedPoints(grade), replace: true })
+      : removeAward(ctx.db, { userId, kind: 'validated', ref: lessonId })));
+  }
+  if (done) await store.logAdmin(ctx.db, { adminId: admin.id, action: validated ? 'exercise.validate' : 'exercise.unvalidate', target: userId, detail: { lessonId, grade } });
   redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=${done ? 'admin_ok' : 'admin_erreur'}`);
 }
 

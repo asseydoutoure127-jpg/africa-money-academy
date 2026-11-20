@@ -761,3 +761,33 @@ h2 { font-weight: 700; }
 .validate input[type="text"] { flex: 1; min-width: 200px; margin: 0; }
 .validate p { margin: 0; flex-basis: 100%; }
 .exercise-ok { margin: 10px 0; }
+
+/* ---------- Classement, points, boutique ---------- */
+.board-page { max-width: 820px; }
+.board-intro { margin: 18px 0; }
+.board { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 8px; }
+.board li { display: grid; grid-template-columns: 38px 1fr auto auto; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; }
+.board .rk { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--indigo-soft); color: var(--indigo); }
+.board .top1 .rk { background: var(--saffron); color: var(--indigo-deep); }
+.board .top2 .rk { background: #d9dcea; }
+.board .top3 .rk { background: #f0d2b0; }
+.board .me { border-color: var(--saffron); box-shadow: 0 0 0 3px var(--saffron-soft); }
+.board .nm { font-weight: 600; overflow-wrap: anywhere; }
+.board .pt { color: var(--indigo); white-space: nowrap; }
+@media (max-width: 520px) { .board li { grid-template-columns: 34px 1fr auto; } .board li .badge { display: none; } }
+.board-me { margin: 10px 0; }
+.board-hide { margin: 10px 0 22px; }
+.honor { margin-top: 30px; }
+.honor ul { padding-left: 18px; }
+.coin-balance { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; max-width: 320px; }
+.coin-balance strong { font-size: 1.8rem; color: var(--indigo); }
+.shop-grid { display: grid; gap: 14px; margin-top: 16px; }
+@media (min-width: 700px) { .shop-grid { grid-template-columns: repeat(3, 1fr); } }
+.shop-item h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.points-card { display: grid; gap: 10px; margin: 16px 0; }
+.points-card .pc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 640px) { .points-card .pc-grid { grid-template-columns: repeat(4, 1fr); } }
+.points-card .pc-grid div { background: var(--indigo-soft); border-radius: 12px; padding: 10px 12px; }
+.points-card .pc-grid strong { display: block; font-size: 1.4rem; color: var(--indigo); }
+.points-card .pc-grid span { font-size: .85rem; color: #4d566e; }
+.grade-select { width: auto; min-width: 110px; margin: 0; }

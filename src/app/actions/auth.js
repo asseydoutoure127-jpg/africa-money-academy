@@ -2,6 +2,7 @@
 // Actions de compte : inscription, connexion, e-mail, mot de passe, profil.
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { award, safe, BAREME } from '@/lib/points.js';
 import { getCtx } from '@/lib/context.js';
 import * as store from '@/lib/store.js';
 import { hashPassword, verifyPassword, newToken, hashToken } from '@/lib/crypto.js';
@@ -55,13 +56,15 @@ export async function signup(formData) {
     if (e?.code === '23505') back('compte_existe');
     throw e;
   }
+  await safe(() => award(ctx.db, { userId: user.id, kind: 'signup', points: BAREME.signup }));
   await sendVerification(ctx, user);
   // Parrainage : le lien /r/CODE a laissé un cookie. Une erreur ici ne doit jamais empêcher l'inscription.
   try {
     const jar = await cookies();
     const refCode = jar.get(REF_COOKIE)?.value;
     if (refCode) {
-      await registerReferral(ctx.db, user, refCode);
+      const referrer = await registerReferral(ctx.db, user, refCode);
+      if (referrer) await safe(() => award(ctx.db, { userId: referrer.id, kind: 'referral', ref: user.id, points: BAREME.referral }));
       jar.delete(REF_COOKIE);
     }
   } catch {
