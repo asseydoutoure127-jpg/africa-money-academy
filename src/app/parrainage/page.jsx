@@ -37,22 +37,22 @@ export default async function Parrainage() {
 
   return (
     <main style={{ padding: 0 }}>
-      <section className="ref-hero">
-        <div className="wrap">
-          <div>
-            <span className="badge gold">Parrainage</span>
-            <h1>Invitez vos amis. Gagnez 50 % à chaque achat.</h1>
-            <p className="lead">
-              Vous avez un lien personnel. Quand quelqu’un crée son compte avec ce lien, puis achète une formation payante, <strong>vous recevez la moitié du prix</strong>. Pas de limite, pas de frais pour vous.
-            </p>
+      <section className="hero hero-app ref-hero2">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="bg" src={PHOTOS.amis.l} alt="" fetchPriority="high" />
+        <div className="wrap hero-inner">
+          <span className="tag gold">Parrainage</span>
+          <h1>Invitez vos amis. Gagnez 50 % à chaque achat.</h1>
+          <p>
+            Vous avez un lien personnel. Quand quelqu’un crée son compte avec ce lien, puis achète une formation payante, <strong>vous recevez la moitié du prix</strong>. Pas de limite, pas de frais pour vous.
+          </p>
+          <div className="hero-cta">
             {user ? (
-              <a className="btn gold" href="#mon-lien">Voir mon lien</a>
+              <a className="btn go gold" href="#mon-lien">Voir mon lien</a>
             ) : (
-              <Link className="btn gold" href="/inscription?suite=/parrainage">Créer un compte pour avoir mon lien</Link>
+              <Link className="btn go gold" href="/inscription?suite=/parrainage">Créer un compte pour avoir mon lien</Link>
             )}
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={PHOTOS.amis.l} alt="Des amis regardent ensemble un téléphone et un ordinateur" width="1400" height="781" />
         </div>
       </section>
 
@@ -66,7 +66,7 @@ export default async function Parrainage() {
               <CopyButton value={refLink} />
             </div>
             <p style={{ marginBottom: 0 }}>
-              <a className="btn small" href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer">
+              <a className="btn go" href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer">
                 Envoyer sur WhatsApp
               </a>
             </p>

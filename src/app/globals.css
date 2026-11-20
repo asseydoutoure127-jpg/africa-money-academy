@@ -1020,3 +1020,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--indigo); }
 .sk-line.short { width: 60%; }
 @keyframes sk { to { background-position: -200% 0; } }
 html { scroll-behavior: auto; }
+
+/* Finitions communes */
+.hero-app.ref-hero2 { min-height: 520px; }
+.hero-app p strong { color: var(--saffron); }
+.promo-ref { display: flex; align-items: center; gap: 14px; margin: 18px 0 0; padding: 14px 16px; border-radius: var(--r-lg); background: var(--saffron); color: var(--indigo-deep); text-decoration: none; box-shadow: var(--shadow); }
+.promo-ref .ic { width: 48px; height: 48px; flex: none; border-radius: 50%; background: var(--indigo-deep); color: var(--saffron); display: flex; align-items: center; justify-content: center; }
+.promo-ref strong { display: block; line-height: 1.25; }
+.promo-ref small { display: block; font-size: .85rem; opacity: .85; }
+.ref-steps li, .ref-rules li { border: 0; box-shadow: var(--shadow); border-radius: var(--r-lg); }
+.ref-rules li { border-left: 0; }
+.ref-table-wrap { border: 0; border-radius: var(--r-lg); box-shadow: var(--shadow); }
+.faq, details.faq { background: #fff; border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 4px 16px; margin-bottom: 10px; border: 0; }
+.faq summary { min-height: 52px; display: flex; align-items: center; font-weight: 700; color: var(--indigo); cursor: pointer; }
+.copybox code { border-radius: 14px; }
+.notice { border-radius: var(--r-lg); }
+.flash { border-radius: var(--r-lg); }
+.strip { border-radius: 0; }
+.persona article { border: 0; box-shadow: var(--shadow); overflow: hidden; }
+.benefit, .panel { border: 0; box-shadow: var(--shadow); }
+table { border-radius: 14px; }
+.page-head { margin-top: 6px; }

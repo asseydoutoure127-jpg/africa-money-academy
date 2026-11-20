@@ -14,7 +14,7 @@ export default function BottomNav({ loggedIn }) {
       : { href: '/', label: 'Accueil', icon: 'home', match: (p) => p === '/' },
     { href: '/formations', label: 'Cours', icon: 'grid', match: (p) => p.startsWith('/formations') },
     { href: '/classement', label: 'Classement', icon: 'trophy', match: (p) => p.startsWith('/classement') },
-    ...(loggedIn ? [{ href: '/boutique', label: 'Boutique', icon: 'bag', match: (p) => p.startsWith('/boutique') }] : []),
+    { href: '/parrainage', label: 'Parrainage', icon: 'gift', match: (p) => p.startsWith('/parrainage') },
     loggedIn
       ? { href: '/espace/profil', label: 'Profil', icon: 'user', match: (p) => p.startsWith('/espace/profil') }
       : { href: '/connexion', label: 'Connexion', icon: 'user', match: (p) => p.startsWith('/connexion') || p.startsWith('/inscription') },

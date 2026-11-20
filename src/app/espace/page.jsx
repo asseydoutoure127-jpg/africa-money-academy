@@ -108,6 +108,11 @@ export default async function Espace({ searchParams }) {
           </article>
         ) : null}
 
+        <Link href="/parrainage" className="promo-ref">
+          <span className="ic"><Icon name="gift" size={26} /></span>
+          <span><strong>Parrainez vos amis, gagnez 50 %</strong><small>{referred === 0 ? 'Votre lien personnel vous attend.' : `${referred} ami${referred > 1 ? 's' : ''} inscrit${referred > 1 ? 's' : ''} avec votre lien.`}</small></span>
+        </Link>
+
         {week && (
           <>
             <div className="sec-title"><h2>Ma semaine</h2><span className="muted small">{streak} jour{streak > 1 ? 's' : ''} de suite</span></div>
