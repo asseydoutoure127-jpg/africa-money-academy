@@ -20,6 +20,11 @@ export default async function Header() {
         <Link href="/" className="brand">
           <b>{first}</b>&nbsp;{rest.join(' ')}
         </Link>
+        {user && (
+          <Link href="/espace/profil" className="avatar" aria-label="Mon profil">
+            {(user.name || '?').trim().charAt(0).toUpperCase()}
+          </Link>
+        )}
         <nav className="nav" aria-label="Menu principal">
           <Link href="/formations">Formations</Link>
           <Link href="/parrainage">Parrainage</Link>

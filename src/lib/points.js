@@ -100,6 +100,33 @@ export async function touchDaily(db, userId) {
   return { streak, bonus: bonus || 0 };
 }
 
+
+/** Semaine en cours (lundi à dimanche) : jours de visite + missions du jour, calculés sur les vrais événements. */
+export async function weekOverview(db, userId, now = new Date()) {
+  const today = dayOf(now);
+  const dow = (now.getUTCDay() + 6) % 7; // 0 = lundi
+  const monday = dayOf(new Date(Date.parse(`${today}T00:00:00Z`) - dow * 86400000));
+  const rows = (await db.query(
+    `select kind, ref, points from point_events where user_id = $1 and ((kind = 'login' and ref >= $2) or (kind in ('lesson_open','lesson_done','exercise','reading') and created_at >= $3::date))`,
+    [userId, monday, today],
+  )).rows;
+  const visited = new Set(rows.filter((r) => r.kind === 'login').map((r) => r.ref));
+  const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((label, i) => {
+    const d = dayOf(new Date(Date.parse(`${monday}T00:00:00Z`) + i * 86400000));
+    return { label, done: visited.has(d), today: d === today, future: d > today };
+  });
+  const todayRows = rows.filter((r) => r.kind !== 'login');
+  const has = (k) => todayRows.some((r) => r.kind === k);
+  const readPts = todayRows.filter((r) => r.kind === 'reading').reduce((a, r) => a + r.points, 0);
+  const missions = [
+    { key: 'visit', label: 'Venir sur le site', done: visited.has(today), value: visited.has(today) ? 1 : 0, goal: 1, reward: BAREME.login },
+    { key: 'open', label: 'Ouvrir une leçon', done: has('lesson_open'), value: has('lesson_open') ? 1 : 0, goal: 1, reward: BAREME.lessonOpen },
+    { key: 'done', label: 'Terminer une leçon', done: has('lesson_done'), value: has('lesson_done') ? 1 : 0, goal: 1, reward: BAREME.lessonDone },
+    { key: 'read', label: 'Lire 10 minutes', done: readPts >= 5, value: Math.min(10, readPts * 2), goal: 10, reward: 5, unit: 'min' },
+  ];
+  return { days, missions };
+}
+
 /** Leçon terminée : +20, et +100 si c'est la dernière de la formation. */
 export async function awardLessonDone(db, { userId, lessonId, courseId, percentAfter }) {
   await award(db, { userId, kind: 'lesson_done', ref: lessonId, points: BAREME.lessonDone });

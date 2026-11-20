@@ -5,39 +5,28 @@ import { photoForCourse } from '@/lib/photos.js';
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
 
 export default function CourseCard({ course, counts, upcoming = false }) {
-  const body = (
+  const img = photoForCourse(course.slug)?.s || course.image_url || '/photos/groupe-s.jpg';
+  const inner = (
     <>
-      <div className="thumb">
-        {(photoForCourse(course.slug) || course.image_url) && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={photoForCourse(course.slug)?.s || course.image_url} alt="" loading="lazy" decoding="async" width="720" height="402" />
-        )}
-        <div className="thumb-badges">
-          {course.is_free && <span className="badge gold">Gratuit · Commencez ici</span>}
-          {upcoming && <span className="badge grey">Bientôt disponible</span>}
-          <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>
-        </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="bg" src={img} alt="" loading="lazy" decoding="async" width="720" height="402" />
+      <div className="pc-top">
+        {course.is_free && <span className="tag gold">Gratuit</span>}
+        {upcoming && <span className="tag">Bientôt</span>}
+        <span className="tag">{LEVELS[course.level] || 'Débutant'}</span>
       </div>
-      <h3>{typo(course.title)}</h3>
-      <p className="grow muted">{course.summary}</p>
-      {counts && (
-        <ul className="stats-line" aria-label="Contenu de la formation">
-          <li><strong>{counts.modules}</strong> modules</li>
-          <li><strong>{counts.lessons}</strong> leçons</li>
-          <li><strong>{counts.pages}</strong> pages</li>
-        </ul>
-      )}
-      <div className="actions">
-        {!upcoming && !course.is_free && course.price_label && <span className="price">{course.price_label}</span>}
+      <div className="pc-body">
+        <h3>{typo(course.title)}</h3>
+        <p>{course.summary}</p>
+        {counts && <p style={{ fontSize: '.82rem', opacity: .85 }}>{counts.modules} modules · {counts.lessons} leçons</p>}
         {upcoming ? (
-          <span className="muted small">Ouverture prochainement</span>
+          <span className="tag">Ouverture prochainement</span>
         ) : (
-          <Link className="btn small" href={`/formations/${course.slug}`}>
-            Voir la formation
-          </Link>
+          <span className="btn go gold">{!course.is_free && course.price_label ? course.price_label : 'Voir la formation'}</span>
         )}
       </div>
     </>
   );
-  return <article className={`card course-card${course.is_free ? ' is-free' : ''}${upcoming ? ' is-upcoming' : ''}`}>{body}</article>;
+  const cls = `pcard course-card${upcoming ? ' is-upcoming' : ''}`;
+  return upcoming ? <article className={cls}>{inner}</article> : <Link className={cls} href={`/formations/${course.slug}`} style={{ textDecoration: 'none' }}>{inner}</Link>;
 }

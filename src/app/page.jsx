@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Flash from '@/components/Flash.jsx';
 import CourseCard from '@/components/CourseCard.jsx';
 import Carnet from '@/components/Carnet.jsx';
-import PhoneMock from '@/components/PhoneMock.jsx';
 import LessonMock from '@/components/LessonMock.jsx';
 import FaqAccordion from '@/components/FaqAccordion.jsx';
 import Icon from '@/components/Icon.jsx';
@@ -23,33 +22,25 @@ export default async function Home({ searchParams }) {
   const faq = await getPageText(db, 'faq');
   return (
     <>
-      <section className="hero">
-        <div className="wrap hero-grid">
-          <div>
-            <Flash code={sp.m} />
-            <h1>Apprenez à gagner de l’argent, en partant de zéro.</h1>
-            <p>
-              Des formations en français, avec des mots simples, à suivre depuis votre téléphone. Pas de promesse magique : des
-              méthodes concrètes, appliquées à votre quotidien.
-            </p>
-            <div className="actions">
-              <Link className="btn gold" href={freeCourse ? `/formations/${freeCourse.slug}` : '/formations'}>
-                {freeCourse ? 'Commencer gratuitement' : 'Voir les formations'}
-              </Link>
-              <Link className="btn ghost" href="/formations">
-                Voir les formations
-              </Link>
-            </div>
-            <ul className="hero-proof">
-              <li>Gratuit pour commencer</li>
-              <li>Prix affichés en FCFA</li>
-              <li>Un exercice à chaque leçon</li>
-            </ul>
-            <p className="install-hint"><Link href="/installer">Installer l’application sur mon téléphone</Link></p>
+      <section className="hero hero-app">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="bg" src={PHOTOS.groupe.l} alt="" fetchPriority="high" />
+        <div className="wrap hero-inner">
+          <Flash code={sp.m} />
+          <div className="chips-row">
+            <span className="tag">Gratuit pour commencer</span>
+            <span className="tag">Prix en FCFA</span>
           </div>
-          <PhoneMock />
+          <h1>Apprenez à gagner de l’argent, en partant de zéro.</h1>
+          <p>Des formations en français, avec des mots simples, à suivre depuis votre téléphone. Pas de promesse magique : des méthodes concrètes, appliquées à votre quotidien.</p>
+          <div className="hero-cta">
+            <Link className="btn go gold" href={freeCourse ? `/formations/${freeCourse.slug}` : '/formations'}>
+              {freeCourse ? 'Commencer gratuitement' : 'Voir les formations'}
+            </Link>
+            <Link className="btn ghost pill" href="/formations">Voir les formations</Link>
+          </div>
+          <p className="install-hint"><Link href="/installer">Installer l’application sur mon téléphone</Link></p>
         </div>
-        <div className="pattern" aria-hidden="true" />
       </section>
 
       <main style={{ padding: 0 }}>

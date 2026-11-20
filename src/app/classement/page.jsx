@@ -25,7 +25,6 @@ export default async function Classement() {
   return (
     <main>
       <div className="wrap board-page">
-        <span className="badge gold">Classement du mois</span>
         <h1>{monthLabel(period).replace(/^./, (c) => c.toUpperCase())}</h1>
         <section className="card gold board-intro">
           <h2 style={{ marginTop: 0 }}>Comment ça marche</h2>
@@ -45,12 +44,24 @@ export default async function Classement() {
           <p className="card">Personne n’a encore de points ce mois-ci. Soyez le premier : <Link href={user ? '/espace' : '/inscription'}>{user ? 'ouvrez une leçon' : 'créez votre compte'}</Link>.</p>
         ) : null}
 
-        <ol className="board" aria-label="Les dix premiers du classement">
-          {top.map((r) => (
-            <li key={r.id} className={`${me && r.id === me.id ? 'me' : ''} ${r.rank <= 3 ? `top${r.rank}` : ''}`}>
+        <div className="podium" aria-label="Les trois premiers">
+          {[2, 1, 3].map((n) => {
+            const r = top.find((x) => x.rank === n && x.points > 0);
+            return (
+              <div key={n} className={`pd p${n}${r ? '' : ' empty'}`}>
+                <div className="pav">{r ? r.name.charAt(0).toUpperCase() : '?'}</div>
+                <div className="nm">{r ? r.name : '—'}</div>
+                <div className="sc">{r ? `${r.points} pts` : ''}</div>
+                <div className="step">{n}</div>
+              </div>
+            );
+          })}
+        </div>
+        <ol className="board v2" aria-label="Le classement" start={4}>
+          {top.filter((r) => r.rank > 3).map((r) => (
+            <li key={r.id} className={me && r.id === me.id ? 'me' : ''}>
               <span className="rk">{r.rank}</span>
-              <span className="nm">{r.name}{me && r.id === me.id ? ' (vous)' : ''}</span>
-              <span className={`badge ${STATUS_CLASS[r.status] || ''}`}>{r.status}</span>
+              <span className="nm">{r.name}{me && r.id === me.id ? ' (vous)' : ''}<small>{r.status}</small></span>
               <strong className="pt">{r.points} pts</strong>
             </li>
           ))}

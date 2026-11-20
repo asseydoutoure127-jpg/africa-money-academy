@@ -46,61 +46,57 @@ export default async function CoursePage({ params, searchParams }) {
 
   return (
     <main style={{ padding: 0 }}>
-      <section className="sale-hero">
+      <section className="hero-photo">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="bg" src={photoForCourse(course.slug)?.l || (course.image_url || '/photos/groupe.jpg').replace('/cover-', '/scene-')} alt="" fetchPriority="high" />
         <div className="wrap">
-          <div>
-            <Flash code={sp.m} />
-            {course.status !== 'published' && <p className="notice" style={{ color: '#12172b' }}>Aperçu administrateur : cette formation n’est pas publiée (statut : {course.status}).</p>}
-            <div>
-              <span className="badge">{LEVELS[course.level] || 'Débutant'}</span>{' '}
-              {course.duration_label && <span className="badge">{course.duration_label}</span>}{' '}
-              {course.is_free && <span className="badge gold">Gratuit</span>}
-            </div>
-            <h1>{typo(course.title)}</h1>
-            {course.summary && <p style={{ fontSize: '1.08rem' }}>{course.summary}</p>}
-            <div className="price-row">
-              {course.is_free ? (
-                <div className="price-tag">Gratuit<small>Aucun paiement</small></div>
-              ) : course.price_label ? (
-                <div className="price-tag">{course.price_label}<small>Paiement unique, sécurisé</small></div>
-              ) : null}
-              {hasAccess ? (
-                <Link className="btn gold" href={`/espace/formation/${course.slug}`}>Accéder à la formation</Link>
-              ) : course.is_free ? (
-                user ? (
-                  <form action={enrollFree}>
-                    <input type="hidden" name="slug" value={course.slug} />
-                    <button className="btn gold" type="submit">S’inscrire gratuitement</button>
-                  </form>
-                ) : (
-                  <Link className="btn gold" href={`/inscription?suite=${encodeURIComponent(next)}`}>Commencer gratuitement</Link>
-                )
-              ) : course.purchase_mode === 'api' ? (
-                <Link className="btn gold" href={`/achat/${course.slug}`}>Acheter cette formation</Link>
-              ) : directUrl ? (
-                <a className="btn gold" href={directUrl} rel="noopener noreferrer">Acheter cette formation</a>
-              ) : null}
-              <a className="btn ghost" href="#programme">Voir le programme</a>
-            </div>
-            <ul className="trust">
-              <li>Accès ouvert automatiquement après paiement</li>
-              <li>Lisible sur téléphone</li>
-              <li>Exercices dans chaque leçon</li>
+          <Flash code={sp.m} />
+          {course.status !== 'published' && <p className="notice" style={{ color: '#12172b' }}>Aperçu administrateur : cette formation n’est pas publiée (statut : {course.status}).</p>}
+          <span className="tag">{LEVELS[course.level] || 'Débutant'}</span>{' '}
+          {course.duration_label && <span className="tag">{course.duration_label}</span>}{' '}
+          {course.is_free && <span className="tag gold">Gratuit</span>}
+          <h1>{typo(course.title)}</h1>
+        </div>
+      </section>
+      <section className="sheet">
+        <div className="wrap">
+          {counts && (
+            <ul className="statrow" aria-label="Contenu de la formation">
+              <li><strong>{counts.modules}</strong>modules</li>
+              <li><strong>{counts.lessons}</strong>leçons</li>
+              <li><strong>{counts.exercises}</strong>exercices</li>
             </ul>
-            {counts && (
-              <ul className="stats-line" aria-label="Contenu de la formation" style={{ marginTop: 18 }}>
-                <li><strong>{counts.modules}</strong> modules</li>
-                <li><strong>{counts.lessons}</strong> leçons</li>
-                <li><strong>{counts.exercises}</strong> exercices</li>
-                <li><strong>{counts.pages}</strong> pages</li>
-              </ul>
-            )}
-          </div>
-          {(photoForCourse(course.slug) || course.image_url) && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={photoForCourse(course.slug)?.l || course.image_url.replace('/cover-', '/scene-')} alt="" width="1400" height="781" />
           )}
-          <div className="pattern" aria-hidden="true" />
+          {course.summary && <p style={{ fontSize: '1.05rem' }}>{course.summary}</p>}
+          <div className="price-row sale-cta">
+            {course.is_free ? (
+              <div className="price-tag">Gratuit<small>Aucun paiement</small></div>
+            ) : course.price_label ? (
+              <div className="price-tag">{course.price_label}<small>Paiement unique, sécurisé</small></div>
+            ) : null}
+              {hasAccess ? (
+              <Link className="btn go" href={`/espace/formation/${course.slug}`}>Accéder à la formation</Link>
+            ) : course.is_free ? (
+              user ? (
+                <form action={enrollFree}>
+                  <input type="hidden" name="slug" value={course.slug} />
+                  <button className="btn go" type="submit">S’inscrire gratuitement</button>
+                </form>
+              ) : (
+                <Link className="btn go" href={`/inscription?suite=${encodeURIComponent(next)}`}>Commencer gratuitement</Link>
+              )
+            ) : course.purchase_mode === 'api' ? (
+              <Link className="btn go" href={`/achat/${course.slug}`}>Acheter cette formation</Link>
+            ) : directUrl ? (
+              <a className="btn go" href={directUrl} rel="noopener noreferrer">Acheter cette formation</a>
+            ) : null}
+            <a className="btn ghost pill" href="#programme">Voir le programme</a>
+          </div>
+          <ul className="trust">
+            <li>Accès ouvert automatiquement après paiement</li>
+            <li>Lisible sur téléphone</li>
+            <li>Exercices dans chaque leçon</li>
+          </ul>
         </div>
       </section>
 
