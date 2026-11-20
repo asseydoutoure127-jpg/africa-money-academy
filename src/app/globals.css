@@ -1065,5 +1065,4 @@ input:not([type]), input[type=search] { border-radius: 16px; border: 1.5px solid
 .pcard.course-card { min-height: 380px; }
 .pcard .pc-body h2, .pcard .pc-body h3 { text-shadow: 0 1px 8px rgba(15, 24, 56, .5); }
 .how-steps { margin-bottom: 8px; }
-main h2 { margin-top: 1.6em; }
-.card > h2:first-child, .sec-title h2, .hero-app h2, .pcard h2, .promo-ref h2 { margin-top: 0; }
+.how-steps + h2 { margin-top: 28px; }
