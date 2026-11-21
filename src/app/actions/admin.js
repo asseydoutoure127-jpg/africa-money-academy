@@ -60,6 +60,8 @@ export async function saveCourse(formData) {
     description: longText(formData, 'description'),
     objectives: longText(formData, 'objectives', 5000),
     outcome: longText(formData, 'outcome', 300),
+    next_slug: slugify(text(formData, 'next_slug', 120)),
+    next_pitch: longText(formData, 'next_pitch', 300),
     audience: longText(formData, 'audience', 3000),
     prerequisites: longText(formData, 'prerequisites', 3000),
     faq: longText(formData, 'faq', 10000),

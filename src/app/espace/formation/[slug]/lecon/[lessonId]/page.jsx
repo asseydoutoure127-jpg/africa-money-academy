@@ -5,6 +5,7 @@ import RichText, { slugifyHeading } from '@/components/RichText.jsx';
 import { requireUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
+import NextCourseCard from '@/components/NextCourseCard.jsx';
 import { computeProgress, findUnlockedLesson, flattenLessons } from '@/lib/progress.js';
 import { markLessonDone, submitExercise, confirmExerciseDone } from '@/app/actions/learn.js';
 import { typo } from '@/lib/typo.js';
@@ -27,6 +28,9 @@ export default async function LessonPage({ params, searchParams }) {
   const found = /^[0-9a-f-]{36}$/i.test(lessonId) ? findUnlockedLesson(progress, lessonId) : null;
   if (!found) notFound();
   if (found.locked) redirect(`/espace/formation/${slug}?m=acces_verrouille`);
+  // Formation gratuite : à la fin d'un module terminé, on propose la formation payante qui suit.
+  const lastOfModule = found.module.lessons[found.module.lessons.length - 1]?.id === lessonId;
+  const nextCourse = course.is_free && course.next_slug && lastOfModule && found.lesson.done ? await store.getCourseBySlug(db, course.next_slug) : null;
 
   const lesson = await store.getLesson(db, lessonId);
   await safe(async () => {
@@ -158,6 +162,7 @@ export default async function LessonPage({ params, searchParams }) {
             idx < flat.length - 1 && !found.lesson.done && <span className="muted small">Terminez cette leçon pour ouvrir la suivante.</span>
           )}
         </div>
+        {nextCourse && nextCourse.status === 'published' && <NextCourseCard course={nextCourse} pitch={course.next_pitch} finished={false} />}
       </div>
     </main>
   );

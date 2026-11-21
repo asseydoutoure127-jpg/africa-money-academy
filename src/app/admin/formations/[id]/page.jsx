@@ -37,6 +37,8 @@ export default async function EditCourse({ params, searchParams }) {
         <label htmlFor="slug">Adresse (dans le lien)</label><input id="slug" name="slug" type="text" defaultValue={course.slug} required />
         <label htmlFor="summary">Résumé court</label><textarea id="summary" name="summary" defaultValue={course.summary} maxLength={400} style={{ minHeight: 80 }} />
         <label htmlFor="outcome">Résultat concret à la fin (une phrase, sans promesse de gains)</label><textarea id="outcome" name="outcome" rows={2} defaultValue={course.outcome} />
+        <label htmlFor="next_slug">Formation à proposer ensuite (adresse, ex. vendre-sur-whatsapp-et-reseaux-sociaux)</label><input id="next_slug" name="next_slug" defaultValue={course.next_slug} />
+        <label htmlFor="next_pitch">Phrase d’invitation affichée à la fin d’un module</label><textarea id="next_pitch" name="next_pitch" rows={2} defaultValue={course.next_pitch} />
         <label htmlFor="objectives">Ce que l’on apprend (un point par ligne, commencez par « - »)</label><textarea id="objectives" name="objectives" defaultValue={course.objectives} />
         <label htmlFor="audience">À qui s’adresse la formation</label><textarea id="audience" name="audience" defaultValue={course.audience} style={{ minHeight: 80 }} />
         <label htmlFor="prerequisites">Prérequis</label><textarea id="prerequisites" name="prerequisites" defaultValue={course.prerequisites} style={{ minHeight: 80 }} />

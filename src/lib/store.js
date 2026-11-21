@@ -137,7 +137,7 @@ export async function purgeOldRateLimits(db) {
 
 // ============================ Formations ============================
 
-const COURSE_COLS = `id, slug, title, summary, description, objectives, outcome, audience, prerequisites, faq, image_url, level,
+const COURSE_COLS = `id, slug, title, summary, description, objectives, outcome, next_slug, next_pitch, audience, prerequisites, faq, image_url, level,
   duration_label, price_label, status, is_free, chariow_product_ref, chariow_product_id, chariow_product_url,
   purchase_mode, certificate_enabled, position, created_at, updated_at`;
 
@@ -210,7 +210,7 @@ export async function createCourse(db, { slug, title }) {
 }
 
 const COURSE_EDITABLE = [
-  'title', 'summary', 'description', 'objectives', 'outcome', 'audience', 'prerequisites', 'faq', 'image_url', 'level',
+  'title', 'summary', 'description', 'objectives', 'outcome', 'next_slug', 'next_pitch', 'audience', 'prerequisites', 'faq', 'image_url', 'level',
   'duration_label', 'price_label', 'is_free', 'chariow_product_ref', 'chariow_product_id', 'chariow_product_url',
   'purchase_mode', 'certificate_enabled', 'position', 'slug',
 ];

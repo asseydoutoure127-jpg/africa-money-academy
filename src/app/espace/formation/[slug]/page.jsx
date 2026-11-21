@@ -6,6 +6,7 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress } from '@/lib/progress.js';
 import { photoForCourse } from '@/lib/photos.js';
+import NextCourseCard from '@/components/NextCourseCard.jsx';
 
 export const metadata = { title: 'Ma formation' };
 
@@ -20,6 +21,7 @@ export default async function CourseSpace({ params, searchParams }) {
   if (!(await store.hasActiveAccess(db, user.id, course.id))) redirect(`/formations/${slug}`);
 
   const modules = await store.listModulesWithLessons(db, course.id);
+  const nextCourse = course.is_free && course.next_slug ? await store.getCourseBySlug(db, course.next_slug) : null;
   const progress = computeProgress(modules, await store.listCompletedLessonIds(db, user.id, course.id));
   return (
     <main>
@@ -41,6 +43,7 @@ export default async function CourseSpace({ params, searchParams }) {
         </article>
         <Flash code={sp.m} />
         {progress.complete && <p className="flash ok">Bravo, vous avez terminé toutes les leçons !</p>}
+        {progress.complete && nextCourse && nextCourse.status === 'published' && <NextCourseCard course={nextCourse} pitch={course.next_pitch} finished />}
         {progress.modules.length === 0 && <p className="muted">Le contenu arrive bientôt.</p>}
         {progress.modules.map((m, i) => (
           <section key={m.id} className={`module${m.unlocked ? '' : ' locked'}`}>
