@@ -20,7 +20,7 @@ export default async function Footer() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="footer-logo" src="/brand/lockup-light.png" alt={siteName} width="190" height="124" />
           <p>Apprendre à gagner de l’argent, pas à pas, en français et depuis votre téléphone.</p>
-          <p className="footer-by">Une application d’Africa Money Academy.</p>
+          <p className="footer-by">Waypoint est édité par Africa Money Academy.</p>
         </div>
         <nav aria-label="Formations">
           <strong>Apprendre</strong>

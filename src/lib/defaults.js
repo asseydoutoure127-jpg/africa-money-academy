@@ -171,7 +171,7 @@ Non. Les formations partent de zéro et utilisent des mots simples.
 
 # Combien de temps dure l'accès ?
 
-Vous gardez l'accès à la formation achetée avec votre compte.
+Il n'y a pas de date de fin prévue : tant que le site fonctionne et que votre compte est actif, vous gardez l'accès à la formation achetée. Nous ne promettons pas « à vie », parce qu'aucun site ne peut garantir qu'il existera toujours. Si un jour le site devait fermer, nous préviendrions les élèves par e-mail.
 
 # Je peux suivre depuis mon téléphone ?
 

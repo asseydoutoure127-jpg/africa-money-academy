@@ -1102,3 +1102,10 @@ input:not([type]), input[type=search] { border-radius: 16px; border: 1.5px solid
 /* Du gratuit au payant */
 .next-course { margin-top: 24px; }
 .next-course .next-kicker { font-weight: 700; margin: 0 0 6px; color: var(--indigo); }
+
+/* Aperçu de leçon à l'accueil : le bouton est dans la feuille, sous le fondu */
+.excerpt-cta.in-paper { margin-top: 0; padding: 0 4px 6px; position: relative; }
+.excerpt-fade { height: 70px; margin-top: -70px; }
+.strip-grid { grid-template-columns: repeat(3, 1fr); }
+.strip-grid > div:nth-child(odd) { border-left: 1px solid var(--line); }
+.strip-grid > div:first-child { border-left: 0; }

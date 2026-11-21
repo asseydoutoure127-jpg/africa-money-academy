@@ -9,7 +9,7 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { getPageText } from '@/lib/pages.js';
 import { PHOTOS, COURSE_PHOTOS } from '@/lib/photos.js';
-import { excerptOf } from '@/lib/excerpt.js';
+import { previewOf } from '@/lib/excerpt.js';
 import { typo } from '@/lib/typo.js';
 
 export default async function Home({ searchParams }) {
@@ -20,7 +20,7 @@ export default async function Home({ searchParams }) {
   const counts = await store.courseCounts(db, [...published, ...upcoming].map((c) => c.id));
   const courses = published;
   const freeCourse = published.find((c) => c.is_free) || null;
-  const total = [...counts.values()].reduce((a, c) => ({ lessons: a.lessons + c.lessons, exercises: a.exercises + c.exercises }), { lessons: 0, exercises: 0 });
+  const total = [...counts.values()].reduce((a, c) => ({ lessons: a.lessons + c.lessons, exercises: a.exercises + c.exercises, pages: a.pages + c.pages }), { lessons: 0, exercises: 0, pages: 0 });
   const faq = await getPageText(db, 'faq');
   let sample = null;
   if (freeCourse) {
@@ -29,7 +29,7 @@ export default async function Home({ searchParams }) {
       const first = mods.flatMap((m) => m.lessons || [])[0];
       if (first) {
         const l = await store.getLesson(db, first.id);
-        sample = { title: l.title, ...excerptOf(l.content) };
+        sample = { title: l.title, ...previewOf(l.content) };
       }
     } catch {
       sample = null;
@@ -61,9 +61,8 @@ export default async function Home({ searchParams }) {
         <section className="strip" aria-label="Ce que vous trouverez sur le site">
           <div className="wrap strip-grid">
             <div><Icon name="book" /><strong>{published.length} formations</strong><span>dont {published.filter((c) => c.is_free).length} gratuite</span></div>
-            <div><Icon name="check" /><strong>{total.lessons} leçons</strong><span>à lire à votre rythme</span></div>
-            <div><Icon name="pen" /><strong>{total.exercises} exercices</strong><span>à faire pour avancer</span></div>
-            <div><Icon name="coins" /><strong>Exemples en FCFA</strong><span>des situations que vous connaissez</span></div>
+            <div><Icon name="pen" /><strong>{total.lessons} leçons</strong><span>chacune avec un exercice</span></div>
+            <div><Icon name="check" /><strong>≈ {total.pages} pages</strong><span>de cours à lire sur téléphone</span></div>
           </div>
         </section>
 
@@ -134,8 +133,10 @@ export default async function Home({ searchParams }) {
                   <RichText text={sample.text} />
                 </div>
                 {sample.cut && <div className="excerpt-fade" aria-hidden="true" />}
+                <div className="excerpt-cta in-paper">
+                  <Link className="btn go gold" href={`/formations/${freeCourse.slug}/extrait`}>Lire la suite gratuitement</Link>
+                </div>
               </article>
-              <p><Link className="btn go gold" href={`/formations/${freeCourse.slug}/extrait`}>Lire la suite gratuitement</Link></p>
             </div>
           </section>
         )}
