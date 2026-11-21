@@ -16,7 +16,8 @@ export default async function Classement() {
   const db = getDb();
   const user = await getCurrentUser();
   const flags = await siteFlags(db);
-  if (!flags.rankingOpen) {
+  const isAdmin = user?.role === 'admin';
+  if (!flags.rankingOpen && !isAdmin) {
     return (
       <main>
         <div className="wrap board-page">
@@ -41,6 +42,9 @@ export default async function Classement() {
     <main>
       <div className="wrap board-page">
         <h1>{monthLabel(period).replace(/^./, (c) => c.toUpperCase())}</h1>
+        {!flags.rankingOpen && (
+          <p className="notice">Aperçu administrateur : ce classement est masqué aux visiteurs jusqu’à {RANKING_MIN_LEARNERS} élèves (il y en a {flags.learners}).</p>
+        )}
         <section className="card gold board-intro">
           <h2 style={{ marginTop: 0 }}>Comment ça marche</h2>
           <p>
