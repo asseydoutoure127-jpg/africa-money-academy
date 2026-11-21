@@ -166,7 +166,7 @@ export async function courseCounts(db, courseIds) {
               count(distinct m.id)::int as modules,
               count(l.id)::int as lessons,
               count(l.id) filter (where l.exercise <> '')::int as exercises,
-              coalesce(sum(array_length(regexp_split_to_array(trim(l.content), '\s+'), 1)), 0)::int as words
+              coalesce(sum(array_length(regexp_split_to_array(trim(l.content), '\\s+'), 1)), 0)::int as words
        from modules m left join lessons l on l.module_id = m.id
        where m.course_id = any($1::uuid[]) group by m.course_id`,
       [courseIds],
