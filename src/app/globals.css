@@ -1109,3 +1109,14 @@ input:not([type]), input[type=search] { border-radius: 16px; border: 1.5px solid
 .strip-grid { grid-template-columns: repeat(3, 1fr); }
 .strip-grid > div:nth-child(odd) { border-left: 1px solid var(--line); }
 .strip-grid > div:first-child { border-left: 0; }
+
+/* Admin : exercices lisibles (texte mis en forme, onglets de statut) */
+.ex-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
+.ex-tabs a { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--indigo); font-weight: 600; font-size: .9rem; text-decoration: none; }
+.ex-tabs a.on { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+.plain-rich p, .plain-rich ul { margin: 0 0 .6em; overflow-wrap: anywhere; }
+.plain-rich ul { padding-left: 1.2em; }
+.plain-rich.consigne { color: var(--muted); font-size: .92rem; border-left: 3px solid var(--line); padding-left: 10px; }
+.plain-rich.answer-text { background: var(--paper); border-radius: 10px; padding: 12px 14px; }
+.ex-label { margin: 8px 0 2px; font-weight: 700; }
+@media (max-width: 600px) { .admin-search { display: grid; gap: 8px; } .admin-search select, .admin-search input { width: 100%; } }

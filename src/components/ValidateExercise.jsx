@@ -1,4 +1,5 @@
 import { validateExercise } from '@/app/actions/admin.js';
+import ConfirmButton from '@/components/ConfirmButton.jsx';
 
 const fmt = (d) => new Date(d).toLocaleDateString('fr-FR', { timeZone: 'Africa/Bamako', day: 'numeric', month: 'short' });
 
@@ -14,7 +15,7 @@ export default function ValidateExercise({ userId, lessonId, validatedAt, feedba
         <>
           <p><span className="badge ok">✓ Validé le {fmt(validatedAt)}{grade !== null && grade !== undefined ? ` · note ${grade}/10` : ''}</span>{feedback ? <span className="muted"> Votre mot : « {feedback} »</span> : null}</p>
           <input type="hidden" name="validated" value="0" />
-          <button className="btn ghost small" type="submit">Annuler la validation</button>
+          <ConfirmButton className="btn ghost small" message="Annuler la validation ? L’exercice repasse « à corriger », la note est effacée et les points gagnés grâce à cette validation sont retirés à l’élève. L’action est notée dans le journal.">Annuler la validation</ConfirmButton>
         </>
       ) : (
         <>

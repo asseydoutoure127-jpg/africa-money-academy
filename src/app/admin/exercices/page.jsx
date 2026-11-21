@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Flash from '@/components/Flash.jsx';
+import PlainRich from '@/components/PlainRich.jsx';
 import ValidateExercise from '@/components/ValidateExercise.jsx';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
@@ -7,25 +8,37 @@ import { requireAdmin } from '@/lib/auth.js';
 
 const fmt = (d) => new Date(d).toLocaleString('fr-FR', { timeZone: 'Africa/Bamako', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 const UUID = /^[0-9a-f-]{36}$/i;
-const PAGE = 30;
+const PAGE = 20;
 
 export default async function Exercises({ searchParams }) {
   await requireAdmin();
   const sp = await searchParams;
   const db = getDb();
   const courseId = typeof sp.f === 'string' && UUID.test(sp.f) ? sp.f : null;
+  const status = sp.s === 'pending' || sp.s === 'validated' ? sp.s : '';
+  const q = typeof sp.q === 'string' ? sp.q.slice(0, 100) : '';
   const page = Math.max(1, Number.parseInt(typeof sp.p === 'string' ? sp.p : '1', 10) || 1);
-  const [courses, { rows, total }] = await Promise.all([
+  const [courses, { rows, total, counts }] = await Promise.all([
     store.listAllCourses(db),
-    store.listExerciseAnswers(db, { courseId, limit: PAGE, offset: (page - 1) * PAGE }),
+    store.listExerciseAnswers(db, { courseId, status, q, limit: PAGE, offset: (page - 1) * PAGE }),
   ]);
   const pages = Math.max(1, Math.ceil(total / PAGE));
-  const link = (p) => `/admin/exercices?${courseId ? `f=${courseId}&` : ''}p=${p}`;
+  const qs = (o) => { const u = new URLSearchParams(); const m = { f: courseId || '', s: status, q, ...o }; for (const [k, v] of Object.entries(m)) if (v) u.set(k, v); return u.toString(); };
+  const link = (p) => `/admin/exercices?${qs({ p })}`;
+  const tab = (s) => `/admin/exercices?${qs({ s, p: '' })}`;
   return (
     <>
       <h1>Exercices des élèves</h1>
       <Flash code={sp.m} />
+      <nav className="ex-tabs" aria-label="Statut">
+        <Link href={tab('pending')} className={status === 'pending' ? 'on' : ''}>À corriger ({counts.pending})</Link>
+        <Link href={tab('validated')} className={status === 'validated' ? 'on' : ''}>Validés ({counts.validated})</Link>
+        <Link href={tab('')} className={!status ? 'on' : ''}>Tous</Link>
+      </nav>
       <form method="get" className="admin-search">
+        {status && <input type="hidden" name="s" value={status} />}
+        <label htmlFor="q" className="sr-only">Chercher un élève</label>
+        <input id="q" name="q" type="search" placeholder="Nom ou e-mail de l’élève" defaultValue={q} />
         <label htmlFor="f" className="sr-only">Formation</label>
         <select id="f" name="f" defaultValue={courseId || ''}>
           <option value="">Toutes les formations</option>
@@ -33,7 +46,7 @@ export default async function Exercises({ searchParams }) {
         </select>
         <button className="btn small" type="submit">Filtrer</button>
       </form>
-      <p className="muted">{total} réponse{total > 1 ? 's' : ''}, les plus récentes d’abord.</p>
+      <p className="muted">{total} réponse{total > 1 ? 's' : ''} · {status === 'pending' ? 'à corriger' : status === 'validated' ? 'validée' + (total > 1 ? 's' : '') : 'au total'}, les non corrigées d’abord.</p>
       {rows.length === 0 && <div className="card"><p>Aucun exercice rendu pour l’instant. Dès qu’un élève en rend un, vous le lisez ici.</p></div>}
       {rows.map((r) => (
         <article className="card answer-card" key={`${r.user_id}-${r.lesson_id}`}>
@@ -42,8 +55,9 @@ export default async function Exercises({ searchParams }) {
             <span className="muted">{r.course_title} · {r.lesson_title}</span>
             <span className="muted">{fmt(r.updated_at)}</span>
           </header>
-          {r.exercise && <p className="muted"><strong>Consigne :</strong> {r.exercise}</p>}
-          <p className="answer-text">{r.answer}</p>
+          {r.exercise && <p className="muted ex-label">Consigne</p>}
+          {r.exercise && <PlainRich text={r.exercise} className="consigne" />}
+          <PlainRich text={r.answer} className="answer-text" />
           <ValidateExercise userId={r.user_id} lessonId={r.lesson_id} validatedAt={r.validated_at} feedback={r.feedback} grade={r.grade} back={link(page)} />
         </article>
       ))}

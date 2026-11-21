@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Flash from '@/components/Flash.jsx';
+import PlainRich from '@/components/PlainRich.jsx';
 import ValidateExercise from '@/components/ValidateExercise.jsx';
 import ConfirmButton from '@/components/ConfirmButton.jsx';
 import { getDb } from '@/lib/db.js';
@@ -50,8 +51,8 @@ export default async function LearnerPage({ params, searchParams }) {
                   </div>
                   {l.answer ? (
                     <div className="answer">
-                      {l.exercise && <p className="muted"><strong>Consigne :</strong> {l.exercise}</p>}
-                      <p className="answer-text">{l.answer}</p>
+                      {l.exercise && <PlainRich text={l.exercise} className="consigne" />}
+                      <PlainRich text={l.answer} className="answer-text" />
                       <ValidateExercise userId={user.id} lessonId={l.id} validatedAt={l.validated_at} feedback={l.feedback} grade={l.grade} back={`/admin/apprenants/${user.id}`} />
                       <p className="muted">Rendu le {fmt(l.submitted_at)}{l.updated_at && String(l.updated_at) !== String(l.submitted_at) ? ` · modifié le ${fmt(l.updated_at)}` : ''}</p>
                     </div>

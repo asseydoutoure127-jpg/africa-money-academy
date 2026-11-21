@@ -760,22 +760,28 @@ export async function getLearnerDetail(db, userId) {
 }
 
 // Toutes les réponses aux exercices, les plus récentes d'abord (filtre par formation possible).
-export async function listExerciseAnswers(db, { courseId = null, limit = 50, offset = 0 } = {}) {
-  const params = [limit, offset];
-  let where = '';
-  if (courseId) { params.push(courseId); where = 'where c.id = $3'; }
+export async function listExerciseAnswers(db, { courseId = null, status = '', q = '', limit = 50, offset = 0 } = {}) {
+  const params = [];
+  const conds = [];
+  if (courseId) { params.push(courseId); conds.push(`c.id = $${params.length}`); }
+  if (status === 'pending') conds.push('x.validated_at is null');
+  if (status === 'validated') conds.push('x.validated_at is not null');
+  const term = String(q || '').trim().toLowerCase();
+  if (term) { params.push(`%${term}%`); conds.push(`(lower(u.name) like $${params.length} or lower(u.email) like $${params.length})`); }
+  const where = conds.length ? `where ${conds.join(' and ')}` : '';
+  const from = `from lesson_exercises x join users u on u.id = x.user_id join lessons l on l.id = x.lesson_id
+       join modules m on m.id = l.module_id join courses c on c.id = m.course_id`;
   const rows = (
     await db.query(
       `select x.user_id, x.lesson_id, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.feedback, x.grade, u.name, u.email,
               l.title as lesson_title, l.exercise, c.title as course_title
-       from lesson_exercises x join users u on u.id = x.user_id join lessons l on l.id = x.lesson_id
-       join modules m on m.id = l.module_id join courses c on c.id = m.course_id
-       ${where} order by x.updated_at desc limit $1 offset $2`,
-      params,
+       ${from} ${where} order by (x.validated_at is null) desc, x.updated_at desc limit $${params.length + 1} offset $${params.length + 2}`,
+      [...params, limit, offset],
     )
   ).rows;
-  const total = Number(first(await db.query(`select count(*)::int as n from lesson_exercises x join lessons l on l.id = x.lesson_id join modules m on m.id = l.module_id join courses c on c.id = m.course_id ${courseId ? 'where c.id = $1' : ''}`, courseId ? [courseId] : [])).n);
-  return { rows, total };
+  const total = Number(first(await db.query(`select count(*)::int as n ${from} ${where}`, params)).n);
+  const counts = first(await db.query(`select count(*) filter (where x.validated_at is null)::int as pending, count(*) filter (where x.validated_at is not null)::int as validated from lesson_exercises x`));
+  return { rows, total, counts };
 }
 
 // Inscriptions des 14 derniers jours (pour le tableau de bord).
