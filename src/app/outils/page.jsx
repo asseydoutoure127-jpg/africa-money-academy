@@ -2,8 +2,8 @@ import Link from 'next/link';
 import Outils from '@/components/Outils.jsx';
 
 export const metadata = {
-  title: 'Boîte à outils : calculs gratuits en FCFA',
-  description: 'Trois petits outils gratuits : votre budget du mois, votre gain sur une vente, et le temps pour atteindre un objectif.',
+  title: 'Boîte à outils : 18 calculs gratuits en FCFA',
+  description: 'Budget, épargne, tontine, prix de vente, seuil de rentabilité, prêt, conversion, frais de transfert : des calculs gratuits en FCFA, faits sur votre téléphone.',
 };
 
 export default function OutilsPage() {

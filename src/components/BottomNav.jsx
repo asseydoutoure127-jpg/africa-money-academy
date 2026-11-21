@@ -13,6 +13,7 @@ export default function BottomNav({ loggedIn }) {
       ? { href: '/espace', label: 'Accueil', icon: 'home', match: (p) => p.startsWith('/espace') && !p.startsWith('/espace/profil') }
       : { href: '/', label: 'Accueil', icon: 'home', match: (p) => p === '/' },
     { href: '/formations', label: 'Cours', icon: 'grid', match: (p) => p.startsWith('/formations') },
+    { href: '/outils', label: 'Outils', icon: 'wrench', match: (p) => p.startsWith('/outils') },
     { href: '/classement', label: 'Classement', icon: 'trophy', match: (p) => p.startsWith('/classement') },
     loggedIn
       ? { href: '/espace/profil', label: 'Profil', icon: 'user', match: (p) => p.startsWith('/espace/profil') }

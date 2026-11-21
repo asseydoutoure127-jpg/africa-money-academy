@@ -1166,7 +1166,7 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 @media (max-width: 859px) {
   body { padding-bottom: 84px; }
   .bottom-nav {
-    left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; justify-content: stretch;
+    left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; justify-content: stretch;
     background: #fff; border: 0; border-top: 1px solid var(--line); border-radius: 0; box-shadow: none;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
   }
@@ -1179,3 +1179,49 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 
 /* Photos des formations : passées en noir et blanc pour rester dans l'identité noir / blanc / safran */
 .pcard > img.bg, .course-hero img, .photo-bw { filter: grayscale(1) contrast(1.06) brightness(.95); }
+
+/* Profil complet */
+.pf-hero { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 0 8px; }
+@media (min-width: 560px) { .pf-hero { grid-template-columns: repeat(4, 1fr); } }
+.pf-hero > div { background: #111; color: #fff; border-radius: var(--r-lg, 18px); padding: 16px 12px; text-align: center; }
+.pf-hero svg { color: var(--saffron); }
+.pf-hero strong { display: block; font: 700 1.6rem/1.1 var(--font-title, system-ui); }
+.pf-hero span { display: block; font-size: .8rem; color: #d6d6d6; margin-top: 3px; }
+.pf-note { margin: 4px 2px 0; font-size: .9rem; }
+.pf-h { font-size: 1.15rem; margin: 26px 2px 10px; }
+.pf-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 560px) { .pf-stats { grid-template-columns: repeat(4, 1fr); } }
+.pf-stats > div { background: #fff; border-radius: 16px; padding: 14px 12px; box-shadow: var(--shadow); }
+.pf-stats strong { display: block; font-size: 1.4rem; color: var(--indigo); line-height: 1.1; }
+.pf-stats span { font-size: .82rem; color: var(--muted); }
+.pf-course { display: block; background: #fff; border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow); text-decoration: none; color: var(--ink); margin-bottom: 10px; }
+.pf-course small { display: block; margin-top: 6px; }
+.pf-badges { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 560px) { .pf-badges { grid-template-columns: repeat(4, 1fr); } }
+.pf-badges li { background: #fff; border-radius: 16px; padding: 12px; box-shadow: var(--shadow); font-weight: 600; font-size: .9rem; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+.pf-badges li span { font-size: 1.2rem; }
+.pf-badges li small { font-weight: 400; font-size: .78rem; }
+.pf-badges li.on { background: var(--saffron-soft); color: var(--ink); border: 1px solid var(--saffron); }
+.pf-ex { margin-bottom: 10px; }
+.pf-fb { margin: 8px 0 0; padding: 10px 12px; background: var(--paper); border-left: 3px solid #111; border-radius: 8px; overflow-wrap: anywhere; }
+.pf-months > div { display: grid; grid-template-columns: 110px 1fr 48px; gap: 10px; align-items: center; padding: 6px 0; font-size: .92rem; }
+.pf-months .bar { background: var(--indigo-soft); border-radius: 99px; height: 10px; overflow: hidden; }
+.pf-months .bar i { display: block; height: 100%; background: #111; border-radius: 99px; }
+.pf-months strong { text-align: right; }
+.pf-feed { list-style: none; margin: 0; padding: 0; background: #fff; border-radius: 16px; box-shadow: var(--shadow); }
+.pf-feed li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.pf-feed li:last-child { border-bottom: 0; }
+.pf-feed small { display: block; color: var(--muted); }
+.pf-ref { display: flex; gap: 14px; align-items: center; text-decoration: none; color: var(--ink); }
+.pf-ref small { display: block; }
+
+@media (max-width: 859px) { .bottom-nav a { font-size: .68rem; } }
+
+/* Boîte à outils : familles et lignes */
+.tool-tabs { display: flex; gap: 8px; overflow-x: auto; margin: 12px -18px 4px; padding: 2px 18px 8px; scrollbar-width: none; }
+.tool-tabs::-webkit-scrollbar { display: none; }
+.tool-tabs button { flex: none; border: 0; border-radius: 999px; padding: 10px 16px; min-height: 44px; background: #fff; box-shadow: var(--shadow); color: var(--indigo); font: inherit; font-weight: 700; cursor: pointer; }
+.tool-tabs button.on { background: #111; color: #fff; }
+.tool-tabs small { opacity: .7; margin-left: 4px; }
+.tools-grid #budget { grid-column: auto; }
+.line2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }

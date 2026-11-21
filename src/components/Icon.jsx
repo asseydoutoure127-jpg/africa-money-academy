@@ -15,6 +15,7 @@ const PATHS = {
   grid: <><rect x="4" y="4" width="7" height="7" rx="1.800" /><rect x="13" y="4" width="7" height="7" rx="1.800" /><rect x="4" y="13" width="7" height="7" rx="1.800" /><rect x="13" y="13" width="7" height="7" rx="1.800" /></>,
   trophy: <><path d="M8 4h8v5a4 4 0 0 1-8 0z" /><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4" /><path d="M12 13v4M8.500 20h7M10 17h4" /></>,
   bag: <><path d="M5 8h14l-1 12H6z" /><path d="M9 8V7a3 3 0 0 1 6 0v1" /></>,
+  wrench: <path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.500-5.500a4 4 0 0 0 5-5l-2.500 2.500-2.500-.5-.5-2.500z" />,
   flame: <path d="M12 3c.5 3.500 5 5.500 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 1.500.700 2.200 1.500 2.500C10 9 11 5.500 12 3z" />,
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
   bell: <><path d="M6 16V11a6 6 0 0 1 12 0v5l1.500 2h-15z" /><path d="M10 20.500a2 2 0 0 0 4 0" /></>,
