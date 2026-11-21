@@ -58,6 +58,7 @@ export async function saveCourse(formData) {
     summary: text(formData, 'summary', 400),
     description: longText(formData, 'description'),
     objectives: longText(formData, 'objectives', 5000),
+    outcome: longText(formData, 'outcome', 300),
     audience: longText(formData, 'audience', 3000),
     prerequisites: longText(formData, 'prerequisites', 3000),
     faq: longText(formData, 'faq', 10000),

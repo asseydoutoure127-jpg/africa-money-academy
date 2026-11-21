@@ -73,6 +73,25 @@ export async function submitExercise(formData) {
   redirect(`${base}/lecon/${lessonId}?m=exercice_ok`);
 }
 
+/** « J'ai fait l'exercice » : pour qui a répondu sur papier ou ne peut pas écrire ici. Termine la leçon, sans points d'exercice. */
+export async function confirmExerciseDone(formData) {
+  const ctx = getCtx();
+  const lessonId = String(formData.get('lessonId') || '');
+  const user = await requireUser('/espace');
+  const lesson = /^[0-9a-f-]{36}$/i.test(lessonId) ? await store.getLesson(ctx.db, lessonId) : null;
+  if (!lesson) redirect('/espace');
+  const course = await store.getCourseById(ctx.db, lesson.course_id);
+  const base = `/espace/formation/${course.slug}`;
+  if (!(await store.hasActiveAccess(ctx.db, user.id, course.id))) redirect(`/formations/${course.slug}`);
+  const modules = await store.listModulesWithLessons(ctx.db, course.id);
+  const progress = computeProgress(modules, await store.listCompletedLessonIds(ctx.db, user.id, course.id));
+  const found = findUnlockedLesson(progress, lessonId);
+  if (!found || found.locked) redirect(`${base}?m=acces_verrouille`);
+  await store.markLessonDone(ctx.db, user.id, lessonId);
+  await safe(() => pointsForLessonDone(ctx, user.id, lessonId, course.id));
+  redirect(`${base}/lecon/${lessonId}?m=exercice_fait`);
+}
+
 export async function enrollFree(formData) {
   const ctx = getCtx();
   const slug = String(formData.get('slug') || '');

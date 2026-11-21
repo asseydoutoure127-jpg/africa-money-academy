@@ -18,6 +18,7 @@ export default function CourseCard({ course, counts, upcoming = false }) {
       <div className="pc-body">
         <h3>{typo(course.title)}</h3>
         <p>{course.summary}</p>
+        {course.outcome && <p className="pc-outcome"><strong>À la fin :</strong> {course.outcome}</p>}
         {counts && <p style={{ fontSize: '.82rem', opacity: .85 }}>{counts.modules} modules · {counts.lessons} leçons</p>}
         {upcoming ? (
           <span className="tag">Ouverture prochainement</span>

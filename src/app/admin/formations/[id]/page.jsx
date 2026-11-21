@@ -36,6 +36,7 @@ export default async function EditCourse({ params, searchParams }) {
         <label htmlFor="title">Titre</label><input id="title" name="title" type="text" defaultValue={course.title} required maxLength={150} />
         <label htmlFor="slug">Adresse (dans le lien)</label><input id="slug" name="slug" type="text" defaultValue={course.slug} required />
         <label htmlFor="summary">Résumé court</label><textarea id="summary" name="summary" defaultValue={course.summary} maxLength={400} style={{ minHeight: 80 }} />
+        <label htmlFor="outcome">Résultat concret à la fin (une phrase, sans promesse de gains)</label><textarea id="outcome" name="outcome" rows={2} defaultValue={course.outcome} />
         <label htmlFor="objectives">Ce que l’on apprend (un point par ligne, commencez par « - »)</label><textarea id="objectives" name="objectives" defaultValue={course.objectives} />
         <label htmlFor="audience">À qui s’adresse la formation</label><textarea id="audience" name="audience" defaultValue={course.audience} style={{ minHeight: 80 }} />
         <label htmlFor="prerequisites">Prérequis</label><textarea id="prerequisites" name="prerequisites" defaultValue={course.prerequisites} style={{ minHeight: 80 }} />

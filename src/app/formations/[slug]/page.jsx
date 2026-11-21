@@ -68,6 +68,7 @@ export default async function CoursePage({ params, searchParams }) {
             </ul>
           )}
           {course.summary && <p style={{ fontSize: '1.05rem' }}>{course.summary}</p>}
+          {course.outcome && <p className="outcome"><strong>À la fin de la formation, vous avez :</strong> {course.outcome}</p>}
           <div className="price-row sale-cta">
             {course.is_free ? (
               <div className="price-tag">Gratuit<small>Aucun paiement</small></div>

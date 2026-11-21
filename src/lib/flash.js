@@ -42,6 +42,7 @@ export const FLASH = {
   achat_mode: ['err', "Cette formation ne se paie pas depuis le site. Utilisez le bouton « Acheter » de la page de la formation."],
   acces_verrouille: ['err', "Cette leçon est verrouillée. Terminez d'abord la leçon précédente (et envoyez son exercice)."],
   exercice_ok: ['ok', 'Exercice envoyé, leçon terminée. La leçon suivante est ouverte. Bravo !'],
+  exercice_fait: ['ok', 'Leçon terminée. La leçon suivante est ouverte. Pensez à écrire votre réponse la prochaine fois : elle peut être validée et rapporter des points.'],
   exercice_court: ['err', 'Votre réponse est trop courte. Écrivez au moins 20 caractères, avec vos propres mots.'],
   exercice_requis: ['err', 'Cette leçon se termine en envoyant votre exercice. Écrivez votre réponse ci-dessous.'],
   lecon_ok: ['ok', 'Leçon terminée. Bravo !'],

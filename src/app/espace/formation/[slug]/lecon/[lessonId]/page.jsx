@@ -6,7 +6,7 @@ import { requireUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import { computeProgress, findUnlockedLesson, flattenLessons } from '@/lib/progress.js';
-import { markLessonDone, submitExercise } from '@/app/actions/learn.js';
+import { markLessonDone, submitExercise, confirmExerciseDone } from '@/app/actions/learn.js';
 import { typo } from '@/lib/typo.js';
 import ReadingTimer from '@/components/ReadingTimer.jsx';
 import { award, touchDaily, safe, BAREME } from '@/lib/points.js';
@@ -114,6 +114,13 @@ export default async function LessonPage({ params, searchParams }) {
                     {found.lesson.done ? 'Mettre à jour ma réponse' : 'Envoyer ma réponse et terminer la leçon'}
                   </button>
                 </form>
+                {!found.lesson.done && (
+                  <form action={confirmExerciseDone} className="exercise-skip">
+                    <input type="hidden" name="lessonId" value={lessonId} />
+                    <p className="hint">Vous avez fait l’exercice ailleurs (sur papier, par exemple) ?</p>
+                    <button className="btn ghost small" type="submit">J’ai fait l’exercice, passer à la suite</button>
+                  </form>
+                )}
               </section>
             )}
             <p className="licence">
