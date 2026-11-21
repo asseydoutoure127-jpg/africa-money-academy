@@ -12,12 +12,18 @@
     "start": "next start",
     "migrate": "node scripts/migrate.mjs",
     "vercel-build": "node scripts/migrate.mjs && next build",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "next": "^15.5.0",
     "pg": "^8.13.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@opennextjs/cloudflare": "^1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }
