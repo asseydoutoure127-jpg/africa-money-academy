@@ -82,7 +82,7 @@ export default async function Dashboard() {
         <div className="grid cols-3">
           <div><p className="big-n">{activity.signups_7d}</p><p className="muted">nouvelles inscriptions</p></div>
           <div><p className="big-n">{activity.active_7d}</p><p className="muted">élèves actifs (leçon ou exercice)</p></div>
-          <div><p className="big-n">{activity.lessons_7d}</p><p className="muted">leçons terminées, {activity.answers_7d} exercices rendus</p></div>
+          <div><p className="big-n">{activity.lessons_7d}</p><p className="muted">leçon{activity.lessons_7d > 1 ? 's' : ''} terminée{activity.lessons_7d > 1 ? 's' : ''}, {activity.answers_7d} exercice{activity.answers_7d > 1 ? 's' : ''} rendu{activity.answers_7d > 1 ? 's' : ''}</p></div>
         </div>
         <h3 style={{ marginTop: 18 }}>Inscriptions par jour (14 jours)</h3>
         <div className="spark" role="img" aria-label={`Inscriptions par jour : ${signups.map((d) => d.n).join(', ')}`}>

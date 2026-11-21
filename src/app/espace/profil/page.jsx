@@ -45,8 +45,8 @@ export default async function Profil({ searchParams }) {
               <p><button className="btn go" type="submit">Changer le mot de passe</button></p>
             </form>
           </details>
-          <Link href="/classement/reglement" className="srow"><span className="ic"><Icon name="trophy" size={20} /></span><span>Règlement du classement</span></Link>
-          <Link href="/parrainage" className="srow"><span className="ic"><Icon name="gift" size={20} /></span><span>Mon lien de parrainage</span></Link>
+          <Link href="/classement/reglement" className="srow"><span className="ic"><Icon name="trophy" size={20} /></span><span>Règlement du classement</span><span className="chev" aria-hidden="true">›</span></Link>
+          <Link href="/parrainage" className="srow"><span className="ic"><Icon name="gift" size={20} /></span><span>Mon lien de parrainage</span><span className="chev" aria-hidden="true">›</span></Link>
         </div>
 
         <form action={logout} style={{ marginTop: 22 }}>

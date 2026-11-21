@@ -1120,3 +1120,22 @@ input:not([type]), input[type=search] { border-radius: 16px; border: 1.5px solid
 .plain-rich.answer-text { background: var(--paper); border-radius: 10px; padding: 12px 14px; }
 .ex-label { margin: 8px 0 2px; font-weight: 700; }
 @media (max-width: 600px) { .admin-search { display: grid; gap: 8px; } .admin-search select, .admin-search input { width: 100%; } }
+
+/* Correctifs issus des captures téléphone (21 nov.) */
+@media (max-width: 859px) {
+  body { padding-bottom: 128px; }
+  .bottom-nav a svg { stroke: currentColor; }
+  .bottom-nav a:not(.active) { color: rgba(255, 255, 255, .82); }
+}
+/* Texte lisible sur les photos des cartes de formation */
+.pcard::before, .pcard.course-card::before { background: linear-gradient(180deg, rgba(15, 24, 56, .08) 0%, rgba(15, 24, 56, .62) 38%, rgba(15, 24, 56, .94) 100%); }
+.pcard p { color: #fff; text-shadow: 0 1px 6px rgba(6, 10, 30, .6); }
+/* Points : s'adapte au nombre de cases (2 ou 3), plus de case vide */
+.kpis { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+/* Supprimer mon compte : même style que les autres lignes, arrondi */
+details.danger-zone { border-radius: 16px; padding: 14px 16px; background: #fff; margin-top: 18px; }
+details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: pointer; }
+/* Statistiques admin : plus compactes */
+.grid.cols-3 .big-n { font-size: 1.8rem; line-height: 1.1; }
+.grid.cols-3 .big-n + .muted { margin: 2px 0 14px; }
+.srow .chev { margin-left: auto; font-size: 1.4rem; color: var(--muted); }
