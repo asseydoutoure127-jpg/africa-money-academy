@@ -51,7 +51,7 @@ export default async function CoursePage({ params, searchParams }) {
         <img className="bg" src={photoForCourse(course.slug)?.l || (course.image_url || '/photos/groupe.webp').replace('/cover-', '/scene-')} alt="" fetchPriority="high" />
         <div className="wrap">
           <Flash code={sp.m} />
-          {course.status !== 'published' && <p className="notice" style={{ color: '#12172b' }}>Aperçu administrateur : cette formation n’est pas publiée (statut : {course.status}).</p>}
+          {course.status !== 'published' && <p className="notice" style={{ color: '#1e1e1e' }}>Aperçu administrateur : cette formation n’est pas publiée (statut : {course.status}).</p>}
           <span className="tag">{LEVELS[course.level] || 'Débutant'}</span>{' '}
           {course.duration_label && <span className="tag">{course.duration_label}</span>}{' '}
           {course.is_free && <span className="tag gold">Gratuit</span>}

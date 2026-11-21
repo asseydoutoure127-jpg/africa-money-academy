@@ -40,7 +40,7 @@ export async function generateMetadata() {
   };
 }
 
-export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#1b2a5c' };
+export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#111111' };
 
 export default async function RootLayout({ children }) {
   let loggedIn = false;

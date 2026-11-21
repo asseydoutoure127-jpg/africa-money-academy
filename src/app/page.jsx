@@ -183,7 +183,7 @@ export default async function Home({ searchParams }) {
 
         <section className="section">
           <div className="wrap">
-            <div className="cta-band has-photo" style={{ backgroundImage: `linear-gradient(rgba(14, 18, 48, .78), rgba(14, 18, 48, .86)), url(${PHOTOS.bureau.l})` }}>
+            <div className="cta-band has-photo" style={{ backgroundImage: `linear-gradient(rgba(31, 31, 31, .78), rgba(31, 31, 31, .86)), url(${PHOTOS.bureau.l})` }}>
               <h2>Prêt à commencer ?</h2>
               <p>Créez votre compte gratuitement, vous ne payez que si vous choisissez une formation.</p>
               <Link className="btn gold" href="/inscription">
