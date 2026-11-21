@@ -659,6 +659,22 @@ export async function putSitePage(db, { slug, title, body }) {
   );
 }
 
+/** Entonnoir : où les élèves s'arrêtent (calculé sur les données du site, sans outil de suivi). Les visites ne sont pas comptées ici. */
+export async function funnelStats(db) {
+  const r = first(
+    await db.query(
+      `select
+        (select count(*)::int from users where role = 'learner') as inscrits,
+        (select count(*)::int from users where role = 'learner' and email_verified_at is not null) as confirmes,
+        (select count(distinct p.user_id)::int from lesson_progress p join users u on u.id = p.user_id where u.role = 'learner') as une_lecon,
+        (select count(distinct x.user_id)::int from lesson_exercises x join users u on u.id = x.user_id where u.role = 'learner') as un_exercice,
+        (select count(distinct e.user_id)::int from enrollments e join users u on u.id = e.user_id
+           where u.role = 'learner' and e.status = 'active' and e.source in ('pulse', 'reconciliation')) as acheteurs`,
+    ),
+  );
+  return r;
+}
+
 export async function dashboardStats(db) {
   const r = first(
     await db.query(

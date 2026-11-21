@@ -10,7 +10,8 @@ import { requireAdmin } from '@/lib/auth.js';
 export default async function Dashboard() {
   await requireAdmin();
   const db = getDb();
-  const [stats, alerts, recent, apiKey, secrets, testPulse, courses, resend, smtpUser, activity, signups, lastAnswers] = await Promise.all([
+  const [funnel, stats, alerts, recent, apiKey, secrets, testPulse, courses, resend, smtpUser, activity, signups, lastAnswers] = await Promise.all([
+    store.funnelStats(db),
     store.dashboardStats(db),
     store.listOpenAlerts(db),
     store.listRecentEnrollments(db),
@@ -38,6 +39,24 @@ export default async function Dashboard() {
   return (
     <>
       <h1>Tableau de bord</h1>
+      <section className="card">
+        <h2 style={{ marginTop: 0 }}>Où s’arrêtent les élèves</h2>
+        <table>
+          <thead><tr><th>Étape</th><th>Personnes</th><th>Part des inscrits</th></tr></thead>
+          <tbody>
+            {[
+              ['Inscrits', funnel.inscrits],
+              ['E-mail confirmé', funnel.confirmes],
+              ['Au moins une leçon terminée', funnel.une_lecon],
+              ['Au moins un exercice rendu', funnel.un_exercice],
+              ['Au moins un achat payé', funnel.acheteurs],
+            ].map(([label, n]) => (
+              <tr key={label}><td>{label}</td><td><strong>{n}</strong></td><td>{funnel.inscrits ? `${Math.round((n / funnel.inscrits) * 100)} %` : '—'}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="hint">Calculé à partir des comptes. Les visites du site ne sont pas comptées : il faudrait pour cela un outil de statistiques.</p>
+      </section>
       {alerts.length > 0 && (
         <section>
           <h2>À traiter et nouveautés</h2>

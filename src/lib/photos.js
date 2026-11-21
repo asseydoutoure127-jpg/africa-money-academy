@@ -1,5 +1,5 @@
 // Photos du site, par formation. `s` = petite version (cartes), `l` = grande version (en-têtes).
-const P = (n) => ({ s: `/photos/${n}-s.jpg`, l: `/photos/${n}.jpg` });
+const P = (n) => ({ s: `/photos/${n}-s.webp`, l: `/photos/${n}.webp` });
 
 export const COURSE_PHOTOS = {
   'bases-de-largent': P('budget'),

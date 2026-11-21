@@ -5,7 +5,7 @@ import { photoForCourse } from '@/lib/photos.js';
 const LEVELS = { debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé' };
 
 export default function CourseCard({ course, counts, upcoming = false }) {
-  const img = photoForCourse(course.slug)?.s || course.image_url || '/photos/groupe-s.jpg';
+  const img = photoForCourse(course.slug)?.s || course.image_url || '/photos/groupe-s.webp';
   const inner = (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -41,7 +41,7 @@ export default async function Espace({ searchParams }) {
   const freeStarted = Boolean(freeRow && freeRow.progress.doneLessons > 0);
   const owned = new Set(rows.map((r) => r.e.slug));
   const nextPaid = published.find((c) => !c.is_free && !owned.has(c.slug)) || null;
-  const imgOf = (slug, fallback) => photoForCourse(slug)?.s || fallback || '/photos/groupe-s.jpg';
+  const imgOf = (slug, fallback) => photoForCourse(slug)?.s || fallback || '/photos/groupe-s.webp';
   const current = rows.find((r) => r.progress.percent < 100) || null;
   const first = user.name.split(' ')[0];
   return (

@@ -28,7 +28,7 @@ export default async function CourseSpace({ params, searchParams }) {
       <div className="wrap">
         <article className="pcard" style={{ minHeight: 280, marginBottom: 18 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="bg" src={photoForCourse(slug)?.s || course.image_url || '/photos/groupe-s.jpg'} alt="" />
+          <img className="bg" src={photoForCourse(slug)?.s || course.image_url || '/photos/groupe-s.webp'} alt="" />
           <div className="pc-top"><Link href="/espace" className="tag">← Accueil</Link><span className="tag gold">{progress.percent} %</span></div>
           <div className="pc-body">
             <h1 style={{ color: '#fff', fontSize: '1.45rem', margin: '0 0 8px' }}>{course.title}</h1>

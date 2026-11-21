@@ -48,7 +48,7 @@ export default async function CoursePage({ params, searchParams }) {
     <main style={{ padding: 0 }}>
       <section className="hero-photo">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="bg" src={photoForCourse(course.slug)?.l || (course.image_url || '/photos/groupe.jpg').replace('/cover-', '/scene-')} alt="" fetchPriority="high" />
+        <img className="bg" src={photoForCourse(course.slug)?.l || (course.image_url || '/photos/groupe.webp').replace('/cover-', '/scene-')} alt="" fetchPriority="high" />
         <div className="wrap">
           <Flash code={sp.m} />
           {course.status !== 'published' && <p className="notice" style={{ color: '#12172b' }}>Aperçu administrateur : cette formation n’est pas publiée (statut : {course.status}).</p>}

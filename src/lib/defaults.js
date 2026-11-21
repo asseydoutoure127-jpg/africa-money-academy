@@ -189,6 +189,10 @@ Vérifiez d'abord que vous êtes connecté avec l'adresse e-mail utilisée pour 
 
 Oui, dans les 7 jours si vous avez suivi moins de 20 % de la formation. Tous les détails sont dans la page Remboursement.
 
+# Puis-je payer depuis mon pays ?
+
+Les prix sont affichés en FCFA. Les moyens de paiement acceptés dépendent de votre pays et de la plateforme de paiement : ils s'affichent au moment de payer. Si vous n'êtes pas dans une zone FCFA (Guinée, RD Congo, Madagascar, Maghreb…) ou si vous n'êtes pas sûr que votre moyen de paiement passera, écrivez-nous avant d'acheter, par la page Contact.
+
 # Comment fonctionne le parrainage ?
 
 Vous partagez votre lien personnel. Quand un ami crée son compte avec ce lien puis achète une formation payante, vous recevez 50 % du prix. Voir la page Parrainage.

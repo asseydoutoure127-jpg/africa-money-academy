@@ -972,7 +972,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--indigo); }
 .persona article, .benefit, .panel { border-radius: var(--r-lg); }
 @media (max-width: 899px) {
   .auth { padding: 0 0 24px; gap: 0; }
-  .auth-side { display: flex; flex-direction: column; justify-content: flex-end; min-height: 200px; padding: 26px 24px 48px; border-radius: 0 0 var(--r-xl) var(--r-xl); color: #fff; position: relative; overflow: hidden; background: var(--indigo-deep) url(/photos/amis-graphiques-s.jpg) center / cover; }
+  .auth-side { display: flex; flex-direction: column; justify-content: flex-end; min-height: 200px; padding: 26px 24px 48px; border-radius: 0 0 var(--r-xl) var(--r-xl); color: #fff; position: relative; overflow: hidden; background: var(--indigo-deep) url(/photos/amis-graphiques-s.webp) center / cover; }
   .auth-side::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 24, 56, .25), rgba(15, 24, 56, .88)); }
   .auth-side > * { position: relative; }
   .auth-side h2 { color: #fff; font-size: 1.7rem; margin: 0; }
