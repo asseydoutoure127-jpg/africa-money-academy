@@ -1176,3 +1176,6 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
   .bottom-nav a.active { width: auto; max-width: none; flex: none; padding: 6px 2px; background: #111; color: #fff; }
   .bottom-nav a.active svg { stroke: #fff; }
 }
+
+/* Photos des formations : passées en noir et blanc pour rester dans l'identité noir / blanc / safran */
+.pcard > img.bg, .course-hero img, .photo-bw { filter: grayscale(1) contrast(1.06) brightness(.95); }
