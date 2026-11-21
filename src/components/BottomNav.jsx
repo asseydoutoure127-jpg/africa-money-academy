@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Icon from './Icon.jsx';
 
 // Barre flottante en bas de l'écran (téléphone) : seule la page ouverte montre son nom.
-export default function BottomNav({ loggedIn, rankingOpen = false }) {
+export default function BottomNav({ loggedIn }) {
   const path = usePathname() || '/';
   if (path.startsWith('/admin')) return null; // l'administration a son propre menu
   const items = [
@@ -13,7 +13,7 @@ export default function BottomNav({ loggedIn, rankingOpen = false }) {
       ? { href: '/espace', label: 'Accueil', icon: 'home', match: (p) => p.startsWith('/espace') && !p.startsWith('/espace/profil') }
       : { href: '/', label: 'Accueil', icon: 'home', match: (p) => p === '/' },
     { href: '/formations', label: 'Cours', icon: 'grid', match: (p) => p.startsWith('/formations') },
-    ...(rankingOpen ? [{ href: '/classement', label: 'Classement', icon: 'trophy', match: (p) => p.startsWith('/classement') }] : []),
+    { href: '/classement', label: 'Classement', icon: 'trophy', match: (p) => p.startsWith('/classement') },
     loggedIn
       ? { href: '/espace/profil', label: 'Profil', icon: 'user', match: (p) => p.startsWith('/espace/profil') }
       : { href: '/connexion', label: 'Connexion', icon: 'user', match: (p) => p.startsWith('/connexion') || p.startsWith('/inscription') },

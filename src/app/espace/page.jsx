@@ -66,14 +66,7 @@ export default async function Espace({ searchParams }) {
         )}
 
         <div className="kpis" aria-label="Mes points">
-          {flags.rankingOpen ? (
-            <>
-              <Link href="/classement" className="kpi"><Icon name="trophy" size={22} /><strong>{standing ? standing.points : 0}</strong><span>points ce mois-ci</span></Link>
-              <Link href="/classement" className="kpi"><Icon name="users" size={22} /><strong>{standing ? `${standing.rank}ᵉ` : '—'}</strong><span>au classement</span></Link>
-            </>
-          ) : (
-            <div className="kpi"><Icon name="trophy" size={22} /><strong>{standing ? standing.points : 0}</strong><span>points ce mois-ci</span></div>
-          )}
+          <Link href="/classement" className="kpi"><Icon name="trophy" size={22} /><strong>{standing ? standing.points : 0}</strong><span>points ce mois-ci</span></Link>
           {flags.shopOpen ? (
             <Link href="/boutique" className="kpi"><Icon name="coins" size={22} /><strong>{coins}</strong><span>pièces boutique</span></Link>
           ) : (

@@ -23,7 +23,7 @@ export default async function Classement() {
         <div className="wrap board-page">
           <h1>Classement</h1>
           <section className="card gold">
-            <p style={{ marginTop: 0 }}><strong>Le classement du mois s’ouvrira bientôt.</strong> Il démarre dès que {RANKING_MIN_LEARNERS} élèves suivent les formations. En attendant, vos points s’accumulent déjà.</p>
+            <p style={{ marginTop: 0 }}><strong>Le classement n’a pas encore commencé.</strong> Il démarre dès que {RANKING_MIN_LEARNERS} élèves suivent les formations{flags.learners > 0 ? ` (nous en sommes à ${flags.learners})` : ''}. En attendant, chaque leçon et chaque exercice vous rapportent déjà des points, qui seront comptés.</p>
             <Link className="btn go gold" href={user ? '/espace' : '/inscription'}>{user ? 'Reprendre mes leçons' : 'Créer mon compte'}</Link>
           </section>
         </div>
