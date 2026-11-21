@@ -34,8 +34,8 @@ Une question avant d'acheter, un souci d'accès après un paiement ? Écrivez-no
 
 # Nos délais
 
-- Nous répondons en général sous 24 heures.
-- **Vous avez payé et l'accès ne s'est pas ouvert ?** Nous réglons le problème dans les 24 heures qui suivent votre message.
+- Nous répondons en général sous 48 heures.
+- **Vous avez payé et l'accès ne s'est pas ouvert ?** Nous réglons le problème dans les 48 heures qui suivent votre message.
 
 # Vous ne recevez pas nos e-mails ?
 
@@ -62,7 +62,7 @@ Vous devez donner une adresse e-mail valide et la confirmer. Vous êtes responsa
 - Le prix de chaque formation est affiché avant le paiement.
 - Le paiement se fait sur la page de paiement sécurisée de notre prestataire, Chariow. Nous ne voyons ni ne gardons vos données bancaires.
 - L'accès s'ouvre sur le compte dont l'adresse e-mail est celle utilisée pour payer, dès que le paiement est confirmé.
-- Si le paiement est pris mais que l'accès ne s'ouvre pas, écrivez-nous : nous réglons le problème dans les 24 heures.
+- Si le paiement est pris mais que l'accès ne s'ouvre pas, écrivez-nous : nous réglons le problème dans les 48 heures.
 
 # 5. Contenus et propriété
 
@@ -113,6 +113,10 @@ Pour créer votre compte, ouvrir l'accès à vos formations, vous envoyer les e-
 
 Notre équipe, et les services qui font fonctionner le site : l'hébergement, la base de données, l'envoi d'e-mails et le paiement. Nous ne vendons pas vos données et nous ne faisons pas de publicité.
 
+# Vos réponses aux exercices
+
+Les réponses que vous écrivez dans les exercices sont lues uniquement par l'administrateur et l'équipe de la formation, pour les valider et vous répondre. Elles ne sont jamais montrées aux autres élèves. Elles sont enregistrées dans notre base de données (hébergée aux États-Unis, chez un prestataire spécialisé). Elles sont effacées sur simple demande depuis la page Contact, ou automatiquement quand vous supprimez votre compte.
+
 # Combien de temps
 
 Tant que votre compte existe. Vous pouvez le supprimer depuis votre profil : vos données personnelles sont alors effacées. Certaines informations d'achat peuvent être conservées si la loi l'exige.
@@ -135,7 +139,7 @@ Nous vous écrivons pour les messages utiles au service. Ces e-mails peuvent arr
 
 # Votre droit à être remboursé
 
-Si la formation ne vous convient pas, vous pouvez demander un remboursement **dans les 7 jours après votre achat**, tant que vous avez suivi **moins de 20 %** de la formation.
+Si la formation ne vous convient pas, vous pouvez demander un remboursement **dans les 7 jours après votre achat**, tant que vous avez suivi **moins de 20 %** de la formation. Ce pourcentage est celui affiché dans « Mon espace » : si la formation compte 15 leçons, vous avez suivi moins de 20 % tant que vous en avez terminé 2 ou moins (3 leçons = 20 %).
 
 # Comment demander
 
@@ -145,7 +149,7 @@ Si la formation ne vous convient pas, vous pouvez demander un remboursement **da
 - le nom de la formation ;
 - en une phrase, la raison de votre demande.
 
-Nous répondons en général sous 24 heures.
+Nous répondons en général sous 48 heures.
 
 # Le remboursement
 
@@ -153,7 +157,7 @@ Le remboursement est fait par le même moyen que le paiement, par l'intermédiai
 
 # Paiement pris, mais pas d'accès
 
-Ce n'est pas un cas de remboursement : c'est un problème à régler. Écrivez-nous : nous le réglons dans les 24 heures. Si nous ne pouvons pas ouvrir votre accès, nous vous remboursons.
+Ce n'est pas un cas de remboursement : c'est un problème à régler. Écrivez-nous : nous le réglons dans les 48 heures. Si nous ne pouvons pas ouvrir votre accès, nous vous remboursons.
 
 # Parrainage
 
@@ -179,7 +183,7 @@ Regardez dans vos courriers indésirables (spam). Si vous le trouvez là, marque
 
 # J'ai payé mais je n'ai pas accès. Que faire ?
 
-Vérifiez d'abord que vous êtes connecté avec l'adresse e-mail utilisée pour payer et que vous avez confirmé cette adresse. Puis cliquez sur « J'ai payé, vérifier mon achat ». Si l'accès ne s'ouvre toujours pas, écrivez-nous depuis la page Contact : nous réglons le problème dans les 24 heures.
+Vérifiez d'abord que vous êtes connecté avec l'adresse e-mail utilisée pour payer et que vous avez confirmé cette adresse. Puis cliquez sur « J'ai payé, vérifier mon achat ». Si l'accès ne s'ouvre toujours pas, écrivez-nous depuis la page Contact : nous réglons le problème dans les 48 heures.
 
 # Puis-je être remboursé ?
 

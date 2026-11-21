@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 function toNumber(v) {
   const n = Number(String(v).replace(/\s/g, '').replace(',', '.'));
@@ -11,7 +12,7 @@ const fmt = (n) => new Intl.NumberFormat('fr-FR').format(Math.round(n)).replace(
 
 // Petit carnet de calcul : montre dès l'accueil la première habitude enseignée (revenus − dépenses = solde).
 // Les chiffres de départ sont un exemple, rien n'est enregistré ni envoyé.
-export default function Carnet() {
+export default function Carnet({ ctaHref = '/formations' }) {
   const [revenu, setRevenu] = useState('60000');
   const [depenses, setDepenses] = useState('45000');
   const solde = toNumber(revenu) - toNumber(depenses);
@@ -37,6 +38,7 @@ export default function Carnet() {
         <strong className={solde < 0 ? 'neg' : ''}>{solde < 0 ? '−' : ''}{fmt(Math.abs(solde))} FCFA</strong>
       </div>
       <p className="carnet-msg">{message}</p>
+      <Link className="btn go gold block" href={ctaHref}>Apprendre à faire son budget : leçon gratuite</Link>
     </form>
   );
 }

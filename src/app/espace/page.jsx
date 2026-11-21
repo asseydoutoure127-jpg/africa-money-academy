@@ -10,6 +10,7 @@ import { ensureReferralCode, countReferred } from '@/lib/referral.js';
 import { touchDaily, safe, myStanding, coinBalance, currentStreak, periodOf, weekOverview } from '@/lib/points.js';
 import Icon from '@/components/Icon.jsx';
 import { photoForCourse } from '@/lib/photos.js';
+import { siteFlags } from '@/lib/flags.js';
 
 export const metadata = { title: 'Mon espace' };
 
@@ -17,6 +18,7 @@ export default async function Espace({ searchParams }) {
   const sp = await searchParams;
   const user = await requireUser('/espace');
   const db = getDb();
+  const flags = await siteFlags(db);
   await safe(() => touchDaily(db, user.id));
   const enrollments = await store.listUserEnrollments(db, user.id);
   const standing = await safe(() => myStanding(db, user.id, periodOf()));
@@ -64,9 +66,19 @@ export default async function Espace({ searchParams }) {
         )}
 
         <div className="kpis" aria-label="Mes points">
-          <Link href="/classement" className="kpi"><Icon name="trophy" size={22} /><strong>{standing ? standing.points : 0}</strong><span>points ce mois-ci</span></Link>
-          <Link href="/classement" className="kpi"><Icon name="users" size={22} /><strong>{standing ? `${standing.rank}ᵉ` : '—'}</strong><span>au classement</span></Link>
-          <Link href="/boutique" className="kpi"><Icon name="coins" size={22} /><strong>{coins}</strong><span>pièces boutique</span></Link>
+          {flags.rankingOpen ? (
+            <>
+              <Link href="/classement" className="kpi"><Icon name="trophy" size={22} /><strong>{standing ? standing.points : 0}</strong><span>points ce mois-ci</span></Link>
+              <Link href="/classement" className="kpi"><Icon name="users" size={22} /><strong>{standing ? `${standing.rank}ᵉ` : '—'}</strong><span>au classement</span></Link>
+            </>
+          ) : (
+            <div className="kpi"><Icon name="trophy" size={22} /><strong>{standing ? standing.points : 0}</strong><span>points ce mois-ci</span></div>
+          )}
+          {flags.shopOpen ? (
+            <Link href="/boutique" className="kpi"><Icon name="coins" size={22} /><strong>{coins}</strong><span>pièces boutique</span></Link>
+          ) : (
+            <div className="kpi"><Icon name="coins" size={22} /><strong>{coins}</strong><span>pièces</span></div>
+          )}
         </div>
 
         {current ? (
@@ -161,7 +173,7 @@ export default async function Espace({ searchParams }) {
         <div className="tiles">
           <Link href="/parrainage" className="tile"><span className="ic"><Icon name="gift" size={22} /></span><strong>Parrainage</strong><span>{referred === 0 ? 'Gagnez 50 % quand un ami achète.' : `${referred} ami${referred > 1 ? 's' : ''} inscrit${referred > 1 ? 's' : ''}.`}</span></Link>
           <Link href="/outils" className="tile"><span className="ic"><Icon name="target" size={22} /></span><strong>Boîte à outils</strong><span>Calculs gratuits.</span></Link>
-          <Link href="/boutique" className="tile"><span className="ic"><Icon name="bag" size={22} /></span><strong>Boutique</strong><span>Dépensez vos pièces.</span></Link>
+          {flags.shopOpen && <Link href="/boutique" className="tile"><span className="ic"><Icon name="bag" size={22} /></span><strong>Boutique</strong><span>Dépensez vos pièces.</span></Link>}
           <Link href="/espace/profil" className="tile"><span className="ic"><Icon name="user" size={22} /></span><strong>Mon profil</strong><span>Infos et mot de passe.</span></Link>
         </div>
       </div>

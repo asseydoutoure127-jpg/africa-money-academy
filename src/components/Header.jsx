@@ -29,6 +29,7 @@ export default async function Header() {
         )}
         <nav className="nav" aria-label="Menu principal">
           <Link href="/formations">Formations</Link>
+          {!user && <Link href="/contact">Contact</Link>}
           {user ? (
             <>
               <Link href="/espace">Mon espace</Link>
@@ -46,7 +47,6 @@ export default async function Header() {
           ) : (
             <>
               <Link href="/connexion">Connexion</Link>
-              <Link href="/inscription">Créer un compte</Link>
             </>
           )}
         </nav>

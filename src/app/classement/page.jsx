@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import { ranking, listHonor, rankingConfig, periodOf, monthLabel, monthEndLabel, touchDaily, safe } from '@/lib/points.js';
 import { toggleRankHidden } from '@/app/actions/points.js';
+import { siteFlags, RANKING_MIN_LEARNERS } from '@/lib/flags.js';
 
 export const metadata = {
   title: 'Classement du mois',
@@ -14,6 +15,20 @@ const STATUS_CLASS = { 'Exercice validé': 'ok', 'En cours': '', 'A commencé': 
 export default async function Classement() {
   const db = getDb();
   const user = await getCurrentUser();
+  const flags = await siteFlags(db);
+  if (!flags.rankingOpen) {
+    return (
+      <main>
+        <div className="wrap board-page">
+          <h1>Classement</h1>
+          <section className="card gold">
+            <p style={{ marginTop: 0 }}><strong>Le classement du mois s’ouvrira bientôt.</strong> Il démarre dès que {RANKING_MIN_LEARNERS} élèves suivent les formations. En attendant, vos points s’accumulent déjà.</p>
+            <Link className="btn go gold" href={user ? '/espace' : '/inscription'}>{user ? 'Reprendre mes leçons' : 'Créer mon compte'}</Link>
+          </section>
+        </div>
+      </main>
+    );
+  }
   if (user) await safe(() => touchDaily(db, user.id));
   const period = periodOf();
   const cfg = await rankingConfig(db);

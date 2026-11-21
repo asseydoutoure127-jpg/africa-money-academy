@@ -7,6 +7,7 @@ import { InstallBanner } from '@/components/PwaInstall.jsx';
 import { getCurrentUser } from '@/lib/auth.js';
 import { getDb } from '@/lib/db.js';
 import { getSiteName, getSiteUrl } from '@/lib/context.js';
+import { siteFlags } from '@/lib/flags.js';
 
 const title = Fraunces({ subsets: ['latin'], variable: '--font-title', display: 'swap', style: ['normal', 'italic'] });
 const body = Nunito_Sans({ subsets: ['latin'], variable: '--font-body', display: 'swap', style: ['normal', 'italic'] });
@@ -22,7 +23,7 @@ export async function generateMetadata() {
   }
   return {
     metadataBase: new URL(getSiteUrl()),
-    title: { default: name, template: `%s – ${name}` },
+    title: { default: `${name} – formations pour gagner de l’argent`, template: `%s – ${name}` },
     openGraph: {
       type: 'website',
       locale: 'fr_FR',
@@ -43,8 +44,10 @@ export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#
 
 export default async function RootLayout({ children }) {
   let loggedIn = false;
+  let flags = { rankingOpen: false, shopOpen: false };
   try {
     loggedIn = Boolean(await getCurrentUser());
+    flags = await siteFlags(getDb());
   } catch {
     // base indisponible : on affiche la barre pour les visiteurs
   }
@@ -55,7 +58,7 @@ export default async function RootLayout({ children }) {
         {children}
         <Footer />
         <InstallBanner />
-        <BottomNav loggedIn={loggedIn} />
+        <BottomNav loggedIn={loggedIn} rankingOpen={flags.rankingOpen} />
       </body>
     </html>
   );
