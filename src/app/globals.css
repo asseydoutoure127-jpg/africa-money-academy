@@ -1139,3 +1139,26 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 .grid.cols-3 .big-n { font-size: 1.8rem; line-height: 1.1; }
 .grid.cols-3 .big-n + .muted { margin: 2px 0 14px; }
 .srow .chev { margin-left: auto; font-size: 1.4rem; color: var(--muted); }
+
+/* Admin : menu compact sur téléphone, bandeau discret, pastilles de chiffres */
+.admin-menu { display: none; }
+.admin-nav a.on { background: var(--indigo); color: #fff; }
+.admin-banner .wrap { padding-top: 8px; padding-bottom: 8px; }
+@media (max-width: 859px) {
+  .admin-nav.desk { display: none; }
+  .admin-menu { display: block; margin-bottom: 18px; background: #fff; border-radius: 16px; box-shadow: var(--shadow); }
+  .admin-menu summary { padding: 14px 16px; cursor: pointer; color: var(--indigo); }
+  .admin-menu nav { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 12px 12px; }
+  .admin-menu nav a { padding: 12px; border-radius: 12px; background: var(--paper); color: var(--indigo); font-weight: 600; text-decoration: none; min-height: 44px; display: flex; align-items: center; }
+  .admin-menu nav a.on { background: var(--indigo); color: #fff; }
+  .admin-banner .ab-note { display: none; }
+  .admin-banner .wrap { justify-content: space-between; flex-wrap: nowrap; }
+}
+.stat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.stat-chips a { background: #fff; border-radius: 999px; padding: 8px 14px; box-shadow: var(--shadow); color: var(--indigo); text-decoration: none; font-size: .9rem; }
+.stat-chips a strong { font-size: 1.05rem; margin-right: 4px; }
+.stat-chips a.on { background: var(--indigo); color: #fff; }
+.admin-area h2 { margin-top: 26px; }
+/* Une seule formation : la carte prend toute la largeur ; nombre impair de tuiles : la dernière s'étale */
+.hlist > *:only-child { flex-basis: 100%; max-width: none; }
+.tiles > *:last-child:nth-child(odd) { grid-column: 1 / -1; }

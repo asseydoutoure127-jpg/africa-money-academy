@@ -702,8 +702,27 @@ export async function listRecentEnrollments(db, limit = 8) {
 // ============================ Admin : suivi des élèves (lecture seule) ============================
 
 // Pour chaque élève : formations suivies, leçons terminées / total, exercices rendus, dernière activité.
-export async function listLearnersOverview(db, { q = '', limit = 40, offset = 0 } = {}) {
+// Chiffres réels de la page Apprenants (comptes « élève » uniquement).
+export async function learnerStats(db) {
+  return first(await db.query(`
+    select count(*)::int as total,
+      count(*) filter (where u.email_verified_at is null)::int as unconfirmed,
+      count(*) filter (where not exists (select 1 from enrollments e where e.user_id = u.id and e.status = 'active'))::int as nocourse,
+      count(*) filter (where exists (select 1 from lesson_progress p where p.user_id = u.id and p.completed_at > now() - interval '7 days')
+                          or exists (select 1 from lesson_exercises x where x.user_id = u.id and x.updated_at > now() - interval '7 days'))::int as active7,
+      (select count(*)::int from lesson_exercises where validated_at is null) as pending_ex
+    from users u where u.role = 'learner'`));
+}
+
+const LEARNER_FILTERS = {
+  unconfirmed: 'u.email_verified_at is null',
+  nocourse: `not exists (select 1 from enrollments e where e.user_id = u.id and e.status = 'active')`,
+  active: `(exists (select 1 from lesson_progress p where p.user_id = u.id and p.completed_at > now() - interval '7 days') or exists (select 1 from lesson_exercises x where x.user_id = u.id and x.updated_at > now() - interval '7 days'))`,
+};
+
+export async function listLearnersOverview(db, { q = '', filter = '', limit = 40, offset = 0 } = {}) {
   const like = `%${q.trim().toLowerCase()}%`;
+  const extra = LEARNER_FILTERS[filter] ? ` and ${LEARNER_FILTERS[filter]}` : '';
   const users = (
     await db.query(
       `select u.id, u.email, u.name, u.role, u.email_verified_at, u.blocked_at, u.created_at,
@@ -711,12 +730,12 @@ export async function listLearnersOverview(db, { q = '', limit = 40, offset = 0 
            select max(completed_at) as t from lesson_progress where user_id = u.id
            union all select max(updated_at) from lesson_exercises where user_id = u.id
          ) x) as last_activity
-       from users u where lower(u.email) like $1 or lower(u.name) like $1
+       from users u where (lower(u.email) like $1 or lower(u.name) like $1)${extra}
        order by u.created_at desc limit $2 offset $3`,
       [like, limit, offset],
     )
   ).rows;
-  const total = Number(first(await db.query(`select count(*)::int as n from users u where lower(u.email) like $1 or lower(u.name) like $1`, [like])).n);
+  const total = Number(first(await db.query(`select count(*)::int as n from users u where (lower(u.email) like $1 or lower(u.name) like $1)${extra}`, [like])).n);
   if (!users.length) return { rows: [], total };
   const ids = users.map((u) => u.id);
   const prog = (

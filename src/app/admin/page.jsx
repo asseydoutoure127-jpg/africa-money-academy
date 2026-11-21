@@ -55,7 +55,7 @@ export default async function Dashboard() {
             ))}
           </tbody>
         </table>
-        <p className="hint">Calculé à partir des comptes. Les visites du site ne sont pas comptées : il faudrait pour cela un outil de statistiques.</p>
+        <p className="hint">Chiffres calculés à partir des comptes inscrits. Les visites de personnes sans compte ne sont pas comptées.</p>
       </section>
       {alerts.length > 0 && (
         <section>
@@ -94,7 +94,7 @@ export default async function Dashboard() {
             </div>
           ))}
         </div>
-        <p className="muted" style={{ marginTop: 10 }}>Les visites du site (personnes qui ne s’inscrivent pas) ne sont pas encore comptées.</p>
+        <p className="muted" style={{ marginTop: 10 }}>Les visites de personnes sans compte ne sont pas comptées.</p>
       </section>
       <section style={{ marginTop: 20 }}>
         <h2>Derniers exercices rendus</h2>
