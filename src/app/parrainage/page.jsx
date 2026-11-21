@@ -6,7 +6,7 @@ import { getDb } from '@/lib/db.js';
 import { getSiteUrl } from '@/lib/context.js';
 import { PHOTOS } from '@/lib/photos.js';
 import * as store from '@/lib/store.js';
-import { REFERRAL_RATE_PERCENT, commissionFor, ensureReferralCode, listReferredWithPurchases } from '@/lib/referral.js';
+import { REFERRAL_RATE_PERCENT, REFERRAL_HOLD_DAYS, REFERRAL_MIN_PAYOUT, isMature, commissionFor, ensureReferralCode, listReferredWithPurchases } from '@/lib/referral.js';
 
 export const metadata = {
   title: 'Parrainage : gagnez 50 % en invitant vos amis',
@@ -127,6 +127,8 @@ export default async function Parrainage() {
             <li><strong>La formation gratuite ne rapporte rien.</strong> Seuls les achats de formations payantes comptent.</li>
             <li><strong>Votre ami doit créer son compte avec votre lien.</strong> Un compte déjà créé avant ne peut pas être rattaché à vous après coup.</li>
             <li><strong>On ne se parraine pas soi-même.</strong> Un compte ouvert avec votre propre adresse e-mail ne compte pas.</li>
+            <li><strong>La commission est due {REFERRAL_HOLD_DAYS} jours après l’achat</strong>, une fois le délai de remboursement de votre ami terminé. S’il est remboursé, la commission est annulée.</li>
+            <li><strong>Versement minimum : {fcfa(REFERRAL_MIN_PAYOUT)}.</strong> En dessous, vos commissions s’additionnent jusqu’à atteindre ce montant.</li>
             <li><strong>Nous vérifions chaque achat</strong> avant de verser la commission. Elle est versée à la main par notre équipe : nous vous écrivons à l’adresse e-mail de votre compte pour convenir du moyen de paiement.</li>
             <li><strong>Pas d’astuce, pas de fausse promesse.</strong> N’affirmez pas à vos amis qu’ils vont « devenir riches ». Dites-leur la vérité : ce sont des formations pour apprendre et agir, sans revenu garanti.</li>
           </ul>
@@ -153,7 +155,7 @@ export default async function Parrainage() {
                           <td>{f.name.split(' ')[0]}</td>
                           <td>{dateFr(f.referred_at)}</td>
                           <td>{f.achats.length === 0 ? <span className="muted">Pas encore</span> : f.achats.map((a) => a.titre).join(', ')}</td>
-                          <td>{gain > 0 ? <strong>{fcfa(gain)}</strong> : '—'}</td>
+                          <td>{gain > 0 ? <><strong>{fcfa(gain)}</strong>{f.achats.some((a) => !isMature(a.date)) && <small className="muted"> (en attente)</small>}</> : '—'}</td>
                         </tr>
                       );
                     })}

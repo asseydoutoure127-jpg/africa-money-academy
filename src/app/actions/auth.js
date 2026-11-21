@@ -10,6 +10,7 @@ import { createLoginSession, destroySession, requireUser, getCurrentUser } from 
 import { claimPendingForUser } from '@/lib/chariow/sales.js';
 import { registerReferral, REF_COOKIE } from '@/lib/referral.js';
 import { cleanText, validEmail, validPassword, safeInternalPath, clientIp } from '@/lib/validate.js';
+import { signupFingerprint } from '@/lib/referral.js';
 
 const HOUR = 3600;
 
@@ -58,6 +59,11 @@ export async function signup(formData) {
   }
   await safe(() => award(ctx.db, { userId: user.id, kind: 'signup', points: BAREME.signup }));
   await sendVerification(ctx, user);
+  // Empreinte d'inscription (jamais lisible) : sert seulement à signaler à l'administrateur un possible auto-parrainage.
+  await safe(async () => {
+    const h = await headers();
+    await ctx.db.query(`update users set signup_fp = $2 where id = $1`, [user.id, signupFingerprint(clientIp(h), h.get('user-agent'))]);
+  });
   // Parrainage : le lien /r/CODE a laissé un cookie. Une erreur ici ne doit jamais empêcher l'inscription.
   try {
     const jar = await cookies();

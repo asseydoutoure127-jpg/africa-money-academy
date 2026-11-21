@@ -12,6 +12,7 @@ import { applyPaidSale } from '@/lib/chariow/sales.js';
 import { cleanText, slugify, validEmail, httpsUrlOrNull } from '@/lib/validate.js';
 import { PAGE_DEFAULTS } from '@/lib/defaults.js';
 import { award, removeAward, validatedPoints, safe } from '@/lib/points.js';
+import { listReferredWithPurchases, paidTotal, recordPayout, summarizeCommissions, REFERRAL_MIN_PAYOUT } from '@/lib/referral.js';
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const id = (formData, name = 'id') => {
@@ -285,6 +286,19 @@ export async function validateExercise(formData) {
 }
 
 // ------------------------------------------------------------ Paiements
+
+/** Enregistre un versement de commission fait à la main. Refuse un montant sous le minimum ou au-dessus de ce qui est dû. */
+export async function recordReferralPayout(formData) {
+  const { admin, ctx } = await start();
+  const referrerId = id(formData, 'id');
+  const amount = Math.round(Number(String(formData.get('amount') || '').replace(/[^0-9]/g, '')));
+  if (!referrerId || !Number.isFinite(amount) || amount <= 0) redirect('/admin/parrainage?m=montant');
+  const filleuls = await listReferredWithPurchases(ctx.db, referrerId);
+  const s = summarizeCommissions(filleuls, await paidTotal(ctx.db, referrerId));
+  if (amount < REFERRAL_MIN_PAYOUT || amount > s.due) redirect('/admin/parrainage?m=montant');
+  await recordPayout(ctx.db, { referrerId, amount, note: text(formData, 'note', 200), adminId: admin.id });
+  redirect('/admin/parrainage?m=verse');
+}
 
 export async function retryDelivery(formData) {
   const { admin, ctx } = await start();

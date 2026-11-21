@@ -1,6 +1,6 @@
 // Parrainage : liens personnels, attribution à l'inscription, alerte pour l'administrateur.
 // Les commissions sont gérées à la main : le site dit seulement QUI a amené QUI et QUI a acheté.
-import { randomInt } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 import * as store from './store.js';
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sans 0/O/1/I, pour éviter les confusions
@@ -11,6 +11,32 @@ const first = (r) => r.rows[0] ?? null;
 
 // Part du prix de la formation reversée au parrain. Les commissions sont versées à la main par l'équipe.
 export const REFERRAL_RATE_PERCENT = 50;
+
+// Délai avant qu'une commission soit due : 7 jours de remboursement + 3 jours de marge (le contrôle des remboursements
+// auprès de Chariow se fait une fois par jour).
+export const REFERRAL_HOLD_DAYS = 10;
+// Montant minimum pour recevoir un versement (une seule vente à 10 000 FCFA suffit : 5 000 FCFA).
+export const REFERRAL_MIN_PAYOUT = 5000;
+
+/** Une commission est « mûre » (payable) quand l'achat a plus de REFERRAL_HOLD_DAYS jours. */
+export function isMature(grantedAt, now = new Date()) {
+  return new Date(grantedAt).getTime() + REFERRAL_HOLD_DAYS * 86_400_000 <= now.getTime();
+}
+
+/** Sépare les commissions d'un parrain : payables, en attente (délai), déjà versées, reste à verser. */
+export function summarizeCommissions(filleuls, paidTotal = 0, now = new Date()) {
+  let payable = 0;
+  let pending = 0;
+  for (const f of filleuls) {
+    for (const a of f.achats) {
+      const c = commissionFor(a.prix) || 0;
+      if (isMature(a.date, now)) payable += c;
+      else pending += c;
+    }
+  }
+  const due = Math.max(0, payable - paidTotal);
+  return { payable, pending, paid: paidTotal, due, canPay: due >= REFERRAL_MIN_PAYOUT };
+}
 
 /** Lit un prix comme « 10 000 FCFA » et renvoie 10000 ; renvoie null si le prix n'est pas lisible. */
 export function priceFromLabel(label) {
@@ -104,15 +130,31 @@ export async function listReferredWithPurchases(db, referrerId) {
   return (
     await db.query(
       `select f.id, f.name, f.email, f.referred_at, f.email_verified_at,
+              (f.signup_fp is not null and f.signup_fp = p.signup_fp) as meme_empreinte,
               coalesce(json_agg(json_build_object('titre', c.title, 'date', e.granted_at, 'prix', c.price_label) order by e.granted_at)
                        filter (where e.id is not null), '[]'::json) as achats
        from users f
+       join users p on p.id = f.referred_by
        left join enrollments e on e.user_id = f.id and e.status = 'active' and e.source in ('pulse', 'reconciliation')
        left join courses c on c.id = e.course_id
        where f.referred_by = $1
-       group by f.id
+       group by f.id, p.signup_fp
        order by f.referred_at desc`,
       [referrerId],
     )
   ).rows;
+}
+
+/** Total déjà versé à un parrain (registre tenu par l'administrateur). */
+export async function paidTotal(db, referrerId) {
+  return Number(first(await db.query(`select coalesce(sum(amount), 0)::int as n from referral_payouts where referrer_id = $1`, [referrerId])).n);
+}
+
+export async function recordPayout(db, { referrerId, amount, note, adminId }) {
+  await db.query(`insert into referral_payouts (referrer_id, amount, note, paid_by) values ($1, $2, $3, $4)`, [referrerId, amount, note, adminId]);
+}
+
+/** Empreinte d'inscription (adresse réseau + navigateur), jamais lisible : sert seulement à signaler des comptes qui se ressemblent. */
+export function signupFingerprint(ip, userAgent) {
+  return createHash('sha256').update(`${ip || ''}|${userAgent || ''}|ama-fp`).digest('hex').slice(0, 32);
 }

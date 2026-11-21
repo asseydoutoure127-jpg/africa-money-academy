@@ -74,7 +74,7 @@ Les formations expliquent des méthodes. Elles ne garantissent aucun revenu : le
 
 # 7. Parrainage
 
-Chaque compte a un lien de parrainage. Quand une personne crée son compte avec votre lien puis achète une formation payante, vous recevez une commission de 50 % du prix payé. Les règles complètes sont sur la page Parrainage. La commission est versée par notre équipe après vérification de l'achat. Un faux compte, un auto-parrainage ou une publicité trompeuse annulent la commission et peuvent entraîner la suspension du compte.
+Chaque compte a un lien de parrainage. Quand une personne crée son compte avec votre lien puis achète une formation payante, vous recevez une commission de 50 % du prix payé. Les règles complètes sont sur la page Parrainage. La commission est due 10 jours après l'achat (fin du délai de remboursement), à partir d'un minimum de 5 000 FCFA, et versée par notre équipe après vérification de l'achat. Un faux compte, un auto-parrainage ou une publicité trompeuse annulent la commission et peuvent entraîner la suspension du compte.
 
 # 8. Suspension
 
