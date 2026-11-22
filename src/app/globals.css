@@ -1173,12 +1173,12 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
   .bottom-nav a { flex-direction: column; justify-content: center; gap: 2px; width: auto; height: auto; min-height: 54px; flex: none; max-width: none; padding: 6px 2px; border-radius: 12px; color: var(--muted); font-size: .72rem; line-height: 1.15; font-weight: 600; background: transparent; }
   .bottom-nav a svg { stroke: currentColor; }
   .bottom-nav a span, .bottom-nav a.active span { display: block; }
-  .bottom-nav a.active { width: auto; max-width: none; flex: none; padding: 6px 2px; background: #111; color: #fff; }
-  .bottom-nav a.active svg { stroke: #fff; }
+  .bottom-nav a.active { width: auto; max-width: none; flex: none; padding: 6px 2px; background: var(--saffron); color: #111; }
+  .bottom-nav a.active svg { stroke: #111; }
 }
 
 /* Photos des formations : passées en noir et blanc pour rester dans l'identité noir / blanc / safran */
-.pcard > img.bg, .course-hero img, .photo-bw { filter: grayscale(1) contrast(1.06) brightness(.95); }
+.pcard > img.bg, .course-hero img, .photo-bw { filter: grayscale(.25) saturate(1.1) contrast(1.05); }
 
 /* Profil complet */
 .pf-hero { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 0 8px; }
@@ -1234,3 +1234,57 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 .res-how ol { margin: 6px 0 0; padding-left: 1.2em; }
 .res-how li { margin-bottom: 4px; overflow-wrap: anywhere; }
 .res-tip p { margin: 4px 0 0; }
+
+/* Résultats : solutions et barres */
+.res-sol { border-top: 1px solid rgba(0, 0, 0, .12); padding-top: 10px; margin-top: 10px; font-size: .92rem; }
+.res-sol ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.res-sol li { background: rgba(255, 255, 255, .7); border-radius: 12px; padding: 10px 12px; display: grid; gap: 2px; }
+.res-sol li b { font-size: .95rem; }
+.res-sol li span { color: #333; }
+.res-sol li em { font-style: normal; font-weight: 700; color: #0e7a4a; }
+.bars { display: grid; gap: 6px; margin-top: 12px; font-size: .86rem; font-weight: 400; }
+.bar-row { display: grid; grid-template-columns: 1.2fr 1.6fr 42px; gap: 8px; align-items: center; }
+.bar-row .bar { background: rgba(0, 0, 0, .1); border-radius: 99px; height: 9px; overflow: hidden; display: block; }
+.bar-row .bar i { display: block; height: 100%; background: var(--saffron); border-radius: 99px; }
+.bar-row b { text-align: right; }
+.line3 { display: grid; grid-template-columns: 1.2fr 1.1fr .8fr; gap: 6px; margin-bottom: 8px; }
+
+/* Couleurs vives : le noir et le blanc restent la base, les couleurs servent à repérer et à donner de l'énergie */
+:root { --v-green: #12b76a; --v-coral: #ff6b4a; --v-sky: #2e90fa; --v-violet: #7a5af8; }
+.tool-tabs button { border-left: 5px solid #ccc; }
+.tool-tabs button[data-g=epargne] { border-left-color: var(--v-green); }
+.tool-tabs button[data-g=vendre] { border-left-color: var(--v-coral); }
+.tool-tabs button[data-g=banque] { border-left-color: var(--v-sky); }
+.tool-tabs button[data-g=gagner] { border-left-color: var(--v-violet); }
+.tool-tabs button.on[data-g=epargne] { background: var(--v-green); }
+.tool-tabs button.on[data-g=vendre] { background: var(--v-coral); }
+.tool-tabs button.on[data-g=banque] { background: var(--v-sky); }
+.tool-tabs button.on[data-g=gagner] { background: var(--v-violet); }
+.tools-grid .card.tool { border-top: 6px solid #ccc; }
+.tools-grid[data-g=epargne] .card.tool { border-top-color: var(--v-green); }
+.tools-grid[data-g=vendre] .card.tool { border-top-color: var(--v-coral); }
+.tools-grid[data-g=banque] .card.tool { border-top-color: var(--v-sky); }
+.tools-grid[data-g=gagner] .card.tool { border-top-color: var(--v-violet); }
+.tools-grid[data-g=epargne] .tool-actions .btn:not(.ghost) { background: var(--v-green); }
+.tools-grid[data-g=vendre] .tool-actions .btn:not(.ghost) { background: var(--v-coral); }
+.tools-grid[data-g=banque] .tool-actions .btn:not(.ghost) { background: var(--v-sky); }
+.tools-grid[data-g=gagner] .tool-actions .btn:not(.ghost) { background: var(--v-violet); }
+.tool-actions .btn:not(.ghost) { color: #fff; border-color: transparent; }
+.pf-hero > div:nth-child(1) { background: var(--saffron); color: #111; }
+.pf-hero > div:nth-child(1) svg, .pf-hero > div:nth-child(1) span { color: #111; }
+.pf-hero > div:nth-child(2) { background: var(--v-green); }
+.pf-hero > div:nth-child(3) { background: var(--v-coral); }
+.pf-hero > div:nth-child(4) { background: var(--v-violet); }
+.pf-hero > div:nth-child(n+2) svg, .pf-hero > div:nth-child(n+2) span { color: #fff; }
+.pf-stats > div:nth-child(4n+1) { border-top: 4px solid var(--saffron); }
+.pf-stats > div:nth-child(4n+2) { border-top: 4px solid var(--v-green); }
+.pf-stats > div:nth-child(4n+3) { border-top: 4px solid var(--v-coral); }
+.pf-stats > div:nth-child(4n+4) { border-top: 4px solid var(--v-violet); }
+.pf-months .bar i { background: var(--v-green); }
+.kpis > *:nth-child(1) svg { color: var(--saffron); }
+.kpis > *:nth-child(2) svg { color: var(--v-green); }
+.kpis > *:nth-child(3) svg { color: var(--v-coral); }
+.lesson-progress i { background: var(--v-green); }
+.tools-grid, .tools-grid > * { min-width: 0; max-width: 100%; }
+.tool input, .tool select { max-width: 100%; min-width: 0; }
+.tool .field-suffix { min-width: 0; }

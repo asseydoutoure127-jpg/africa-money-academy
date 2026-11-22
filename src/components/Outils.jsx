@@ -29,7 +29,7 @@ function Field({ id, label, value, onChange, hint, suffix = 'FCFA', ph = '0' }) 
 }
 
 // Résultat : phrase claire, puis « Comment c'est calculé » (étapes), puis « Que faire maintenant ? ».
-function Result({ ok = true, children, how = [], tip = '' }) {
+function Result({ ok = true, children, how = [], tip = '', solutions = [] }) {
   const shown = useContext(ShowCtx);
   if (!shown) return null;
   return (
@@ -37,6 +37,11 @@ function Result({ ok = true, children, how = [], tip = '' }) {
       <p className="res-main">{children}</p>
       {how.filter(Boolean).length > 0 && (
         <div className="res-how"><strong>Comment c’est calculé</strong><ol>{how.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}</ol></div>
+      )}
+      {solutions.length > 0 && (
+        <div className="res-sol"><strong>Solutions possibles</strong>
+          <ul>{solutions.map((x, i) => <li key={i}><b>{x.t}</b>{x.d && <span>{x.d}</span>}{x.gain > 0 && <em>≈ {fcfa(x.gain)} par mois</em>}</li>)}</ul>
+        </div>
       )}
       {tip && <div className="res-tip"><strong>Que faire maintenant ?</strong><p>{tip}</p></div>}
     </div>
@@ -77,6 +82,7 @@ function Budget() {
       <Field id="b-wants" label="Autres dépenses" value={raw[2]} onChange={set(2)} ph="Ex. 15 000" hint="Sorties, vêtements, cadeaux…" />
       <Result ok={left >= 0}
         how={[`Total des dépenses = ${fcfa(n)} + ${fcfa(w)} = ${fcfa(n + w)}`, `Reste = argent reçu − dépenses = ${fcfa(i)} − ${fcfa(n + w)} = ${fcfa(left)}`, i > 0 ? `Vos dépenses représentent ${Math.round(((n + w) / i) * 100)} % de ce que vous recevez.` : '']}
+        solutions={left < 0 ? [{ t: 'Réduire les autres dépenses', d: `Si vous les baissez de moitié : ${fcfa(w / 2)}.`, gain: w / 2 }, { t: 'Réduire de 10 % tout le reste', d: 'Une petite baisse sur chaque ligne passe mieux qu’une grosse coupe sur une seule.', gain: (n + w) * 0.1 }, { t: 'Gagner un peu plus', d: `Il manque ${fcfa(-left)} : un petit revenu en plus règle le problème sans se priver.`, gain: -left }] : [{ t: 'Épargne automatique', d: `Mettez ${fcfa(left * 0.5)} à part le jour où vous êtes payé.`, gain: left * 0.5 }, { t: 'Réduire de 10 % les autres dépenses', d: 'Même quand tout va bien, ce petit effort construit votre argent de secours plus vite.', gain: w * 0.1 }]}
         tip={left >= 0 ? `Mettez ${fcfa(Math.max(0, left * 0.5))} de côté dès le début du mois (la moitié de ce qui reste), avant de dépenser. Ce qui n’est pas mis de côté tout de suite se dépense presque toujours.` : 'Commencez par la ligne « autres dépenses » : réduisez-la d’abord. Ensuite cherchez un petit revenu en plus.'}>
         {left >= 0 ? <>Il vous reste <strong>{fcfa(left)}</strong> ce mois-ci.</> : <>Vous dépensez <strong>{fcfa(-left)}</strong> de plus que ce que vous recevez.</>}
       </Result>
@@ -181,6 +187,7 @@ function Marge() {
       <Field id="m-qty" label="Nombre vendu par mois (facultatif)" value={raw[2]} onChange={set(2)} suffix="pièces" ph="Ex. 100" />
       <Result ok={gain > 0}
         how={[`Gain par pièce = prix de vente − coût = ${fcfa(p)} − ${fcfa(c)} = ${fcfa(gain)}`, p > 0 ? `Part du prix gardée = gain ÷ prix = ${fcfa(gain)} ÷ ${fcfa(p)} = ${Math.round((gain / p) * 100)} %` : '', q > 0 ? `Gain du mois = ${fcfa(gain)} × ${fmt(q)} = ${fcfa(gain * q)}` : '']}
+        solutions={[{ t: 'Augmenter le prix de 10 %', d: `Prix ${fcfa(p * 1.1)} : gain ${fcfa(p * 1.1 - c)} par pièce.`, gain: (p * 0.1) * (q || 0) }, { t: 'Baisser le coût de 10 %', d: `Coût ${fcfa(c * 0.9)} : gain ${fcfa(p - c * 0.9)} par pièce. Négociez au prix de gros, groupez les achats.`, gain: (c * 0.1) * (q || 0) }, { t: 'Vendre plus, pas seulement plus cher', d: 'Proposez à vos clients un deuxième article ou un lot : le gain par client monte sans toucher au prix.' }]}
         tip={gain <= 0 ? 'Ne vendez pas à ce prix : chaque vente vous appauvrit. Augmentez le prix un peu, ou cherchez un fournisseur moins cher.' : gain / p < 0.2 ? 'Votre marge est faible : une petite dépense imprévue la fait disparaître. Visez au moins 25 à 30 % du prix (outil « À quel prix vendre ? »).' : 'Bonne marge. Notez bien vos coûts chaque mois pour être sûr qu’elle reste vraie.'}>
         {gain <= 0 ? <>À ce prix, vous <strong>perdez {fcfa(-gain)}</strong> à chaque vente.</> : <>Vous gagnez <strong>{fcfa(gain)}</strong> par pièce, soit <strong>{Math.round((gain / p) * 100)} %</strong> du prix de vente.{q > 0 && <> Avec {fmt(q)} vente{q > 1 ? 's' : ''} par mois : <strong>{fcfa(gain * q)}</strong>.</>}</>}
       </Result>
@@ -350,8 +357,114 @@ function Horaire() {
   );
 }
 
+
+/* ---------- Budget détaillé : le grand outil ---------- */
+const CATS = [
+  { k: 'logement', l: 'Logement, eau, électricité', need: true, tips: ['Demandez à baisser le loyer ou partagez le logement si c’est possible.', 'Éteignez et débranchez ce que vous n’utilisez pas : lampes, chargeurs, ventilateur.', 'Payez les factures à date fixe pour éviter les frais de retard.'] },
+  { k: 'nourriture', l: 'Nourriture', need: true, tips: ['Faites la liste des repas de la semaine avant d’aller au marché, et n’achetez que ce qui est sur la liste.', 'Achetez en plus grande quantité ce qui se conserve (riz, huile, savon, sucre) : le prix à l’unité baisse.', 'Cuisinez à la maison plutôt que d’acheter des plats tout prêts chaque jour.'] },
+  { k: 'transport', l: 'Transport', need: true, tips: ['Regroupez vos déplacements : une sortie bien planifiée coûte moins que trois petites.', 'Comparez les moyens (à pied, transport commun, moto-taxi) selon la distance.', 'Entretenez votre moto ou vélo : une petite réparation à temps évite une grosse panne.'] },
+  { k: 'telephone', l: 'Crédit téléphone et internet', need: false, tips: ['Un forfait internet pour la semaine ou le mois revient souvent moins cher que de petits crédits chaque jour.', 'Vérifiez ce qui consomme votre connexion (vidéos, mises à jour automatiques) et coupez ce qui est inutile.', 'Utilisez le wifi quand il est gratuit et fiable.'] },
+  { k: 'sante', l: 'Santé', need: true, tips: ['Regardez s’il existe une mutuelle ou une assurance maladie accessible : payer un peu chaque mois évite une grosse dépense en cas de problème.', 'La prévention (eau propre, moustiquaire, consultation tôt) coûte moins cher que de soigner tard.'] },
+  { k: 'ecole', l: 'École, formation', need: true, tips: ['Achetez les fournitures en une fois, en gros, avec d’autres parents.', 'Pensez aux livres d’occasion et aux cours gratuits avant d’acheter du neuf.'] },
+  { k: 'famille', l: 'Aide à la famille, cotisations', need: true, tips: ['Fixez un montant d’aide par mois, décidé à l’avance, et tenez-le : vous saurez dire non sans culpabiliser.', 'Mettez de côté un petit montant pour les imprévus familiaux plutôt que de tout donner au dernier moment.'] },
+  { k: 'loisirs', l: 'Sorties, vêtements, loisirs', need: false, tips: ['Donnez-vous une enveloppe fixe par mois pour les envies. Quand elle est vide, on attend le mois suivant.', 'Attendez 48 heures avant tout achat d’envie : souvent l’envie passe.'] },
+  { k: 'dettes', l: 'Remboursements de dettes', need: true, tips: ['Remboursez en priorité la dette la plus chère (celle qui coûte le plus d’intérêts), tout en payant le minimum des autres.', 'N’empruntez pas pour rembourser une autre dette sans calculer ce que cela coûte en tout.', 'Si vous ne pouvez plus payer, parlez-en à votre créancier avant le retard et proposez un échéancier.'] },
+  { k: 'autres', l: 'Autres dépenses', need: false, tips: ['Notez chaque petite dépense pendant deux semaines : on découvre vite où l’argent s’échappe.', 'Les petites dépenses de tous les jours (boisson, snack, crédit) pèsent souvent plus qu’on ne le pense.'] },
+];
+function BudgetDetail() {
+  const [income, setIncome] = useState('');
+  const [vals, setVals] = useState(Object.fromEntries(CATS.map((c) => [c.k, ''])));
+  const inc = num(income);
+  const rows = CATS.map((c) => ({ ...c, v: num(vals[c.k]) }));
+  const total = rows.reduce((a, r) => a + r.v, 0);
+  const left = inc - total;
+  const needs = rows.filter((r) => r.need).reduce((a, r) => a + r.v, 0);
+  const wants = total - needs;
+  const sorted = [...rows].filter((r) => r.v > 0).sort((a, b) => b.v - a.v);
+  const top3 = sorted.slice(0, 3);
+  const cuttable = rows.filter((r) => !['logement', 'dettes', 'sante'].includes(r.k));
+  const cut10 = cuttable.reduce((a, r) => a + r.v * 0.1, 0);
+  const cut20 = cuttable.reduce((a, r) => a + r.v * 0.2, 0);
+  const target = inc * 0.2;
+  const sols = [];
+  if (inc > 0 && total > 0) {
+    top3.forEach((r) => {
+      const gain = r.k === 'logement' || r.k === 'dettes' ? r.v * 0.05 : r.v * 0.15;
+      sols.push({ t: `${r.l} : ${Math.round((r.v / total) * 100)} % de vos dépenses`, d: r.tips[0], gain });
+    });
+    if (left < 0) sols.push({ t: 'Gagner un peu plus', d: `Il manque ${fcfa(-left)} chaque mois. Avec un gain de 1 000 FCFA par vente, cela fait ${Math.ceil(-left / 1000)} ventes par mois, soit environ ${Math.max(1, Math.ceil(-left / 1000 / 26))} par jour. Voyez nos formations pour trouver comment.`, gain: -left });
+    else if (left < target) sols.push({ t: `Atteindre 20 % d’épargne`, d: `Vous épargnez ${fcfa(Math.max(0, left))} (${Math.round((Math.max(0, left) / inc) * 100)} %). Pour viser 20 % (${fcfa(target)}), il faut trouver ${fcfa(target - Math.max(0, left))} de plus par mois.`, gain: target - Math.max(0, left) });
+  }
+  return (
+    <Card id="budget-detail" title="Mon budget détaillé" intro="Le grand bilan : remplissez ce que vous dépensez par poste. Vous voyez où part l’argent, ce qui est trop, et des solutions chiffrées pour garder plus." ready={inc > 0 && total > 0}>
+      <Field id="bd-in" label="Argent reçu ce mois (tout compris)" value={income} onChange={setIncome} ph="Ex. 120 000" />
+      {CATS.map((c) => <Field key={c.k} id={`bd-${c.k}`} label={c.l} value={vals[c.k]} onChange={(x) => setVals((a) => ({ ...a, [c.k]: x }))} ph="0" />)}
+      <Result ok={left >= 0}
+        how={[
+          `Total des dépenses = ${rows.filter((r) => r.v > 0).map((r) => fcfa(r.v)).join(' + ')} = ${fcfa(total)}`,
+          `Reste = ${fcfa(inc)} − ${fcfa(total)} = ${fcfa(left)} (${inc > 0 ? Math.round((left / inc) * 100) : 0} % de vos revenus)`,
+          `Dépenses obligatoires (logement, nourriture, transport, santé, école, famille, dettes) : ${fcfa(needs)} = ${inc > 0 ? Math.round((needs / inc) * 100) : 0} % de vos revenus. Repère : environ 50 %.`,
+          `Dépenses plus libres (téléphone, loisirs, autres) : ${fcfa(wants)} = ${inc > 0 ? Math.round((wants / inc) * 100) : 0} % de vos revenus. Repère : environ 30 %.`,
+          `Si vous réduisez de 10 % les postes réductibles : ${fcfa(cut10)} gagnés par mois (${fcfa(cut10 * 12)} par an). De 20 % : ${fcfa(cut20)} par mois.`,
+        ]}
+        solutions={sols}
+        tip={left < 0 ? `Votre déficit est de ${fcfa(-left)}. Réduire de 10 % ne suffit pas toujours (${fcfa(cut10)}) : combinez les solutions ci-dessus et un revenu en plus. Ne comblez pas le trou avec des dettes.` : left < target ? 'Vous êtes à l’équilibre mais vous épargnez peu. Choisissez UNE solution ci-dessus et appliquez-la ce mois-ci, puis mettez le gain de côté tout de suite.' : 'Très bon équilibre. Placez cet argent à part (compte, tontine, mobile money séparé) et visez 3 mois de dépenses de secours.'}>
+        {left >= 0 ? <>Il vous reste <strong>{fcfa(left)}</strong> par mois.</> : <>Vous dépensez <strong>{fcfa(-left)}</strong> de plus que ce que vous recevez.</>}
+        {total > 0 && (
+          <span className="bars" aria-label="Part de chaque poste">
+            {sorted.map((r) => (
+              <span className="bar-row" key={r.k}><span>{r.l}</span><span className="bar"><i style={{ width: `${Math.max(3, Math.round((r.v / total) * 100))}%` }} /></span><b>{Math.round((r.v / total) * 100)} %</b></span>
+            ))}
+          </span>
+        )}
+      </Result>
+    </Card>
+  );
+}
+function Defi52() {
+  const [[base], raw, set] = useVals(1);
+  const total = base * (52 * 53) / 2;
+  return (
+    <Card id="defi52" title="Défi d’épargne des 52 semaines" intro="La semaine 1, vous mettez de côté un petit montant. La semaine 2, le double. La semaine 3, le triple… jusqu’à la semaine 52." ready={base > 0}>
+      <Field id="d52-b" label="Montant de la première semaine" value={raw[0]} onChange={set(0)} ph="Ex. 100" />
+      <Result how={[`Semaine n : n × ${fcfa(base)}. Semaine 10 = ${fcfa(base * 10)}, semaine 26 = ${fcfa(base * 26)}, semaine 52 = ${fcfa(base * 52)}.`, `Total sur l’année = ${fcfa(base)} × (1 + 2 + … + 52) = ${fcfa(base)} × 1 378 = ${fcfa(total)}`, `Les 26 premières semaines coûtent peu : ${fcfa(base * 351)} en tout. Le plus dur est la fin.`]}
+        solutions={[{ t: 'Version plus facile', d: `Commencez par la dernière semaine : ${fcfa(base * 52)} quand vous avez le plus d’argent (début d’année), puis diminuez chaque semaine.` }, { t: 'Version mensuelle', d: `Sur 12 mois : mois n × ${fcfa(base * 4)}. Total ${fcfa(base * 4 * 78)}.` }]}
+        tip="Mettez l’argent dans un endroit où il est difficile de le reprendre. Cochez chaque semaine faite sur un papier visible.">
+        En 52 semaines, vous aurez <strong>{fcfa(total)}</strong>.
+      </Result>
+    </Card>
+  );
+}
+function Dettes() {
+  const [rows, setRows] = useState([{ n: '', a: '', r: '' }, { n: '', a: '', r: '' }, { n: '', a: '', r: '' }]);
+  const [pay, setPay] = useState('');
+  const set = (i, k, x) => setRows((a) => a.map((l, j) => (j === i ? { ...l, [k]: x } : l)));
+  const debts = rows.map((d, i) => ({ i, n: d.n || `Dette ${i + 1}`, a: num(d.a), r: num(d.r) })).filter((d) => d.a > 0);
+  const ordered = [...debts].sort((x, y) => y.r - x.r || x.a - y.a);
+  const total = debts.reduce((a, d) => a + d.a, 0);
+  const p = num(pay);
+  return (
+    <Card id="dettes" title="Mes dettes : par laquelle commencer ?" intro="Remboursez d’abord celle qui coûte le plus cher (le taux le plus haut). Les autres, vous payez seulement le minimum." ready={debts.length > 0 && p > 0}>
+      {rows.map((l, i) => (
+        <div className="line3" key={i}>
+          <input aria-label={`Nom de la dette ${i + 1}`} value={l.n} onChange={(e) => set(i, 'n', e.target.value)} placeholder={['Ex. boutique', 'Ex. ami', 'Ex. banque'][i]} />
+          <div className="field-suffix"><input aria-label={`Montant ${i + 1}`} inputMode="decimal" value={l.a} onChange={(e) => set(i, 'a', e.target.value)} placeholder="0" /><span>FCFA</span></div>
+          <div className="field-suffix"><input aria-label={`Taux ${i + 1}`} inputMode="decimal" value={l.r} onChange={(e) => set(i, 'r', e.target.value)} placeholder="0" /><span>%</span></div>
+        </div>
+      ))}
+      <p className="hint">Pour chaque dette : un nom, le montant qu’il reste à payer, et le taux (ou le coût par mois en % ; 0 s’il n’y a pas d’intérêt).</p>
+      <Field id="dt-p" label="Ce que je peux rembourser par mois en tout" value={pay} onChange={setPay} ph="Ex. 30 000" />
+      <Result how={[`Total des dettes = ${debts.map((d) => fcfa(d.a)).join(' + ')} = ${fcfa(total)}`, `Mois pour tout rembourser, sans compter les intérêts = ${fcfa(total)} ÷ ${fcfa(p)} = ${Math.ceil(total / (p || 1))} mois.`, `Ordre conseillé : ${ordered.map((d, k) => `${k + 1}. ${d.n} (${fmt(d.r)} %)`).join(' → ')}`]}
+        solutions={[{ t: `Commencez par « ${ordered[0]?.n} »`, d: 'Mettez tout l’argent possible sur cette dette. Quand elle est finie, mettez la même somme sur la suivante.' }, { t: 'Parlez à ceux à qui vous devez', d: 'Un échéancier proposé à l’avance est presque toujours mieux accepté qu’un retard silencieux.' }, { t: 'Ne prenez pas de nouvelle dette', d: 'Chaque nouvelle dette retarde la fin de toutes les autres.' }]}
+        tip="Si vos dettes dépassent plusieurs mois de revenus, cherchez d’abord à augmenter vos revenus et à réduire vos dépenses (voir « Mon budget détaillé »).">
+        Vous devez <strong>{fcfa(total)}</strong> en tout. Remboursez d’abord <strong>{ordered[0]?.n}</strong>. Fin dans environ <strong>{Math.ceil(total / (p || 1))} mois</strong>.
+      </Result>
+    </Card>
+  );
+}
+
 const GROUPS = [
-  { key: 'epargne', label: 'Budget et épargne', tools: [Budget, Repartition, Objectif, Urgence, Epargne, Tontine, Interets] },
+  { key: 'epargne', label: 'Budget et épargne', tools: [BudgetDetail, Budget, Repartition, Objectif, Urgence, Epargne, Tontine, Interets, Defi52, Dettes] },
   { key: 'vendre', label: 'Vendre', tools: [Marge, PrixConseille, Seuil, VentesParJour, PrixRevient, Remise] },
   { key: 'banque', label: 'Argent et banque', tools: [Pret, Devises, Frais] },
   { key: 'gagner', label: 'Gagner de l’argent', tools: [Revenu, Horaire] },
@@ -371,12 +484,12 @@ export default function Outils() {
       <p className="muted">{total} outils, classés en {GROUPS.length} familles.</p>
       <div className="tool-tabs" role="tablist" aria-label="Familles d’outils">
         {GROUPS.map((x) => (
-          <button key={x.key} type="button" role="tab" aria-selected={x.key === group} className={x.key === group ? 'on' : ''} onClick={() => setGroup(x.key)}>
+          <button key={x.key} data-g={x.key} type="button" role="tab" aria-selected={x.key === group} className={x.key === group ? 'on' : ''} onClick={() => setGroup(x.key)}>
             {x.label} <small>{x.tools.length}</small>
           </button>
         ))}
       </div>
-      <div className="tools-grid">
+      <div className="tools-grid" data-g={g.key}>
         {g.tools.map((T, i) => <Frame key={`${g.key}-${i}`} T={T} />)}
       </div>
     </div>
