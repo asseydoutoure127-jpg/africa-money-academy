@@ -102,7 +102,7 @@ export default async function Profil({ searchParams }) {
         ) : data.exercises.map((x, i) => (
           <article key={i} className="card pf-ex">
             <div className="lc-top"><strong>{x.lesson_title}</strong>
-              {x.validated_at ? <span className="badge ok">Validé{x.grade !== null ? ` · ${x.grade}/10` : ''}</span> : <span className="badge grey">En attente de correction</span>}</div>
+              {x.status === 'validated' ? <span className="badge ok">Validé{x.grade !== null ? ` · ${x.grade}/10` : ''}</span> : x.status === 'needs_correction' ? <span className="badge gold">Correction demandée</span> : x.status === 'refused' ? <span className="badge red">À refaire</span> : <span className="badge grey">En attente de correction</span>}</div>
             <small className="muted">{x.course_title} · rendu le {dayShort(x.submitted_at)}</small>
             {x.feedback && <p className="pf-fb">« {x.feedback} »</p>}
           </article>

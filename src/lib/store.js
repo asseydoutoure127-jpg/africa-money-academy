@@ -321,19 +321,45 @@ export async function listCompletedLessonIds(db, userId, courseId) {
 }
 
 export async function getExerciseAnswer(db, userId, lessonId) {
-  return first(await db.query(`select answer, submitted_at, updated_at, validated_at, feedback, grade from lesson_exercises where user_id = $1 and lesson_id = $2`, [userId, lessonId]));
+  return first(await db.query(`select answer, submitted_at, updated_at, validated_at, status, reviewed_at, feedback, grade from lesson_exercises where user_id = $1 and lesson_id = $2`, [userId, lessonId]));
 }
 
 export async function saveExerciseAnswer(db, userId, lessonId, answer) {
-  await db.query(
-    `insert into lesson_exercises (user_id, lesson_id, answer) values ($1, $2, $3)
-     on conflict (user_id, lesson_id) do update set
-       validated_at = case when lesson_exercises.answer is distinct from excluded.answer then null else lesson_exercises.validated_at end,
-       validated_by = case when lesson_exercises.answer is distinct from excluded.answer then null else lesson_exercises.validated_by end,
-       grade = case when lesson_exercises.answer is distinct from excluded.answer then null else lesson_exercises.grade end,
-       answer = excluded.answer, updated_at = now()`,
-    [userId, lessonId, answer],
-  );
+  const prev = first(await db.query(`select answer, status from lesson_exercises where user_id = $1 and lesson_id = $2`, [userId, lessonId]));
+  if (!prev) {
+    await db.query(`insert into lesson_exercises (user_id, lesson_id, answer) values ($1, $2, $3)`, [userId, lessonId, answer]);
+    await db.query(`insert into exercise_attempts (user_id, lesson_id, answer) values ($1, $2, $3)`, [userId, lessonId, answer]);
+    return;
+  }
+  const changed = prev.answer !== answer;
+  // Une réponse modifiée, ou renvoyée après une demande de correction / un refus, repasse « à corriger ».
+  if (changed || prev.status === 'refused' || prev.status === 'needs_correction') {
+    await db.query(
+      `update lesson_exercises set answer = $3, status = 'pending', validated_at = null, validated_by = null, grade = null,
+              reviewed_at = null, reviewed_by = null, updated_at = now()
+        where user_id = $1 and lesson_id = $2`,
+      [userId, lessonId, answer],
+    );
+  }
+  if (changed) await db.query(`insert into exercise_attempts (user_id, lesson_id, answer) values ($1, $2, $3)`, [userId, lessonId, answer]);
+}
+
+/** Toutes les tentatives des couples (élève, leçon) demandés, de la plus récente à la plus ancienne. Clé : « userId:lessonId ». */
+export async function listAttemptsFor(db, pairs) {
+  const out = new Map();
+  if (!pairs.length) return out;
+  const users = pairs.map((p) => p.user_id);
+  const lessons = pairs.map((p) => p.lesson_id);
+  const rows = (await db.query(
+    `select a.user_id, a.lesson_id, a.answer, a.submitted_at
+       from exercise_attempts a join unnest($1::uuid[], $2::uuid[]) as k(u, l) on a.user_id = k.u and a.lesson_id = k.l
+      order by a.submitted_at desc`, [users, lessons])).rows;
+  for (const r of rows) {
+    const key = `${r.user_id}:${r.lesson_id}`;
+    if (!out.has(key)) out.set(key, []);
+    out.get(key).push(r);
+  }
+  return out;
 }
 
 export async function markLessonDone(db, userId, lessonId) {
@@ -710,7 +736,7 @@ export async function learnerStats(db) {
       count(*) filter (where not exists (select 1 from enrollments e where e.user_id = u.id and e.status = 'active'))::int as nocourse,
       count(*) filter (where exists (select 1 from lesson_progress p where p.user_id = u.id and p.completed_at > now() - interval '7 days')
                           or exists (select 1 from lesson_exercises x where x.user_id = u.id and x.updated_at > now() - interval '7 days'))::int as active7,
-      (select count(*)::int from lesson_exercises where validated_at is null) as pending_ex
+      (select count(*)::int from lesson_exercises where status = 'pending') as pending_ex
     from users u where u.role = 'learner'`));
 }
 
@@ -767,7 +793,7 @@ export async function getLearnerDetail(db, userId) {
   const lessons = (
     await db.query(
       `select m.course_id, m.title as module_title, m.position as mpos, l.id, l.title, l.position as lpos, l.exercise,
-              p.completed_at, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.feedback, x.grade
+              p.completed_at, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.status, x.feedback, x.grade
        from lessons l join modules m on m.id = l.module_id
        left join lesson_progress p on p.lesson_id = l.id and p.user_id = $1
        left join lesson_exercises x on x.lesson_id = l.id and x.user_id = $1
@@ -783,8 +809,7 @@ export async function listExerciseAnswers(db, { courseId = null, status = '', q 
   const params = [];
   const conds = [];
   if (courseId) { params.push(courseId); conds.push(`c.id = $${params.length}`); }
-  if (status === 'pending') conds.push('x.validated_at is null');
-  if (status === 'validated') conds.push('x.validated_at is not null');
+  if (['pending', 'validated', 'refused', 'needs_correction'].includes(status)) { params.push(status); conds.push(`x.status = $${params.length}`); }
   const term = String(q || '').trim().toLowerCase();
   if (term) { params.push(`%${term}%`); conds.push(`(lower(u.name) like $${params.length} or lower(u.email) like $${params.length})`); }
   const where = conds.length ? `where ${conds.join(' and ')}` : '';
@@ -792,14 +817,14 @@ export async function listExerciseAnswers(db, { courseId = null, status = '', q 
        join modules m on m.id = l.module_id join courses c on c.id = m.course_id`;
   const rows = (
     await db.query(
-      `select x.user_id, x.lesson_id, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.feedback, x.grade, u.name, u.email,
+      `select x.user_id, x.lesson_id, x.answer, x.submitted_at, x.updated_at, x.validated_at, x.status, x.reviewed_at, x.feedback, x.grade, u.name, u.email,
               l.title as lesson_title, l.exercise, c.title as course_title
-       ${from} ${where} order by (x.validated_at is null) desc, x.updated_at desc limit $${params.length + 1} offset $${params.length + 2}`,
+       ${from} ${where} order by (x.status = 'pending') desc, x.updated_at desc limit $${params.length + 1} offset $${params.length + 2}`,
       [...params, limit, offset],
     )
   ).rows;
   const total = Number(first(await db.query(`select count(*)::int as n ${from} ${where}`, params)).n);
-  const counts = first(await db.query(`select count(*) filter (where x.validated_at is null)::int as pending, count(*) filter (where x.validated_at is not null)::int as validated from lesson_exercises x`));
+  const counts = first(await db.query(`select count(*) filter (where x.status = 'pending')::int as pending, count(*) filter (where x.status = 'needs_correction')::int as needs_correction, count(*) filter (where x.status = 'validated')::int as validated, count(*) filter (where x.status = 'refused')::int as refused from lesson_exercises x`));
   return { rows, total, counts };
 }
 
@@ -831,16 +856,30 @@ export async function activitySummary(db) {
 }
 
 // Valide (ou annule la validation d') la réponse d'un élève à un exercice.
-export async function setExerciseValidated(db, { userId, lessonId, adminId, validated, feedback = '', grade = null }) {
+const REVIEW_STATUSES = ['pending', 'validated', 'refused', 'needs_correction'];
+
+/** Décision de l'administrateur sur un exercice. `pending` annule une décision précédente. */
+export async function setExerciseReview(db, { userId, lessonId, adminId, status, feedback = '', grade = null }) {
+  if (!REVIEW_STATUSES.includes(status)) throw new Error('statut inconnu');
+  const validated = status === 'validated';
+  const decided = status !== 'pending';
   return first(
     await db.query(
       `update lesson_exercises
-         set validated_at = case when $4::boolean then now() else null end,
-             validated_by = case when $4::boolean then $3::uuid else null end,
-             feedback = case when $4::boolean then $5 else '' end,
-             grade = case when $4::boolean then $6::smallint else null end
-       where user_id = $1 and lesson_id = $2 returning user_id`,
-      [userId, lessonId, adminId, validated, feedback, grade],
+         set status = $4,
+             validated_at = case when $5::boolean then now() else null end,
+             validated_by = case when $5::boolean then $3::uuid else null end,
+             reviewed_at = case when $6::boolean then now() else null end,
+             reviewed_by = case when $6::boolean then $3::uuid else null end,
+             feedback = case when $6::boolean then $7 else '' end,
+             grade = case when $5::boolean then $8::smallint else null end
+       where user_id = $1 and lesson_id = $2 returning user_id, status`,
+      [userId, lessonId, adminId, status, validated, decided, feedback, grade],
     ),
   );
+}
+
+// Ancien nom, gardé pour les appels existants.
+export function setExerciseValidated(db, { userId, lessonId, adminId, validated, feedback = '', grade = null }) {
+  return setExerciseReview(db, { userId, lessonId, adminId, status: validated ? 'validated' : 'pending', feedback, grade });
 }

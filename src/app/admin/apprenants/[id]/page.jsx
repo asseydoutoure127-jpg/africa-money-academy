@@ -53,7 +53,7 @@ export default async function LearnerPage({ params, searchParams }) {
                     <div className="answer">
                       {l.exercise && <PlainRich text={l.exercise} className="consigne" />}
                       <PlainRich text={l.answer} className="answer-text" />
-                      <ValidateExercise userId={user.id} lessonId={l.id} validatedAt={l.validated_at} feedback={l.feedback} grade={l.grade} back={`/admin/apprenants/${user.id}`} />
+                      <ValidateExercise userId={user.id} lessonId={l.id} status={l.status} validatedAt={l.validated_at} reviewedAt={l.validated_at} feedback={l.feedback} grade={l.grade} back={`/admin/apprenants/${user.id}`} />
                       <p className="muted">Rendu le {fmt(l.submitted_at)}{l.updated_at && String(l.updated_at) !== String(l.submitted_at) ? ` · modifié le ${fmt(l.updated_at)}` : ''}</p>
                     </div>
                   ) : l.exercise ? <p className="muted ll-none">Exercice pas encore rendu.</p> : null}

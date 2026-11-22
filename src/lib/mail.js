@@ -65,6 +65,22 @@ export function renderMail(template, d) {
         html: wrap(d.siteName, 'Confirmez votre adresse pour ouvrir l\'accès', [hello, `Votre paiement pour <strong>${course}</strong> est bien reçu. Confirmez votre adresse e-mail (message envoyé à l'inscription) et l'accès s'ouvrira automatiquement.`], { label: 'Me connecter', url: d.link }),
         text: `${helloText}\n\nVotre paiement pour ${d.courseTitle || 'votre formation'} est bien reçu. Confirmez votre adresse e-mail et l'accès s'ouvrira automatiquement :\n${d.link}\n`,
       };
+    case 'exerciseReviewed': {
+      const lesson = escapeHtml(d.lessonTitle || 'votre exercice');
+      const fb = d.feedback ? `Le commentaire de votre correcteur : « ${escapeHtml(d.feedback)} »` : '';
+      const lines = {
+        validated: [`Votre exercice « ${lesson} » est validé${d.grade !== undefined && d.grade !== null ? ` : note ${d.grade}/10` : ''}. Bravo !`, fb],
+        needs_correction: [`Votre exercice « ${lesson} » demande une petite correction.`, fb, 'Reprenez votre réponse, puis renvoyez-la : la correction se fait en quelques minutes.'],
+        refused: [`Votre exercice « ${lesson} » n’a pas pu être accepté.`, fb, 'Vous pouvez le refaire et le renvoyer quand vous voulez.'],
+        pending: [`La validation de votre exercice « ${lesson} » a été retirée : il repasse en attente de correction.`, fb],
+      }[d.status] || [`Votre exercice « ${lesson} » a été relu.`, fb];
+      const subject = { validated: 'Exercice validé', needs_correction: 'Une correction vous est demandée', refused: 'Exercice à refaire', pending: 'Validation retirée' }[d.status] || 'Exercice relu';
+      return {
+        subject: `${subject} – ${d.siteName}`,
+        html: wrap(d.siteName, subject, [hello, ...lines.filter(Boolean)], { label: 'Ouvrir l’exercice', url: d.link }),
+        text: `${helloText}\n\n${lines.filter(Boolean).join('\n').replace(/<[^>]+>/g, '')}\n\n${d.link}\n`,
+      };
+    }
     default:
       throw new Error(`Modèle d'e-mail inconnu : ${template}`);
   }

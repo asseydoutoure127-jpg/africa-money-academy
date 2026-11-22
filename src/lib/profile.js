@@ -43,7 +43,7 @@ export async function profileData(db, userId) {
     kind: r.kind, points: r.points, at: r.created_at, lesson: r.lesson_title || null,
   }));
   const exercises = (await db.query(
-    `select l.title as lesson_title, c.title as course_title, x.grade, x.validated_at, x.feedback, x.submitted_at, x.updated_at
+    `select l.title as lesson_title, c.title as course_title, x.grade, x.validated_at, x.status, x.feedback, x.submitted_at, x.updated_at
        from lesson_exercises x join lessons l on l.id = x.lesson_id join modules m on m.id = l.module_id join courses c on c.id = m.course_id
       where x.user_id = $1 order by x.updated_at desc limit 20`, [userId])).rows;
   const orders = (await db.query(`select item_title, price_coins, status, created_at from shop_orders where user_id = $1 order by created_at desc limit 20`, [userId])).rows;

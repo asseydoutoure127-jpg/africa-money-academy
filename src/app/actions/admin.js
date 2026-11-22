@@ -265,28 +265,47 @@ export async function toggleBlock(formData) {
   redirect('/admin/apprenants?m=admin_ok');
 }
 
-// Valider (ou annuler la validation d') l'exercice d'un élève. `back` : page où revenir (liste blanche).
+// Décision de l'administrateur sur un exercice : valider (avec note), demander une correction, refuser, ou annuler la décision.
+// `back` : page où revenir (liste blanche). Refuser et demander une correction exigent un commentaire pour l'élève.
+const DECISIONS = ['validated', 'needs_correction', 'refused', 'pending'];
 export async function validateExercise(formData) {
   const { admin, ctx } = await start();
   const userId = id(formData, 'userId');
   const lessonId = id(formData, 'lessonId');
-  const validated = formData.get('validated') === '1';
+  const decisionRaw = String(formData.get('decision') || (formData.get('validated') === '1' ? 'validated' : 'pending'));
+  const status = DECISIONS.includes(decisionRaw) ? decisionRaw : 'pending';
   const back = String(formData.get('back') || '');
   const dest = /^\/admin\/(exercices|apprenants)[A-Za-z0-9/?=&_-]*$/.test(back) ? back : '/admin/exercices';
-  if (!userId || !lessonId) redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=admin_erreur`);
+  const go = (m) => redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=${m}`);
+  if (!userId || !lessonId) go('admin_erreur');
   const feedback = longText(formData, 'feedback', 600).trim();
   const gradeRaw = String(formData.get('grade') ?? '');
   const grade = /^(10|[0-9])$/.test(gradeRaw) ? Number(gradeRaw) : null;
-  // Valider demande une note sur 10 : le classement en dépend.
-  if (validated && grade === null) redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=note_requise`);
-  const done = await store.setExerciseValidated(ctx.db, { userId, lessonId, adminId: admin.id, validated, feedback, grade });
+  // Valider demande une note sur 10 (le classement en dépend). Refuser / demander une correction demandent un commentaire.
+  if (status === 'validated' && grade === null) go('note_requise');
+  if ((status === 'refused' || status === 'needs_correction') && !feedback) go('commentaire_requis');
+  const before = await store.getExerciseAnswer(ctx.db, userId, lessonId);
+  if (!before) go('admin_erreur');
+  const done = await store.setExerciseReview(ctx.db, { userId, lessonId, adminId: admin.id, status, feedback, grade: status === 'validated' ? grade : null });
   if (done) {
-    await safe(() => (validated
+    await safe(() => (status === 'validated'
       ? award(ctx.db, { userId, kind: 'validated', ref: lessonId, points: validatedPoints(grade), replace: true })
       : removeAward(ctx.db, { userId, kind: 'validated', ref: lessonId })));
+    const action = { validated: 'exercise.validate', needs_correction: 'exercise.request_correction', refused: 'exercise.refuse', pending: 'exercise.unvalidate' }[status];
+    await store.logAdmin(ctx.db, { adminId: admin.id, action, target: userId, detail: { lessonId, grade, from: before.status, comment: feedback ? true : false } });
+    // L'élève est prévenu par e-mail (sans jamais bloquer l'action si l'envoi échoue). On ne prévient pas pour une simple annulation d'un état déjà « en attente ».
+    if (!(status === 'pending' && before.status === 'pending')) {
+      await safe(async () => {
+        const learner = await store.getUserById(ctx.db, userId);
+        const lesson = await store.getLesson(ctx.db, lessonId);
+        const course = lesson ? await store.getCourseById(ctx.db, lesson.course_id) : null;
+        if (learner && lesson && course) {
+          await ctx.notify('exerciseReviewed', { to: learner.email, name: learner.name, status, lessonTitle: lesson.title, feedback, grade, link: `${ctx.siteUrl}/espace/formation/${course.slug}/lecon/${lessonId}#exercice` });
+        }
+      });
+    }
   }
-  if (done) await store.logAdmin(ctx.db, { adminId: admin.id, action: validated ? 'exercise.validate' : 'exercise.unvalidate', target: userId, detail: { lessonId, grade } });
-  redirect(`${dest}${dest.includes('?') ? '&' : '?'}m=${done ? 'admin_ok' : 'admin_erreur'}`);
+  go(done ? 'admin_ok' : 'admin_erreur');
 }
 
 // ------------------------------------------------------------ Paiements

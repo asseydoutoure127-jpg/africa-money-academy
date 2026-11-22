@@ -7,7 +7,7 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import NextCourseCard from '@/components/NextCourseCard.jsx';
 import { computeProgress, findUnlockedLesson, flattenLessons } from '@/lib/progress.js';
-import { markLessonDone, submitExercise, confirmExerciseDone } from '@/app/actions/learn.js';
+import { markLessonDone, submitExercise } from '@/app/actions/learn.js';
 import { typo } from '@/lib/typo.js';
 import ReadingTimer from '@/components/ReadingTimer.jsx';
 import { award, touchDaily, safe, BAREME } from '@/lib/points.js';
@@ -102,6 +102,15 @@ export default async function LessonPage({ params, searchParams }) {
               <section className="exercise" id="exercice">
                 <h2>Exercice</h2>
                 <RichText text={lesson.exercise} />
+                {answer?.status === 'needs_correction' && (
+                  <p className="exercise-fix"><span className="badge gold">Correction demandée</span> {answer.feedback ? <em>« {answer.feedback} »</em> : null}<br />Reprenez votre réponse ci-dessous, puis renvoyez-la.</p>
+                )}
+                {answer?.status === 'refused' && (
+                  <p className="exercise-fix"><span className="badge red">À refaire</span> {answer.feedback ? <em>« {answer.feedback} »</em> : null}<br />Vous pouvez écrire une nouvelle réponse ci-dessous.</p>
+                )}
+                {answer && answer.status === 'pending' && (
+                  <p className="exercise-wait"><span className="badge grey">En attente de correction</span></p>
+                )}
                 {answer?.validated_at && (
                   <p className="exercise-ok"><span className="badge ok">✓ Exercice validé{answer.grade !== null && answer.grade !== undefined ? ` · note ${answer.grade}/10` : ''}</span>{answer.feedback ? <> <em>« {answer.feedback} »</em></> : null}</p>
                 )}
@@ -118,13 +127,6 @@ export default async function LessonPage({ params, searchParams }) {
                     {found.lesson.done ? 'Mettre à jour ma réponse' : 'Envoyer ma réponse et terminer la leçon'}
                   </button>
                 </form>
-                {!found.lesson.done && (
-                  <form action={confirmExerciseDone} className="exercise-skip">
-                    <input type="hidden" name="lessonId" value={lessonId} />
-                    <p className="hint">Vous avez fait l’exercice ailleurs (sur papier, par exemple) ?</p>
-                    <button className="btn ghost small" type="submit">J’ai fait l’exercice, passer à la suite</button>
-                  </form>
-                )}
               </section>
             )}
             <p className="licence">

@@ -1308,3 +1308,15 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 .pcard.pc-compact h2 { font-size: 1.15rem; }
 .pcard.pc-compact .btn { align-self: flex-start; margin-top: 8px; }
 .footer-logo { width: 130px; }
+
+/* Exercices : décision et tentatives */
+.validate.decide { display: grid; gap: 8px; }
+.validate.decide textarea { width: 100%; }
+.decide-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.danger-text { color: #b42318; border-color: #b42318; }
+details.attempts { margin: 8px 0; background: var(--paper); border-radius: 12px; padding: 8px 12px; }
+details.attempts summary { cursor: pointer; font-weight: 600; }
+.attempt { margin-top: 8px; }
+.plain-rich.answer-text.old { opacity: .75; }
+.exercise-fix { background: #fff7e0; border-radius: 12px; padding: 10px 12px; }
+.exercise-wait { margin: 8px 0; }
