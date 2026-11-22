@@ -1320,3 +1320,9 @@ details.attempts summary { cursor: pointer; font-weight: 600; }
 .plain-rich.answer-text.old { opacity: .75; }
 .exercise-fix { background: #fff7e0; border-radius: 12px; padding: 10px 12px; }
 .exercise-wait { margin: 8px 0; }
+
+/* Écouter la leçon */
+.listen { background: var(--paper); border-radius: 16px; padding: 12px 14px; margin: 0 0 18px; display: grid; gap: 8px; border-left: 5px solid var(--v-sky); }
+.listen-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.listen-speed { display: flex; align-items: center; gap: 6px; font-size: .88rem; margin-left: auto; }
+.listen-speed select { width: auto; padding: 6px 8px; }

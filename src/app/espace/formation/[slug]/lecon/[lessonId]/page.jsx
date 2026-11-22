@@ -7,6 +7,8 @@ import { getDb } from '@/lib/db.js';
 import * as store from '@/lib/store.js';
 import NextCourseCard from '@/components/NextCourseCard.jsx';
 import { computeProgress, findUnlockedLesson, flattenLessons } from '@/lib/progress.js';
+import ListenLesson from '@/components/ListenLesson.jsx';
+import { speechText } from '@/lib/speech-text.js';
 import { markLessonDone, submitExercise } from '@/app/actions/learn.js';
 import { typo } from '@/lib/typo.js';
 import ReadingTimer from '@/components/ReadingTimer.jsx';
@@ -97,6 +99,7 @@ export default async function LessonPage({ params, searchParams }) {
               ))}
             </div>
             <ReadingTimer />
+            <ListenLesson title={lesson.title} text={speechText(lesson.content)} />
             <RichText text={lesson.content} />
             {lesson.exercise?.trim() && (
               <section className="exercise" id="exercice">
