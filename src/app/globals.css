@@ -1288,3 +1288,16 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 .tools-grid, .tools-grid > * { min-width: 0; max-width: 100%; }
 .tool input, .tool select { max-width: 100%; min-width: 0; }
 .tool .field-suffix { min-width: 0; }
+
+/* Apprenants : liste compacte */
+.learner-list.compact { display: grid; gap: 8px; }
+.lrow { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: start; background: #fff; border-radius: 16px; padding: 12px 14px; box-shadow: var(--shadow); text-decoration: none; color: var(--ink); }
+.lr-avatar { width: 44px; height: 44px; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; font-weight: 700; }
+.lr-main { display: grid; gap: 3px; min-width: 0; }
+.lr-main strong { overflow-wrap: anywhere; }
+.lr-main small { color: var(--muted); overflow-wrap: anywhere; }
+.lr-badges { display: flex; flex-wrap: wrap; gap: 4px; }
+.lr-course { display: grid; gap: 4px; }
+.lr-ct { font-size: .85rem; overflow-wrap: anywhere; }
+.lr-pct { font-weight: 700; color: var(--v-green); }
+.pager { display: flex; justify-content: space-between; align-items: center; margin: 16px 0; gap: 8px; }

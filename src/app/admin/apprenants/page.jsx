@@ -12,10 +12,13 @@ export default async function Learners({ searchParams }) {
   await requireAdmin();
   const sp = await searchParams;
   const db = getDb();
+  const PAGE = 20;
+  const page = Math.max(1, Math.min(500, parseInt(sp.p, 10) || 1));
   const q = typeof sp.q === 'string' ? sp.q.slice(0, 100) : '';
   const filter = ['unconfirmed', 'nocourse', 'active'].includes(sp.s) ? sp.s : '';
-  const { rows, total } = await store.listLearnersOverview(db, { q, filter, limit: 50 });
+  const { rows, total } = await store.listLearnersOverview(db, { q, filter, limit: PAGE, offset: (page - 1) * PAGE });
   const [courses, stats] = await Promise.all([store.listAllCourses(db), store.learnerStats(db)]);
+  const link = (p) => `/admin/apprenants?${new URLSearchParams({ ...(q ? { q } : {}), ...(filter ? { s: filter } : {}), p: String(p) })}`;
   return (
     <>
       <h1>Apprenants</h1>
@@ -47,36 +50,43 @@ export default async function Learners({ searchParams }) {
       </details>
       <p className="muted">{total} compte{total > 1 ? 's' : ''}{filter ? ' dans ce filtre' : ''}{q ? ` pour « ${q} »` : ''}. Cliquez sur un nom pour voir sa progression et lire ses exercices.</p>
       {rows.length === 0 && <p>Aucun compte trouvé.</p>}
-      <div className="learner-list">
-        {rows.map((u) => (
-          <article className="card learner" key={u.id}>
-            <header>
-              <div>
-                <h2><Link href={`/admin/apprenants/${u.id}`}>{u.name}</Link></h2>
-                <p className="muted">{u.email}</p>
-              </div>
-              <div className="learner-badges">
-                {u.role !== 'learner' && <span className="badge gold">{u.role}</span>}
-                {!u.email_verified_at && <span className="badge red">e-mail non confirmé</span>}
-                {u.blocked_at && <span className="badge red">bloqué</span>}
-              </div>
-            </header>
-            {u.courses.length === 0 ? (
-              <p className="muted">Aucune formation.</p>
-            ) : u.courses.map((c) => {
-              const pct = c.lessons ? Math.round((c.done / c.lessons) * 100) : 0;
-              return (
-                <div className="learner-course" key={c.course_id}>
-                  <div className="lc-top"><span>{c.title}{c.status !== 'active' && <span className="badge grey" style={{ marginLeft: 8 }}>accès retiré</span>}</span><strong>{pct} %</strong></div>
-                  <div className="lesson-progress" role="progressbar" aria-valuenow={pct} aria-valuemin="0" aria-valuemax="100"><i style={{ width: `${pct}%` }} /></div>
-                  <p className="muted">{c.done} / {c.lessons} leçons · {c.answers} exercice{c.answers > 1 ? 's' : ''} rendu{c.answers > 1 ? 's' : ''}</p>
-                </div>
-              );
-            })}
-            <footer className="muted">Inscrit le {fmt(u.created_at)} · dernière activité : {fmt(u.last_activity)}</footer>
-          </article>
-        ))}
+      <div className="learner-list compact">
+        {rows.map((u) => {
+          const active = u.courses.filter((c) => c.status === 'active');
+          const main = [...(active.length ? active : u.courses)].sort((x, y) => (y.done / (y.lessons || 1)) - (x.done / (x.lessons || 1)))[0];
+          const pct = main && main.lessons ? Math.round((main.done / main.lessons) * 100) : 0;
+          return (
+            <Link className="lrow" key={u.id} href={`/admin/apprenants/${u.id}`}>
+              <span className="lr-avatar" aria-hidden="true">{(u.name || '?').slice(0, 1).toUpperCase()}</span>
+              <span className="lr-main">
+                <strong>{u.name}</strong>
+                <small>{u.email}</small>
+                <span className="lr-badges">
+                  {u.role !== 'learner' && <span className="badge gold">{u.role}</span>}
+                  {!u.email_verified_at && <span className="badge red">e-mail non confirmé</span>}
+                  {u.blocked_at && <span className="badge red">bloqué</span>}
+                  {!main && <span className="badge grey">sans formation</span>}
+                </span>
+                {main && (
+                  <span className="lr-course">
+                    <span className="lr-ct">{main.title}{u.courses.length > 1 ? ` · +${u.courses.length - 1} autre${u.courses.length > 2 ? 's' : ''}` : ''}{main.status !== 'active' ? ' · accès retiré' : ''}</span>
+                    <span className="lesson-progress" role="progressbar" aria-valuenow={pct} aria-valuemin="0" aria-valuemax="100"><i style={{ width: `${pct}%` }} /></span>
+                  </span>
+                )}
+                <small>Activité : {fmt(u.last_activity)} · inscrit le {fmt(u.created_at)}</small>
+              </span>
+              <span className="lr-pct">{main ? `${pct} %` : '—'}</span>
+            </Link>
+          );
+        })}
       </div>
+      {(page > 1 || total > page * PAGE) && (
+        <nav className="pager" aria-label="Pages">
+          {page > 1 ? <Link className="btn ghost small" href={link(page - 1)}>← Précédents</Link> : <span />}
+          <span className="muted">Page {page} sur {Math.max(1, Math.ceil(total / PAGE))}</span>
+          {total > page * PAGE ? <Link className="btn ghost small" href={link(page + 1)}>Suivants →</Link> : <span />}
+        </nav>
+      )}
     </>
   );
 }

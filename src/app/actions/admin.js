@@ -257,6 +257,8 @@ export async function toggleBlock(formData) {
   const userId = id(formData, 'userId');
   if (!userId || userId === admin.id) redirect('/admin/apprenants?m=admin_erreur');
   const block = formData.get('block') === '1';
+  const target = await store.getUserById(ctx.db, userId);
+  if (!target || target.role === 'admin') redirect('/admin/apprenants?m=admin_erreur');
   await store.setBlocked(ctx.db, userId, block);
   if (block) await store.deleteUserSessions(ctx.db, userId);
   await store.logAdmin(ctx.db, { adminId: admin.id, action: block ? 'user.block' : 'user.unblock', target: userId, detail: {} });
