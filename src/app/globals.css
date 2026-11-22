@@ -1326,3 +1326,16 @@ details.attempts summary { cursor: pointer; font-weight: 600; }
 .listen-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .listen-speed { display: flex; align-items: center; gap: 6px; font-size: .88rem; margin-left: auto; }
 .listen-speed select { width: auto; padding: 6px 8px; }
+
+/* Profil : niveau, prochaine étape, calendrier, réussites groupées */
+.pf-level { margin-top: 12px; display: grid; gap: 8px; border-top: 5px solid var(--v-violet); }
+.pf-next { display: flex; gap: 12px; align-items: center; text-decoration: none; color: var(--ink); margin-top: 10px; border-left: 5px solid var(--saffron); }
+.pf-next small { display: block; }
+.pf-next-ic { width: 38px; height: 38px; border-radius: 50%; background: var(--saffron); color: #111; display: grid; place-items: center; flex: none; }
+.cal-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+.cal-grid i { aspect-ratio: 1; border-radius: 4px; background: #e8e8ea; display: block; }
+.cal-grid i.on { background: var(--saffron); }
+.pf-group { margin-bottom: 10px; }
+.pf-group h3 { font-size: .95rem; margin: 10px 2px 6px; color: var(--muted); }
+.mini-bar { display: block; height: 6px; border-radius: 99px; background: #e8e8ea; overflow: hidden; margin-top: 4px; }
+.mini-bar i { display: block; height: 100%; background: var(--v-green); border-radius: 99px; }

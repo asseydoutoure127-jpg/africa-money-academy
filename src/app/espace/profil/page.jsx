@@ -31,7 +31,7 @@ export default async function Profil({ searchParams }) {
     safe(() => coinBalance(db, user.id)),
     safe(() => currentStreak(db, user.id)),
     countReferred(db, user.id),
-    profileData(db, user.id),
+    profileData(db, user.id, { referred: await countReferred(db, user.id) }),
     store.listUserEnrollments(db, user.id),
   ]);
   await ensureReferralCode(db, user.id);
@@ -41,6 +41,17 @@ export default async function Profil({ searchParams }) {
     courses.push({ e, progress: computeProgress(modules, await store.listCompletedLessonIds(db, user.id, e.course_id)) });
   }
   const t = data.totals;
+  const cur = courses.find((c) => c.progress.percent < 100 && c.e.status === 'active');
+  const close = data.achievements.filter((a) => !a.done).sort((x, y) => y.current / y.target - x.current / x.target)[0];
+  const nextStep = cur
+    ? { href: `/espace/formation/${cur.e.slug}`, title: `Continuer « ${cur.e.title} »`, sub: `${cur.progress.percent} % faits${close ? ` · Prochaine réussite : ${close.title} (${close.current}/${close.target})` : ''}` }
+    : close ? { href: '/formations', title: 'Choisir une formation', sub: `Prochaine réussite : ${close.title} (${close.current}/${close.target})` } : null;
+  // Calendrier des 12 dernières semaines : un carré par jour, coloré si vous êtes venu ce jour-là.
+  const activeSet = new Set(data.activityDays);
+  const cal = [];
+  const todayUTC = new Date(`${data.today}T00:00:00Z`);
+  for (let i = 83; i >= 0; i -= 1) { const d = new Date(todayUTC.getTime() - i * 86400000); const key = d.toISOString().slice(0, 10); cal.push({ key, on: activeSet.has(key) }); }
+  const groups = [...new Set(data.achievements.map((a) => a.group))];
   const maxMonth = Math.max(1, ...data.months.map((m) => m.pts));
   const rankText = flags.rankingOpen ? (standing ? `${standing.rank}ᵉ` : '—') : '—';
   return (
@@ -64,6 +75,19 @@ export default async function Profil({ searchParams }) {
         </section>
         {!flags.rankingOpen && <p className="muted pf-note">Le classement n’a pas encore commencé. Vos points s’accumulent déjà et seront comptés.</p>}
 
+        <section className="card pf-level" aria-label="Mon niveau">
+          <div className="lc-top"><strong>Niveau {data.level.n} · {data.level.name}</strong><span>{t.points_total} pts</span></div>
+          <div className="lesson-progress" role="progressbar" aria-valuenow={data.level.pct} aria-valuemin="0" aria-valuemax="100"><i style={{ width: `${data.level.pct}%` }} /></div>
+          <small className="muted">{data.level.next ? `Encore ${data.level.toNext} points pour devenir ${data.level.next.name}.` : 'Niveau le plus haut atteint.'} Le niveau dépend de tous les points gagnés depuis votre inscription : il ne redescend jamais.</small>
+        </section>
+
+        {nextStep && (
+          <Link href={nextStep.href} className="card pf-next">
+            <span className="pf-next-ic" aria-hidden="true"><Icon name="arrow" size={20} /></span>
+            <span><strong>{nextStep.title}</strong><small className="muted">{nextStep.sub}</small></span>
+          </Link>
+        )}
+
         <h2 className="pf-h">Mes statistiques</h2>
         <section className="pf-stats">
           <div><strong>{t.points_total}</strong><span>points gagnés en tout</span></div>
@@ -76,6 +100,12 @@ export default async function Profil({ searchParams }) {
           <div><strong>{data.readingMinutes}</strong><span>min de lecture</span></div>
         </section>
 
+        <h2 className="pf-h">Ma régularité (12 dernières semaines)</h2>
+        <section className="card pf-cal" aria-label="Jours de visite">
+          <div className="cal-grid">{cal.map((c) => <i key={c.key} className={c.on ? 'on' : ''} title={c.key} />)}</div>
+          <small className="muted">{cal.filter((c) => c.on).length} jour{cal.filter((c) => c.on).length > 1 ? 's' : ''} de visite sur 84. Chaque carré jaune est un jour où vous êtes venu.</small>
+        </section>
+
         <h2 className="pf-h">Mes formations</h2>
         {courses.length === 0 ? (
           <div className="card"><p>Vous n’avez pas encore de formation. <Link href="/formations">Voir les formations</Link></p></div>
@@ -83,18 +113,29 @@ export default async function Profil({ searchParams }) {
           <Link key={e.slug} href={`/espace/formation/${e.slug}`} className="pf-course">
             <div className="lc-top"><strong>{e.title}</strong><span>{progress.percent} %</span></div>
             <div className="lesson-progress" aria-hidden="true"><i style={{ width: `${progress.percent}%` }} /></div>
-            <small className="muted">{progress.doneLessons} / {progress.totalLessons} leçons{e.status !== 'active' ? ' · accès retiré' : ''}</small>
+            <small className="muted">{progress.doneLessons} / {progress.totalLessons} leçons{(() => { const pc = data.perCourse.find((x) => x.course_id === e.course_id); return pc ? ` · ${pc.sent} exercice${pc.sent > 1 ? 's' : ''} rendu${pc.sent > 1 ? 's' : ''}, ${pc.validated} validé${pc.validated > 1 ? 's' : ''}${pc.avg !== null ? ` · note moyenne ${String(pc.avg).replace('.', ',')}/10` : ''}` : ''; })()}{e.status !== 'active' ? ' · accès retiré' : ''}</small>
           </Link>
         ))}
 
-        <h2 className="pf-h">Mes réussites</h2>
-        <ul className="pf-badges">
-          {data.achievements.map((a) => (
-            <li key={a.key} className={a.done ? 'on' : ''}>
-              <span aria-hidden="true">{a.done ? '✓' : '○'}</span>{a.title}<small>{a.done ? 'obtenue' : 'à débloquer'}</small>
-            </li>
-          ))}
-        </ul>
+        <h2 className="pf-h">Mes réussites ({data.achievements.filter((a) => a.done).length} / {data.achievements.length})</h2>
+        {groups.map((gname) => (
+          <section key={gname} className="pf-group">
+            <h3>{gname}</h3>
+            <ul className="pf-badges">
+              {data.achievements.filter((a) => a.group === gname).map((a) => (
+                <li key={a.key} className={a.done ? 'on' : ''}>
+                  <span aria-hidden="true">{a.done ? '✓' : '○'}</span>{a.title}
+                  {a.done ? <small>obtenue</small> : (
+                    <>
+                      <span className="mini-bar" aria-hidden="true"><i style={{ width: `${Math.round((a.current / a.target) * 100)}%` }} /></span>
+                      <small>{a.current} / {a.target} · {a.hint}</small>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
 
         <h2 className="pf-h">Mes exercices et les retours reçus</h2>
         {data.exercises.length === 0 ? (
