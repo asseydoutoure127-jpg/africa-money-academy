@@ -1225,3 +1225,12 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 .tool-tabs small { opacity: .7; margin-left: 4px; }
 .tools-grid #budget { grid-column: auto; }
 .line2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+
+/* Outils : bouton Calculer, résultat expliqué */
+.tool-actions { display: flex; gap: 10px; margin-top: 14px; }
+.tool .result { margin-top: 14px; }
+.res-main { margin: 0 0 10px; font-size: 1.05rem; }
+.res-how, .res-tip { border-top: 1px solid rgba(0, 0, 0, .12); padding-top: 10px; margin-top: 10px; font-size: .92rem; }
+.res-how ol { margin: 6px 0 0; padding-left: 1.2em; }
+.res-how li { margin-bottom: 4px; overflow-wrap: anywhere; }
+.res-tip p { margin: 4px 0 0; }
