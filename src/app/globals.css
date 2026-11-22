@@ -1301,3 +1301,10 @@ details.danger-zone > summary { color: var(--danger); font-weight: 700; cursor: 
 .lr-ct { font-size: .85rem; overflow-wrap: anywhere; }
 .lr-pct { font-weight: 700; color: var(--v-green); }
 .pager { display: flex; justify-content: space-between; align-items: center; margin: 16px 0; gap: 8px; }
+
+/* Tableau de bord : carte de formation plus sobre, bouton non dominant ; pied de page plus court */
+.pcard.pc-compact { min-height: 200px; }
+.pcard.pc-compact .pc-body { padding-bottom: 14px; }
+.pcard.pc-compact h2 { font-size: 1.15rem; }
+.pcard.pc-compact .btn { align-self: flex-start; margin-top: 8px; }
+.footer-logo { width: 130px; }

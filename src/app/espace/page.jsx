@@ -75,7 +75,7 @@ export default async function Espace({ searchParams }) {
         </div>
 
         {current ? (
-          <article className="pcard">
+          <article className="pcard pc-compact">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="bg" src={imgOf(current.e.slug, current.e.image_url)} alt="" />
             <div className="pc-top"><span className="tag gold">{current.progress.doneLessons > 0 ? 'Continuer' : 'À commencer'}</span><span className="tag">{current.progress.percent} %</span></div>
@@ -83,7 +83,7 @@ export default async function Espace({ searchParams }) {
               <h2>{current.e.title}</h2>
               <div className="pbar" aria-hidden="true"><span style={{ width: `${current.progress.percent}%` }} /></div>
               <p>{current.progress.doneLessons} leçon{current.progress.doneLessons > 1 ? 's' : ''} terminée{current.progress.doneLessons > 1 ? 's' : ''} sur {current.progress.totalLessons}</p>
-              <Link className="btn go gold" href={`/espace/formation/${current.e.slug}`}>{current.progress.doneLessons > 0 ? 'Reprendre la leçon' : 'Commencer'}</Link>
+              <Link className="btn gold small" href={`/espace/formation/${current.e.slug}`}>{current.progress.doneLessons > 0 ? 'Reprendre la leçon' : 'Commencer'}</Link>
             </div>
           </article>
         ) : free && !freeRow ? (
@@ -140,7 +140,7 @@ export default async function Espace({ searchParams }) {
           </>
         )}
 
-        <div className="sec-title"><h2>Mes formations</h2><Link href="/formations">Toutes</Link></div>
+        <div className="sec-title"><h2>{current && rows.length > 1 ? 'Mes autres formations' : 'Mes formations'}</h2><Link href="/formations">Toutes</Link></div>
         {rows.length === 0 ? (
           <div className="card soft">
             <p style={{ marginTop: 0 }}>Vous n’avez pas encore de formation.</p>
@@ -148,7 +148,7 @@ export default async function Espace({ searchParams }) {
           </div>
         ) : (
           <div className="hlist">
-            {rows.map(({ e, progress }) => (
+            {rows.filter((r) => !(current && rows.length > 1 && r.e.id === current.e.id)).map(({ e, progress }) => (
               <Link key={e.id} href={`/espace/formation/${e.slug}`} className="pcard" style={{ minHeight: 210, textDecoration: 'none' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img className="bg" src={imgOf(e.slug, e.image_url)} alt="" loading="lazy" />
